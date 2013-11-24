@@ -9,17 +9,19 @@ If you are using sockets then Extasys is the proper tool for your work. It's bee
 
 Goals
 
-Provide fast and accurate TCP and UDP data transfer
-Asynchronous processing
-Less development time
+	Provide fast and accurate TCP and UDP data transfer
+	Asynchronous processing
+	Less development time
+
 Features
 
-Dedicated Thread Pool for each TCPServer, TCPClient, UDPServer and UDPClient
-Multiple listeners per server and multiple connectors per client
-TCP message collector with character or string message splitter
+	Dedicated Thread Pool for each TCPServer, TCPClient, UDPServer and UDPClient
+	Multiple listeners per server and multiple connectors per client
+	TCP message collector with character or string message splitter
+
 Lean how to use
 
-Guides and examples on using Extasys can be found here
-Support
+	Guides and examples on using Extasys can be found here
 
+Support
 If you need more support on using Extasys with your applications now you can ask for help in Extasys Google Group
