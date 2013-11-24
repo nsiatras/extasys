@@ -30,3 +30,8 @@ Support
 	ask for help in Extasys Google Group.
 	http://groups.google.com/group/extasys-socket
 	
+Useful tips
+
+	The Extasys project is written using NetBeans? IDE
+	You can also find Extasys in Google Code --> https://code.google.com/p/extasys/
+	
