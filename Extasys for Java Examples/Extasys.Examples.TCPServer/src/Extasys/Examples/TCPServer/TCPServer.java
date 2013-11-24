@@ -50,16 +50,16 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     @Override
     public void OnDataReceive(TCPClientConnection sender, DataFrame data)
     {
-        /*try
-         {
-         sender.SendData(new String(data.getBytes()) + "#SPLITTER#");
-         }
-         catch (Exception ex)
-         {
+        try
+        {
+            sender.SendData("GET#SPLITTER#");
+        }
+        catch (Exception ex)
+        {
 
-         }*/
+        }
 
-        fMyTCPListener.ReplyToAllExceptSender(new String(data.getBytes()) + "#SPLITTER#", sender);
+        //fMyTCPListener.ReplyToAllExceptSender(new String(data.getBytes()) + "#SPLITTER#", sender);
     }
 
     @Override
