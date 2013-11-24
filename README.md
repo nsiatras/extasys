@@ -21,7 +21,8 @@ Features
 
 Lean how to use
 
-	Guides and examples on using Extasys can be found here
+	Guides and examples on using Extasys can be found at
+	https://sites.google.com/site/extasyssocket/
 
 Support
 	
