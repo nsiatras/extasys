@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extasys", "Extasys\Extasys.csproj", "{2A003801-C61F-4007-BCD7-A1A91B0871D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extasys.Examples.TCPServer", "Extasys.Examples.TCPServer\Extasys.Examples.TCPServer.csproj", "{CCA4BC13-CCD7-4F23-BBF4-09EBD51525BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extasys.Examples.TCPClient", "Extasys.Examples.TCPClient\Extasys.Examples.TCPClient.csproj", "{4AA2275D-3EF7-4942-8B38-028E4405F421}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extasys.Examples.UDPClient", "Extasys.Examples.UDPClient\Extasys.Examples.UDPClient.csproj", "{29415C58-CF3D-459A-9698-344AA3E87B63}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A003801-C61F-4007-BCD7-A1A91B0871D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A003801-C61F-4007-BCD7-A1A91B0871D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A003801-C61F-4007-BCD7-A1A91B0871D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A003801-C61F-4007-BCD7-A1A91B0871D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCA4BC13-CCD7-4F23-BBF4-09EBD51525BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCA4BC13-CCD7-4F23-BBF4-09EBD51525BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCA4BC13-CCD7-4F23-BBF4-09EBD51525BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCA4BC13-CCD7-4F23-BBF4-09EBD51525BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AA2275D-3EF7-4942-8B38-028E4405F421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AA2275D-3EF7-4942-8B38-028E4405F421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AA2275D-3EF7-4942-8B38-028E4405F421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AA2275D-3EF7-4942-8B38-028E4405F421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29415C58-CF3D-459A-9698-344AA3E87B63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29415C58-CF3D-459A-9698-344AA3E87B63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29415C58-CF3D-459A-9698-344AA3E87B63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29415C58-CF3D-459A-9698-344AA3E87B63}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
