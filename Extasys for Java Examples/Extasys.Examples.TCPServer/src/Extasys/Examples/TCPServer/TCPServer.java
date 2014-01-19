@@ -23,6 +23,7 @@ import Extasys.DataFrame;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.Network.TCP.Server.Listener.TCPListener;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 
 /**
  *
@@ -32,6 +33,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 {
 
     private TCPListener fMyTCPListener;
+    private Charset fCharset = Charset.forName("UTF-8");
 
     public TCPServer(String name, String description, InetAddress listenerIP, int port, int maxConnections, int connectionsTimeOut, int corePoolSize, int maximumPoolSize)
     {
@@ -52,7 +54,9 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     {
         try
         {
-            sender.SendData("GET#SPLITTER#");
+            byte[] bytes = data.getBytes();
+
+            sender.SendDataSynchronous(new String(bytes, fCharset) + "#SPLITTER#");
         }
         catch (Exception ex)
         {

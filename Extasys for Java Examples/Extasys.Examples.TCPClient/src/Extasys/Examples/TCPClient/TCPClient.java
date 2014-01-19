@@ -24,6 +24,9 @@ import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,6 +36,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 {
 
     private AutoSendMessages fAutoSendMessagesThread;
+    private Charset fCharset = Charset.forName("UTF-8");
 
     public TCPClient(String name, String description, InetAddress remoteHostIP, int remoteHostPort, int corePoolSize, int maximumPoolSize)
     {
@@ -49,7 +53,16 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     @Override
     public void OnDataReceive(TCPConnector connector, DataFrame data)
     {
-        //System.out.println("Data received: " + new String(data.getBytes()));
+        try
+        {
+            String dataStr = new String(data.getBytes(), fCharset);
+
+            connector.SendData(dataStr + "#SPLITTER#");
+        }
+        catch (Exception ex)
+        {
+
+        }
     }
 
     @Override
@@ -68,8 +81,21 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     public void StartSendingMessages()
     {
         StopSendingMessages();
-        fAutoSendMessagesThread = new AutoSendMessages(this);
-        fAutoSendMessagesThread.start();
+        try
+        {
+            SendData("1#SPLITTER#");
+
+//fAutoSendMessagesThread = new AutoSendMessages(this);
+            //fAutoSendMessagesThread.start();
+        }
+        catch (ConnectorDisconnectedException ex)
+        {
+            Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (ConnectorCannotSendPacketException ex)
+        {
+            Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void StopSendingMessages()

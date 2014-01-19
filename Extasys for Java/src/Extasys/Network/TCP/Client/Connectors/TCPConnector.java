@@ -291,6 +291,41 @@ public class TCPConnector
     }
 
     /**
+     * Send data to server and wait until data transfer complete.
+     *
+     * @param data is the string data to send
+     * @throws ConnectorDisconnectedException
+     */
+    public void SendDataSynchronous(String data) throws ConnectorDisconnectedException
+    {
+        byte[] bytes = data.getBytes();
+        SendDataSynchronous(bytes, 0, bytes.length);
+    }
+
+    /**
+     * Send data to server and wait until data transfer complete.
+     *
+     * @param bytes is the byte array to be send.
+     * @param offset is the position in the data buffer at witch to begin
+     * sending.
+     * @param length is the number of the bytes to be send.
+     * @throws ConnectorDisconnectedException
+     */
+    public void SendDataSynchronous(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException
+    {
+        try
+        {
+            fOutput.write(bytes, offset, length);
+            fBytesOut += length;
+        }
+        catch (IOException ex)
+        {
+            Stop();
+            throw new ConnectorDisconnectedException(this);
+        }
+    }
+
+    /**
      * Returns the main Extasys TCP Client of the connector.
      *
      * @return the main Extasys TCP Client of the connector.

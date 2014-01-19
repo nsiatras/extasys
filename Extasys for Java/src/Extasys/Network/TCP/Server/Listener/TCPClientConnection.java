@@ -41,20 +41,20 @@ import java.util.Date;
  *
  * @author Nikos Siatras
  */
-public class TCPClientConnection
+public final class TCPClientConnection
 {
 
     //Connection properties
-    public Socket fConnection;
+    protected Socket fConnection;
     protected boolean fActive = false;
     protected boolean fIsConnected = false;
-    private TCPListener fMyListener;
+    public TCPListener fMyListener;
     public ExtasysTCPServer fMyExtasysServer;
     private String fIPAddress;
     private String fName = "";
     private Object fTag = null;
     private Thread fClientDataReaderThread;
-    private Date fConnectionStartUpDateTime;
+    private final Date fConnectionStartUpDateTime;
     //Data input-output streams.
     public InputStream fInput;
     public OutputStream fOutput;
@@ -62,7 +62,7 @@ public class TCPClientConnection
     public long fBytesIn = 0, fBytesOut = 0;
     //Message collector.
     public TCPClientConnectionMessageCollector fMyMessageCollector;
-    protected boolean fUseMessageCollector;
+    protected final boolean fUseMessageCollector;
     //Messages IO.
     public IncomingTCPClientConnectionPacket fLastIncomingPacket = null;
     public OutgoingTCPClientConnectionPacket fLastOugoingPacket = null;
@@ -70,11 +70,13 @@ public class TCPClientConnection
 
     public TCPClientConnection(Socket socket, TCPListener myTCPListener, boolean useMessageCollector, String ETX)
     {
+        fConnectionStartUpDateTime = ExtasysCalendar.fCalendar.getTime();
+        fUseMessageCollector = useMessageCollector;
+        fConnection = socket;
+
         try
         {
-            fUseMessageCollector = useMessageCollector;
             fIPAddress = socket.getInetAddress().toString() + ":" + String.valueOf(socket.getPort());
-            fConnection = socket;
             fIsConnected = true;
 
             if (myTCPListener.getConnectionTimeOut() > 0) //Connection time-out.
@@ -105,8 +107,6 @@ public class TCPClientConnection
 
         fMyListener.AddClient(this);
         StartReceivingData();
-
-        fConnectionStartUpDateTime = ExtasysCalendar.fCalendar.getTime();
     }
 
     private void StartReceivingData()
@@ -162,9 +162,52 @@ public class TCPClientConnection
         {
             throw new ClientIsDisconnectedException(this);
         }
-        fBytesOut += length;
-        fMyListener.fBytesOut += length;
         fLastOugoingPacket = new OutgoingTCPClientConnectionPacket(this, bytes, offset, length, fLastOugoingPacket);
+    }
+
+    /**
+     * Send data to client and wait until data transfer complete.
+     *
+     * @param data is the string to send.
+     * @throws ClientIsDisconnectedException
+     */
+    public void SendDataSynchronous(String data) throws ClientIsDisconnectedException
+    {
+        byte[] bytes = data.getBytes();
+        SendDataSynchronous(bytes, 0, bytes.length);
+    }
+
+    /**
+     * Send data to client and wait until data transfer complete.
+     *
+     * @param bytes is the byte array to be send.
+     * @param offset is the position in the data buffer at witch to begin
+     * @param length is the number of the bytes to be send.
+     * @throws
+     * Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException
+     */
+    public void SendDataSynchronous(byte[] bytes, int offset, int length) throws ClientIsDisconnectedException
+    {
+        if (!this.fIsConnected)
+        {
+            throw new ClientIsDisconnectedException(this);
+        }
+
+        try
+        {
+            fOutput.write(bytes, offset, length);
+            fBytesOut += length;
+            fMyListener.fBytesOut += length;
+        }
+        catch (IOException ex)
+        {
+            if (fLastOugoingPacket != null)
+            {
+                fLastOugoingPacket.Cancel();
+            }
+            this.DisconnectMe();
+            throw new ClientIsDisconnectedException(this);
+        }
     }
 
     /**

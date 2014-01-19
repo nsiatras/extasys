@@ -69,6 +69,6 @@ public class ManualResetEvent
     public synchronized void Set()
     {
         fInitialState = true;
-        notify();
+        notifyAll();
     }
 }

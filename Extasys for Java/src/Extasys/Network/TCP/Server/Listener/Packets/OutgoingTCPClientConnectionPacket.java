@@ -95,6 +95,7 @@ public class OutgoingTCPClientConnectionPacket implements Runnable
                 {
                     fClient.fOutput.write(fBytes, fOffset, fLength);
                     fClient.fBytesOut += fLength;
+                    fClient.fMyListener.fBytesOut += fLength;
                 }
                 catch (IOException ioException)
                 {
@@ -111,6 +112,8 @@ public class OutgoingTCPClientConnectionPacket implements Runnable
                     try
                     {
                         fClient.fOutput.write(fBytes, fOffset, fLength);
+                        fClient.fBytesOut += fLength;
+                        fClient.fMyListener.fBytesOut += fLength;
                     }
                     catch (IOException ioException)
                     {
