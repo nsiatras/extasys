@@ -31,27 +31,23 @@ public class TCPClientMessageCollector
 {
 
     private TCPConnector fMyConnector;
-    private byte[] fETXStr;
-    private ByteArrayBuilder fIncomingDataBuffer = new ByteArrayBuilder();
+    private final byte[] fETXStr;
+    private final ByteArrayBuilder fIncomingDataBuffer = new ByteArrayBuilder();
+    private final int fETXLength;
     private int fIndexOfETX;
-    private int fETXLength = 0;
 
     public TCPClientMessageCollector(TCPConnector connector, char ETX)
     {
-        Initialize(connector, String.valueOf(ETX));
+        fMyConnector = connector;
+        fETXStr = String.valueOf(ETX).getBytes();
+        fETXLength = fETXStr.length;
     }
 
     public TCPClientMessageCollector(TCPConnector connector, String splitter)
     {
-        Initialize(connector, splitter);
-    }
-
-    private void Initialize(TCPConnector connector, String splitter)
-    {
         fMyConnector = connector;
         fETXStr = splitter.getBytes();
         fETXLength = fETXStr.length;
-        //fIncomingDataBuffer = new ByteArrayBuilder();
     }
 
     public void AppendData(byte[] bytes)

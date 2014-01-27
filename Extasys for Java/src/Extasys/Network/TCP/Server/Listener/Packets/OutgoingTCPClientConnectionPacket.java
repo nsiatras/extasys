@@ -23,19 +23,20 @@ import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.ManualResetEvent;
 import Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException;
 import java.io.IOException;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class OutgoingTCPClientConnectionPacket implements Runnable
+public final class OutgoingTCPClientConnectionPacket implements Runnable
 {
 
-    public ManualResetEvent fDone = new ManualResetEvent(false);
-    private TCPClientConnection fClient;
-    private byte[] fBytes;
-    private int fOffset;
-    private int fLength;
+    public final ManualResetEvent fDone = new ManualResetEvent(false);
+    private final TCPClientConnection fClient;
+    private final byte[] fBytes;
+    private final int fOffset;
+    private final int fLength;
     private OutgoingTCPClientConnectionPacket fPreviousPacket;
     public boolean fCancel = false;
 
@@ -52,21 +53,29 @@ public class OutgoingTCPClientConnectionPacket implements Runnable
      * sending.
      * @param length is the number of the bytes to be send.
      * @param previousPacket is the previous outgoing packet of the client.
+     * @throws
+     * Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException
      */
     public OutgoingTCPClientConnectionPacket(TCPClientConnection client, byte[] bytes, int offset, int length, OutgoingTCPClientConnectionPacket previousPacket) throws OutgoingPacketFailedException
     {
+        fClient = client;
+        fBytes = bytes;
+        fOffset = offset;
+        fLength = length;
+        fPreviousPacket = previousPacket;
+
+        SendToThreadPool();
+    }
+
+    protected void SendToThreadPool()
+    {
         try
         {
-            fClient = client;
-            fBytes = bytes;
-            fOffset = offset;
-            fLength = length;
-            fPreviousPacket = previousPacket;
             fClient.fMyExtasysServer.fMyThreadPool.execute(this);
         }
-        catch (Exception ex)
+        catch (RejectedExecutionException ex)
         {
-            throw new OutgoingPacketFailedException(this);
+            fClient.ForceDisconnect();
         }
     }
 
@@ -94,12 +103,14 @@ public class OutgoingTCPClientConnectionPacket implements Runnable
                 try
                 {
                     fClient.fOutput.write(fBytes, fOffset, fLength);
+                    fClient.fOutput.flush();
                     fClient.fBytesOut += fLength;
                     fClient.fMyListener.fBytesOut += fLength;
                 }
                 catch (IOException ioException)
                 {
                     fCancel = true;
+                    fDone.Set();
                     fClient.DisconnectMe();
                 }
             }
@@ -112,12 +123,14 @@ public class OutgoingTCPClientConnectionPacket implements Runnable
                     try
                     {
                         fClient.fOutput.write(fBytes, fOffset, fLength);
+                        fClient.fOutput.flush();
                         fClient.fBytesOut += fLength;
                         fClient.fMyListener.fBytesOut += fLength;
                     }
                     catch (IOException ioException)
                     {
                         fCancel = true;
+                        fDone.Set();
                         fClient.DisconnectMe();
                     }
                 }
@@ -125,18 +138,16 @@ public class OutgoingTCPClientConnectionPacket implements Runnable
                 {
                     fCancel = true;
                 }
+
+                fPreviousPacket = null;
             }
         }
         catch (Exception ex)
         {
         }
 
-        if (fPreviousPacket != null)
-        {
-            fPreviousPacket = null;
-        }
-
         fDone.Set();
+
     }
 
     /**

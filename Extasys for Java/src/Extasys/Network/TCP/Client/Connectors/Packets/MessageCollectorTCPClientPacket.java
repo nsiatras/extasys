@@ -21,17 +21,18 @@ package Extasys.Network.TCP.Client.Connectors.Packets;
 
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.ManualResetEvent;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class MessageCollectorTCPClientPacket implements Runnable
+public final class MessageCollectorTCPClientPacket implements Runnable
 {
 
     public ManualResetEvent fDone = new ManualResetEvent(false);
-    private TCPConnector fConnector;
-    private byte[] fData;
+    private final TCPConnector fConnector;
+    private final byte[] fData;
     private MessageCollectorTCPClientPacket fPreviousPacket;
     public boolean fCancel = false;
 
@@ -53,7 +54,19 @@ public class MessageCollectorTCPClientPacket implements Runnable
         fData = data;
         fPreviousPacket = previousPacket;
 
-        connector.fMyTCPClient.fMyThreadPool.execute(this);
+        SendToThreadPool();
+    }
+
+    protected void SendToThreadPool()
+    {
+        try
+        {
+            fConnector.fMyTCPClient.fMyThreadPool.execute(this);
+        }
+        catch (RejectedExecutionException ex)
+        {
+            fConnector.ForceStop();
+        }
     }
 
     /**

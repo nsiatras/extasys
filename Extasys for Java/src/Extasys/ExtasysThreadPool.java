@@ -19,20 +19,21 @@
  THE SOFTWARE.*/
 package Extasys;
 
-import java.util.Calendar;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class ExtasysCalendar
+public class ExtasysThreadPool extends ThreadPoolExecutor
 {
 
-    public static Calendar fCalendar = Calendar.getInstance();
-
-    public ExtasysCalendar()
+    public ExtasysThreadPool(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit)
     {
-
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ArrayBlockingQueue(500000, true));
+        this.prestartAllCoreThreads();
     }
 
 }

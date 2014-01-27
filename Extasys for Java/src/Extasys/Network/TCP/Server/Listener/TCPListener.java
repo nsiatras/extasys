@@ -166,6 +166,19 @@ public class TCPListener
      */
     public void Stop()
     {
+        Stop(false);
+    }
+
+    /**
+     * Force server stop
+     */
+    public void ForceStop()
+    {
+        Stop(true);
+    }
+
+    private void Stop(boolean force)
+    {
         fActive = false;
 
         try
@@ -184,7 +197,14 @@ public class TCPListener
                 try
                 {
                     TCPClientConnection tmp = (TCPClientConnection) fConnectedClients.get(e.nextElement());
-                    tmp.DisconnectMe();
+                    if (!force)
+                    {
+                        tmp.DisconnectMe();
+                    }
+                    else
+                    {
+                        tmp.ForceDisconnect();
+                    }
                 }
                 catch (Exception ex)
                 {

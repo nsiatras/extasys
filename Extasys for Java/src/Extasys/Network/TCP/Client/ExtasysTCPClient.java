@@ -20,6 +20,7 @@
 package Extasys.Network.TCP.Client;
 
 import Extasys.DataFrame;
+import Extasys.ExtasysThreadPool;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;
@@ -37,8 +38,8 @@ public class ExtasysTCPClient
 
     private final String fName, fDescription;
     private final ArrayList fConnectors = new ArrayList();
-    private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(100000);
-    public final ThreadPoolExecutor fMyThreadPool;
+    private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(200000);
+    public final ExtasysThreadPool fMyThreadPool;
 
     /**
      * Constructs a new Extasys TCP Client.
@@ -54,7 +55,7 @@ public class ExtasysTCPClient
     {
         fName = name;
         fDescription = description;
-        fMyThreadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 10, TimeUnit.SECONDS, fThreadPoolQueue);
+        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize, corePoolSize, TimeUnit.SECONDS);
     }
 
     /**
@@ -130,6 +131,8 @@ public class ExtasysTCPClient
 
     /**
      * Start or restart the client.
+     *
+     * @throws java.lang.Exception
      */
     public void Start() throws Exception
     {
@@ -154,9 +157,37 @@ public class ExtasysTCPClient
      */
     public void Stop()
     {
+        Stop(false);
+    }
+
+    /**
+     * Force client to stop.
+     */
+    public void ForceStop()
+    {
+        Stop(true);
+    }
+
+    private void Stop(boolean force)
+    {
         for (int i = 0; i < fConnectors.size(); i++)
         {
-            ((TCPConnector) fConnectors.get(i)).Stop();
+            if (!force)
+            {
+                ((TCPConnector) fConnectors.get(i)).Stop();
+            }
+            else
+            {
+                ((TCPConnector) fConnectors.get(i)).ForceStop();
+            }
+        }
+
+        try
+        {
+            fMyThreadPool.getQueue().clear();
+        }
+        catch (Exception ex)
+        {
         }
     }
 
@@ -175,6 +206,10 @@ public class ExtasysTCPClient
      * Send data from all connector's to all hosts.
      *
      * @param data is the string to be send.
+     * @throws
+     * Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException
+     * @throws
+     * Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException
      */
     public void SendData(String data) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
     {
@@ -191,6 +226,10 @@ public class ExtasysTCPClient
      * @param offset is the position in the data buffer at witch to begin
      * sending.
      * @param length is the number of the bytes to be send.
+     * @throws
+     * Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException
+     * @throws
+     * Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException
      */
     public void SendData(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
     {

@@ -25,11 +25,11 @@ import java.util.Arrays;
  *
  * @author Nikos Siatras
  */
-public class DataFrame
+public final class DataFrame
 {
 
-    private byte[] fBytes;
-    private int fLength;
+    private final byte[] fBytes;
+    private final int fLength;
 
     public DataFrame(byte[] bytes)
     {
@@ -43,12 +43,12 @@ public class DataFrame
         fLength = fBytes.length;
     }
 
-    public byte[] getBytes()
+    public final byte[] getBytes()
     {
         return fBytes;
     }
 
-    public int getLength()
+    public final int getLength()
     {
         return fLength;
     }

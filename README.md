@@ -1,8 +1,7 @@
-Extasys
+extasys
 =======
-Asynchronous TCP/UDP socket library
 
-Learn how to use --> https://sites.google.com/site/extasyssocket/
+Asynchronous TCP/UDP socket library
 
 Extasys is a fast, accurate and easy to use TCP/UDP socket library for Java, Mono and Microsoft .NET Framework. The power of this socket is the asynchronous data proccessing that offers.
 
@@ -30,9 +29,4 @@ Support
 	If you need more support on using Extasys with your applications now you can 
 	ask for help in Extasys Google Group.
 	http://groups.google.com/group/extasys-socket
-	
-Useful tips
-
-	The Extasys project is written using NetBeans? IDE
-	You can also find Extasys in Google Code --> https://code.google.com/p/extasys/
 	

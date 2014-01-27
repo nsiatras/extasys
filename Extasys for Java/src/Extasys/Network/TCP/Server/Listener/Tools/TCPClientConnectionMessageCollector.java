@@ -31,22 +31,20 @@ public class TCPClientConnectionMessageCollector
 {
 
     private TCPClientConnection fMyClient;
-    private byte[] fETXStr;
-    private ByteArrayBuilder fIncomingDataBuffer;
+    private final byte[] fETXStr;
+    private final ByteArrayBuilder fIncomingDataBuffer;
     private int fIndexOfETX;
-    private int fETXLength = 0;
+    private final int fETXLength;
 
     public TCPClientConnectionMessageCollector(TCPClientConnection myClient, char splitter)
     {
-        Initialize(myClient, String.valueOf(splitter));
+        fMyClient = myClient;
+        fETXStr = String.valueOf(splitter).getBytes();
+        fETXLength = fETXStr.length;
+        fIncomingDataBuffer = new ByteArrayBuilder();
     }
 
     public TCPClientConnectionMessageCollector(TCPClientConnection myClient, String splitter)
-    {
-        Initialize(myClient, splitter);
-    }
-
-    private void Initialize(TCPClientConnection myClient, String splitter)
     {
         fMyClient = myClient;
         fETXStr = splitter.getBytes();
@@ -66,7 +64,6 @@ public class TCPClientConnectionMessageCollector
                 fIncomingDataBuffer.Delete(0, fIndexOfETX + fETXLength);
                 fIndexOfETX = fIncomingDataBuffer.IndexOf(fETXStr);
             }
-
         }
         catch (Exception ex)
         {

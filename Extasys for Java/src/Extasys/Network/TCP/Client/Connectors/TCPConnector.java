@@ -52,6 +52,8 @@ public class TCPConnector
     private final int fReadBufferSize;
     public InputStream fInput;
     public OutputStream fOutput;
+    protected final Object fSendDataLock = new Object();
+    protected final Object fReceiveDataLock = new Object();
     private ReadIncomingDataThread fReadIncomingDataThread;
     //Data throughput.
     public long fBytesIn = 0, fBytesOut = 0;
@@ -175,8 +177,39 @@ public class TCPConnector
      */
     public void Stop()
     {
+        Stop(false);
+    }
+
+    /**
+     * Force connector stop (disconnect from the server).
+     */
+    public void ForceStop()
+    {
+        Stop(true);
+    }
+
+    private void Stop(boolean force)
+    {
         if (fActive)
         {
+            if (!force)
+            {
+                // Wait to process incoming and outgoing TCP Packets
+                if (fLastMessageCollectorPacket != null)
+                {
+                    fLastMessageCollectorPacket.fDone.WaitOne();
+                }
+                else if (fLastIncomingPacket != null)
+                {
+                    fLastIncomingPacket.fDone.WaitOne();
+                }
+
+                if (fLastOutgoingPacket != null)
+                {
+                    fLastOutgoingPacket.fDone.WaitOne();
+                }
+            }
+
             try
             {
                 if (fConnection != null)
@@ -280,13 +313,16 @@ public class TCPConnector
      */
     public void SendData(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
     {
-        if (fIsConnected)
+        synchronized (fSendDataLock)
         {
-            fLastOutgoingPacket = new OutgoingTCPClientPacket(this, bytes, offset, length, fLastOutgoingPacket);
-        }
-        else
-        {
-            throw new ConnectorDisconnectedException(this);
+            if (fIsConnected)
+            {
+                fLastOutgoingPacket = new OutgoingTCPClientPacket(this, bytes, offset, length, fLastOutgoingPacket);
+            }
+            else
+            {
+                throw new ConnectorDisconnectedException(this);
+            }
         }
     }
 
@@ -506,7 +542,10 @@ class ReadIncomingDataThread extends Thread
                     {
                         try
                         {
-                            fMyTCPConnector.fLastIncomingPacket = new IncomingTCPClientPacket(fMyTCPConnector, new DataFrame(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastIncomingPacket);
+                            synchronized (fMyTCPConnector.fReceiveDataLock)
+                            {
+                                fMyTCPConnector.fLastIncomingPacket = new IncomingTCPClientPacket(fMyTCPConnector, new DataFrame(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastIncomingPacket);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -517,7 +556,10 @@ class ReadIncomingDataThread extends Thread
                     {
                         try
                         {
-                            fMyTCPConnector.fLastMessageCollectorPacket = new MessageCollectorTCPClientPacket(fMyTCPConnector, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastMessageCollectorPacket);
+                            synchronized (fMyTCPConnector.fReceiveDataLock)
+                            {
+                                fMyTCPConnector.fLastMessageCollectorPacket = new MessageCollectorTCPClientPacket(fMyTCPConnector, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastMessageCollectorPacket);
+                            }
                         }
                         catch (Exception ex)
                         {

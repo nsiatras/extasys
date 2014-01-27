@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 /**
  *
- * @author NSi
+ * @author Nikos Siatras
  */
 public class ByteArrayBuilder
 {
@@ -46,7 +46,7 @@ public class ByteArrayBuilder
     {
         synchronized (fLock)
         {
-            byte[] newArray = new byte[fBytes.length + data.length];
+            final byte[] newArray = new byte[fBytes.length + data.length];
             System.arraycopy(fBytes, 0, newArray, 0, fBytes.length);
             System.arraycopy(data, 0, newArray, fBytes.length, data.length);
             fBytes = newArray;
@@ -79,30 +79,14 @@ public class ByteArrayBuilder
     {
         synchronized (fLock)
         {
+            final byte[] firstPart = Arrays.copyOfRange(fBytes, 0, indexFrom);
+            final byte[] secondPart = Arrays.copyOfRange(fBytes, indexTo, fBytes.length);
 
-            byte[] firstPart = Arrays.copyOfRange(fBytes, 0, indexFrom);
-            byte[] secondPart = Arrays.copyOfRange(fBytes, indexTo, fBytes.length);
-
-            byte[] C = new byte[firstPart.length + secondPart.length];
+            final byte[] C = new byte[firstPart.length + secondPart.length];
             System.arraycopy(firstPart, 0, C, 0, firstPart.length);
             System.arraycopy(secondPart, 0, C, firstPart.length, secondPart.length);
 
             fBytes = C;
-
-            /*
-             * if (indexFrom > 0) { System.arraycopy(fBytes, 0, firstPart, 0,
-             * indexFrom); }
-             *
-             * System.arraycopy(fBytes, indexTo, firstPart, 0, fBytes.length -
-             * indexTo);
-             *
-             * byte[] C = new byte[firstPart.length + secondPart.length];
-             * System.arraycopy(firstPart, 0, C, 0, firstPart.length);
-             * System.arraycopy(secondPart, 0, C, firstPart.length,
-             * secondPart.length);
-             *
-             * fBytes = C;
-             */
         }
     }
 

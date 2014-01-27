@@ -20,6 +20,8 @@
 package Extasys.Examples.TCPServer;
 
 import Extasys.DataFrame;
+import Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException;
+import Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.Network.TCP.Server.Listener.TCPListener;
 import java.net.InetAddress;
@@ -33,6 +35,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 {
 
     private TCPListener fMyTCPListener;
+    private final String fMessageSplitter = "#SPLITTER#";
     private Charset fCharset = Charset.forName("UTF-8");
 
     public TCPServer(String name, String description, InetAddress listenerIP, int port, int maxConnections, int connectionsTimeOut, int corePoolSize, int maximumPoolSize)
@@ -42,7 +45,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
         try
         {
             // Add listener with message collector.
-            fMyTCPListener = this.AddListener("My listener", listenerIP, 5000, maxConnections, 65535, connectionsTimeOut, 100, "#SPLITTER#");
+            fMyTCPListener = this.AddListener("My listener", listenerIP, 5000, maxConnections, 8192, connectionsTimeOut, 100, fMessageSplitter);
         }
         catch (Exception ex)
         {
@@ -54,16 +57,14 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     {
         try
         {
-            byte[] bytes = data.getBytes();
-
-            sender.SendDataSynchronous(new String(bytes, fCharset) + "#SPLITTER#");
+            String incomingDataStr = new String(data.getBytes(), fCharset);
+            // System.out.println("Data received: " + incomingDataStr);
+            sender.SendData(incomingDataStr + fMessageSplitter);
         }
-        catch (Exception ex)
+        catch (ClientIsDisconnectedException | OutgoingPacketFailedException ex)
         {
 
         }
-
-        //fMyTCPListener.ReplyToAllExceptSender(new String(data.getBytes()) + "#SPLITTER#", sender);
     }
 
     @Override

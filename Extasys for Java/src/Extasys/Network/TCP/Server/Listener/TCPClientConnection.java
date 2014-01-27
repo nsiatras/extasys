@@ -20,7 +20,6 @@
 package Extasys.Network.TCP.Server.Listener;
 
 import Extasys.DataFrame;
-import Extasys.ExtasysCalendar;
 import Extasys.Network.TCP.Server.ExtasysTCPServer;
 import Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException;
 import Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException;
@@ -44,39 +43,50 @@ import java.util.Date;
 public final class TCPClientConnection
 {
 
-    //Connection properties
+    // Connection properties
     protected Socket fConnection;
     protected boolean fActive = false;
     protected boolean fIsConnected = false;
-    public TCPListener fMyListener;
-    public ExtasysTCPServer fMyExtasysServer;
-    private String fIPAddress;
+    public final TCPListener fMyListener;
+    public final ExtasysTCPServer fMyExtasysServer;
+    private final String fIPAddress;
     private String fName = "";
     private Object fTag = null;
     private Thread fClientDataReaderThread;
-    private final Date fConnectionStartUpDateTime;
-    //Data input-output streams.
+    private final long fConnectionStartUpDateTime;
+    // Data input-output streams.
     public InputStream fInput;
     public OutputStream fOutput;
-    //Data throughput.
+    protected final Object fSendDataLock = new Object();
+    protected final Object fReceiveDataLock = new Object();
+    // Data throughput.
     public long fBytesIn = 0, fBytesOut = 0;
-    //Message collector.
+    // Message collector.
     public TCPClientConnectionMessageCollector fMyMessageCollector;
     protected final boolean fUseMessageCollector;
-    //Messages IO.
+    // Messages IO.
     public IncomingTCPClientConnectionPacket fLastIncomingPacket = null;
-    public OutgoingTCPClientConnectionPacket fLastOugoingPacket = null;
+    public OutgoingTCPClientConnectionPacket fLastOutgoingPacket = null;
     public MessageCollectorTCPClientConnectionPacket fLastMessageCollectorPacket = null;
 
     public TCPClientConnection(Socket socket, TCPListener myTCPListener, boolean useMessageCollector, String ETX)
     {
-        fConnectionStartUpDateTime = ExtasysCalendar.fCalendar.getTime();
-        fUseMessageCollector = useMessageCollector;
         fConnection = socket;
+
+        fMyListener = myTCPListener;
+        fMyExtasysServer = myTCPListener.getMyExtasysTCPServer();
+
+        fIPAddress = (socket.getInetAddress() != null) ? socket.getInetAddress().toString() + ":" + String.valueOf(socket.getPort()) : "";
+
+        // Initialize a new message collector or not
+        fUseMessageCollector = useMessageCollector;
+        fMyMessageCollector = (fUseMessageCollector) ? new TCPClientConnectionMessageCollector(this, ETX) : null;
+
+        // Connection startup time
+        fConnectionStartUpDateTime = System.currentTimeMillis();
 
         try
         {
-            fIPAddress = socket.getInetAddress().toString() + ":" + String.valueOf(socket.getPort());
             fIsConnected = true;
 
             if (myTCPListener.getConnectionTimeOut() > 0) //Connection time-out.
@@ -86,23 +96,11 @@ public final class TCPClientConnection
 
             fConnection.setReceiveBufferSize(myTCPListener.getReadBufferSize());
             fConnection.setSendBufferSize(myTCPListener.getReadBufferSize());
-            fMyListener = myTCPListener;
-            fMyExtasysServer = myTCPListener.getMyExtasysTCPServer();
         }
         catch (SocketException ex)
         {
             DisconnectMe();
             return;
-        }
-        catch (Exception ex)
-        {
-            DisconnectMe();
-            return;
-        }
-
-        if (fUseMessageCollector)
-        {
-            fMyMessageCollector = new TCPClientConnectionMessageCollector(this, ETX);
         }
 
         fMyListener.AddClient(this);
@@ -158,11 +156,14 @@ public final class TCPClientConnection
      */
     public void SendData(byte[] bytes, int offset, int length) throws ClientIsDisconnectedException, OutgoingPacketFailedException
     {
-        if (!this.fIsConnected)
+        synchronized (fSendDataLock)
         {
-            throw new ClientIsDisconnectedException(this);
+            if (!this.fIsConnected)
+            {
+                throw new ClientIsDisconnectedException(this);
+            }
+            fLastOutgoingPacket = new OutgoingTCPClientConnectionPacket(this, bytes, offset, length, fLastOutgoingPacket);
         }
-        fLastOugoingPacket = new OutgoingTCPClientConnectionPacket(this, bytes, offset, length, fLastOugoingPacket);
     }
 
     /**
@@ -201,9 +202,9 @@ public final class TCPClientConnection
         }
         catch (IOException ex)
         {
-            if (fLastOugoingPacket != null)
+            if (fLastOutgoingPacket != null)
             {
-                fLastOugoingPacket.Cancel();
+                fLastOutgoingPacket.Cancel();
             }
             this.DisconnectMe();
             throw new ClientIsDisconnectedException(this);
@@ -215,15 +216,50 @@ public final class TCPClientConnection
      */
     public void DisconnectMe()
     {
+        Disconnect(false);
+    }
+
+    /**
+     * Client force disconnect
+     */
+    public void ForceDisconnect()
+    {
+        Disconnect(true);
+    }
+
+    /**
+     * Disconnect this client.
+     */
+    private void Disconnect(boolean force)
+    {
         if (fActive)
         {
+            if (!force)
+            {
+                // Wait to process incoming and outgoing TCP Packets
+                if (fLastMessageCollectorPacket != null)
+                {
+                    fLastMessageCollectorPacket.fDone.WaitOne();
+                }
+                else if (fLastIncomingPacket != null)
+                {
+                    fLastIncomingPacket.fDone.WaitOne();
+                }
+
+                if (fLastOutgoingPacket != null)
+                {
+                    fLastOutgoingPacket.fDone.WaitOne();
+                }
+            }
+
             fActive = false;
             fIsConnected = false;
+
             try
             {
                 fInput.close();
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
             }
 
@@ -231,7 +267,7 @@ public final class TCPClientConnection
             {
                 fOutput.close();
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
             }
 
@@ -239,7 +275,7 @@ public final class TCPClientConnection
             {
                 fConnection.close();
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
             }
 
@@ -253,9 +289,9 @@ public final class TCPClientConnection
                 fLastIncomingPacket.Cancel();
             }
 
-            if (fLastOugoingPacket != null)
+            if (fLastOutgoingPacket != null)
             {
-                fLastOugoingPacket.Cancel();
+                fLastOutgoingPacket.Cancel();
             }
 
             if (fLastMessageCollectorPacket != null)
@@ -279,7 +315,7 @@ public final class TCPClientConnection
             fOutput = null;
             fConnection = null;
             fLastIncomingPacket = null;
-            fLastOugoingPacket = null;
+            fLastOutgoingPacket = null;
             fLastMessageCollectorPacket = null;
             fMyMessageCollector = null;
 
@@ -345,7 +381,7 @@ public final class TCPClientConnection
      */
     public Date getConnectionStartUpDateTime()
     {
-        return fConnectionStartUpDateTime;
+        return new Date(fConnectionStartUpDateTime);
     }
 
     /**
@@ -421,6 +457,18 @@ class ClientDataReader implements Runnable
     @Override
     public void run()
     {
+        if (fClientConnection.fUseMessageCollector)
+        {
+            ClientWithMessageCollector();
+        }
+        else
+        {
+            ClientWithoutMessageCollector();
+        }
+    }
+
+    private void ClientWithMessageCollector()
+    {
         int bytesRead;
 
         while (fClientConnection.fActive)
@@ -432,13 +480,10 @@ class ClientDataReader implements Runnable
                 if (bytesRead > 0)
                 {
                     fClientConnection.fBytesIn += bytesRead;
-                    fClientConnection.getMyTCPListener().fBytesIn += bytesRead;
+                    fClientConnection.fMyListener.fBytesIn += bytesRead;
 
-                    if (!fClientConnection.fUseMessageCollector)
-                    {
-                        fClientConnection.fLastIncomingPacket = new IncomingTCPClientConnectionPacket(fClientConnection, new DataFrame(fReadBuffer, 0, bytesRead), fClientConnection.fLastIncomingPacket);
-                    }
-                    else
+                    // PACKET WITH MESSAGE COLLECTOR
+                    synchronized (fClientConnection.fReceiveDataLock)
                     {
                         fClientConnection.fLastMessageCollectorPacket = new MessageCollectorTCPClientConnectionPacket(fClientConnection, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fClientConnection.fLastMessageCollectorPacket);
                     }
@@ -448,19 +493,48 @@ class ClientDataReader implements Runnable
                     fClientConnection.DisconnectMe();
                 }
             }
-            catch (SocketTimeoutException socketTimeOutException) //Socket timeout.
+            catch (SocketTimeoutException ex) //Socket timeout.
             {
                 fClientConnection.DisconnectMe();
             }
-            catch (IOException ioException)
+            catch (IOException | StringIndexOutOfBoundsException ex)
             {
                 fClientConnection.DisconnectMe();
             }
-            catch (StringIndexOutOfBoundsException stringIndexOutOfBoundsException)
+        }
+    }
+
+    private void ClientWithoutMessageCollector()
+    {
+        int bytesRead;
+
+        while (fClientConnection.fActive)
+        {
+            try
+            {
+                bytesRead = fClientConnection.fInput.read(fReadBuffer);
+
+                if (bytesRead > 0)
+                {
+                    fClientConnection.fBytesIn += bytesRead;
+                    fClientConnection.fMyListener.fBytesIn += bytesRead;
+
+                    // PACKET WITHOUT MESSAGE COLLECTOR
+                    synchronized (fClientConnection.fReceiveDataLock)
+                    {
+                        fClientConnection.fLastIncomingPacket = new IncomingTCPClientConnectionPacket(fClientConnection, new DataFrame(fReadBuffer, 0, bytesRead), fClientConnection.fLastIncomingPacket);
+                    }
+                }
+                else
+                {
+                    fClientConnection.DisconnectMe();
+                }
+            }
+            catch (SocketTimeoutException ex) //Socket timeout.
             {
                 fClientConnection.DisconnectMe();
             }
-            catch (Exception exception)
+            catch (IOException | StringIndexOutOfBoundsException ex)
             {
                 fClientConnection.DisconnectMe();
             }

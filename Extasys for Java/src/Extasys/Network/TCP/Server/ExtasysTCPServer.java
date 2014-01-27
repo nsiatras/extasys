@@ -20,13 +20,13 @@
 package Extasys.Network.TCP.Server;
 
 import Extasys.DataFrame;
+import Extasys.ExtasysThreadPool;
 import Extasys.Network.TCP.Server.Listener.Exceptions.*;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.Network.TCP.Server.Listener.TCPListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -40,8 +40,7 @@ public class ExtasysTCPServer
     private final String fName;
     private final String fDescription;
     private final ArrayList fListeners = new ArrayList();
-    private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(100000);
-    public final ThreadPoolExecutor fMyThreadPool;
+    public final ExtasysThreadPool fMyThreadPool;
 
     /**
      * Constructs an new Extasys TCP Server.
@@ -57,7 +56,7 @@ public class ExtasysTCPServer
     {
         fName = name;
         fDescription = description;
-        fMyThreadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 10, TimeUnit.SECONDS, fThreadPoolQueue);
+        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize, 10, TimeUnit.SECONDS);
     }
 
     /**
@@ -182,24 +181,46 @@ public class ExtasysTCPServer
      */
     public void Stop()
     {
+        Stop(false);
+    }
+
+    /**
+     * Force server stop.
+     */
+    public void ForceStop()
+    {
+        Stop(true);
+    }
+
+    private void Stop(boolean force)
+    {
+        //Stop all listeners.
+        for (int i = 0; i < fListeners.size(); i++)
+        {
+            if (!force)
+            {
+                ((TCPListener) fListeners.get(i)).Stop();
+            }
+            else
+            {
+                ((TCPListener) fListeners.get(i)).ForceStop();
+            }
+        }
+
         try
         {
-            fThreadPoolQueue.clear();
+            fMyThreadPool.getQueue().clear();
         }
         catch (Exception ex)
         {
         }
-        //Stop all listeners.
-        for (int i = 0; i < fListeners.size(); i++)
-        {
-            ((TCPListener) fListeners.get(i)).Stop();
-        }
     }
 
     /**
-     * Dispose the server. This method stops the server and disposes all the
-     * active members of this class. After calling this method you cannot
-     * re-start the server.
+     * Dispose the server.
+     *
+     * This method stops the server and disposes all the active members of this
+     * class. After calling this method you cannot re-start the server.
      */
     public void Dispose()
     {
