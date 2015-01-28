@@ -72,6 +72,8 @@ namespace Extasys.Network.TCP.Server.Listener
                     TcpListener listener = (TcpListener)ar.AsyncState;
 
                     TCPClientConnection client = new TCPClientConnection(listener.EndAcceptSocket(ar), fMyListener, fMyListener.IsMessageCollectorInUse, fMyListener.MessageSplitter);
+                    fClientConnectionCompleted.Set();
+
                     if (fMyListener.ConnectedClients.Count >= fMyListener.MaxConnections)
                     {
                         client.DisconnectMe();
