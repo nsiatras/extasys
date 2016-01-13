@@ -216,13 +216,13 @@ public class TCPConnector{
                if (!force) {
                     // Wait to process incoming and outgoing TCP Packets
                     if (fLastMessageCollectorPacket != null) {
-                         fLastMessageCollectorPacket.fDone.WaitOne();
+                         fLastMessageCollectorPacket.fDone.waitOne();
                     } else if (fLastIncomingPacket != null) {
-                         fLastIncomingPacket.fDone.WaitOne();
+                         fLastIncomingPacket.fDone.waitOne();
                     }
 
                     if (fLastOutgoingPacket != null) {
-                         fLastOutgoingPacket.fDone.WaitOne();
+                         fLastOutgoingPacket.fDone.waitOne();
                     }
                }
 
@@ -274,7 +274,7 @@ public class TCPConnector{
                }
 
                try {
-                    fMyTCPClient.OnDisconnect(this);
+                    fMyTCPClient.onDisconnect(this);
                } catch (Exception ex) {
                }
                fConnection = null;
@@ -493,7 +493,7 @@ class ReadIncomingDataThread extends Thread{
 
           if (!fMyTCPConnector.fIsConnected) {
                fMyTCPConnector.fIsConnected = true;
-               fMyTCPConnector.getMyExtasysTCPClient().OnConnect(fMyTCPConnector);
+               fMyTCPConnector.getMyExtasysTCPClient().onConnect(fMyTCPConnector);
           }
      }
 

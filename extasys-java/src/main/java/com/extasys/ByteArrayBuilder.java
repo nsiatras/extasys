@@ -43,7 +43,7 @@ public class ByteArrayBuilder{
       * @param data
       * is the byte[] array to append
       */
-     public void Append(byte[] data) {
+     public void append(byte[] data) {
 
           synchronized (fLock) {
                final byte[] newArray = new byte[fBytes.length + data.length];
@@ -53,7 +53,7 @@ public class ByteArrayBuilder{
           }
      }
 
-     public int IndexOf(byte[] subArray) {
+     public int indexOf(byte[] subArray) {
 
           synchronized (fLock) {
                int i = 0;
@@ -72,7 +72,7 @@ public class ByteArrayBuilder{
           }
      }
 
-     public void Delete(int indexFrom, int indexTo) {
+     public void delete(int indexFrom, int indexTo) {
 
           synchronized (fLock) {
                final byte[] firstPart = Arrays.copyOfRange(fBytes, 0, indexFrom);
@@ -86,14 +86,14 @@ public class ByteArrayBuilder{
           }
      }
 
-     public byte[] SubList(int fromIndex, int toIndex) {
+     public byte[] subList(int fromIndex, int toIndex) {
 
           synchronized (fLock) {
                return Arrays.copyOfRange(fBytes, fromIndex, toIndex);
           }
      }
 
-     public void Dispose() {
+     public void dispose() {
 
           synchronized (fLock) {
                this.fBytes = new byte[0];

@@ -50,7 +50,7 @@ public class OutgoingUDPServerPacket implements Runnable{
      public void Cancel() {
 
           fCancel = true;
-          fDone.Set();
+          fDone.set();
      }
 
      @Override
@@ -61,7 +61,7 @@ public class OutgoingUDPServerPacket implements Runnable{
                     fMyListener.fSocket.send(fData);
                     fMyListener.fBytesOut += fData.getLength();
                } else {
-                    fPreviousPacket.fDone.WaitOne();
+                    fPreviousPacket.fDone.waitOne();
                     if (!fCancel && !fPreviousPacket.fCancel) {
                          fMyListener.fSocket.send(fData);
                          fMyListener.fBytesOut += fData.getLength();
@@ -76,7 +76,7 @@ public class OutgoingUDPServerPacket implements Runnable{
                fPreviousPacket = null;
           }
 
-          fDone.Set();
+          fDone.set();
      }
 
      /**

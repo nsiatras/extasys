@@ -81,7 +81,7 @@ public final class IncomingTCPClientPacket implements Runnable{
      public void Cancel() {
 
           fCancel = true;
-          fDone.Set();
+          fDone.set();
      }
 
      @Override
@@ -89,11 +89,11 @@ public final class IncomingTCPClientPacket implements Runnable{
 
           try {
                if (fPreviousPacket == null) {
-                    fConnector.fMyTCPClient.OnDataReceive(fConnector, fData);
+                    fConnector.fMyTCPClient.onDataReceive(fConnector, fData);
                } else {
-                    fPreviousPacket.fDone.WaitOne();
+                    fPreviousPacket.fDone.waitOne();
                     if (!fCancel && !fPreviousPacket.fCancel) {
-                         fConnector.fMyTCPClient.OnDataReceive(fConnector, fData);
+                         fConnector.fMyTCPClient.onDataReceive(fConnector, fData);
                     } else {
                          fCancel = true;
                     }
@@ -105,7 +105,7 @@ public final class IncomingTCPClientPacket implements Runnable{
                fPreviousPacket = null;
           }
 
-          fDone.Set();
+          fDone.set();
      }
 
      /**

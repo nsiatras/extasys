@@ -80,7 +80,7 @@ public final class MessageCollectorTCPClientPacket implements Runnable{
      public void Cancel() {
 
           fCancel = true;
-          fDone.Set();
+          fDone.set();
      }
 
      @Override
@@ -90,7 +90,7 @@ public final class MessageCollectorTCPClientPacket implements Runnable{
                if (fPreviousPacket == null) {
                     fConnector.fMessageCollector.AppendData(fData);
                } else {
-                    fPreviousPacket.fDone.WaitOne();
+                    fPreviousPacket.fDone.waitOne();
                     if (!fCancel && !fPreviousPacket.fCancel) {
                          fConnector.fMessageCollector.AppendData(fData);
                     } else {
@@ -102,7 +102,7 @@ public final class MessageCollectorTCPClientPacket implements Runnable{
           } catch (Exception ex) {
           }
 
-          fDone.Set();
+          fDone.set();
      }
 
      /**

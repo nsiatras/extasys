@@ -84,7 +84,7 @@ public class ExtasysTCPServer{
       * is the number of outstanding connection requests the listener can have.
       * @return the listener.
       */
-     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog) {
+     public TCPListener addListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog) {
 
           TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog);
           listener.setMyExtasysTCPServer(this);
@@ -113,7 +113,7 @@ public class ExtasysTCPServer{
       * is the message splitter.
       * @return the listener.
       */
-     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter) {
+     public TCPListener addListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter) {
 
           TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
           listener.setMyExtasysTCPServer(this);
@@ -142,7 +142,7 @@ public class ExtasysTCPServer{
       * is the message splitter.
       * @return the listener.
       */
-     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter) {
+     public TCPListener addListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter) {
 
           TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
           listener.setMyExtasysTCPServer(this);
@@ -156,7 +156,7 @@ public class ExtasysTCPServer{
       * @param name
       * is the listener's name to remove.
       */
-     public void RemoveListener(String name) {
+     public void removeListener(String name) {
 
           for (int i = 0; i < fListeners.size(); i++) {
                if (((TCPListener) fListeners.get(i)).getName().equals(name)) {
@@ -172,19 +172,19 @@ public class ExtasysTCPServer{
       *
       * @throws java.io.IOException
       */
-     public void Start() throws IOException, Exception {
+     public void start() throws IOException, Exception {
 
-          Stop();
+          stop();
           try {
                // Start all listeners.
                for (int i = 0; i < fListeners.size(); i++) {
                     ((TCPListener) fListeners.get(i)).Start();
                }
           } catch (IOException ex) {
-               Stop();
+               stop();
                throw ex;
           } catch (Exception ex) {
-               Stop();
+               stop();
                throw ex;
           }
      }
@@ -192,20 +192,20 @@ public class ExtasysTCPServer{
      /**
       * Stop the server.
       */
-     public void Stop() {
+     public void stop() {
 
-          Stop(false);
+          stop(false);
      }
 
      /**
       * Force server stop.
       */
-     public void ForceStop() {
+     public void forceStop() {
 
-          Stop(true);
+          stop(true);
      }
 
-     private void Stop(boolean force) {
+     private void stop(boolean force) {
 
           // Stop all listeners.
           for (int i = 0; i < fListeners.size(); i++) {
@@ -227,9 +227,9 @@ public class ExtasysTCPServer{
       *
       * This method stops the server and disposes all the active members of this class. After calling this method you cannot re-start the server.
       */
-     public void Dispose() {
+     public void dispose() {
 
-          Stop();
+          stop();
           fMyThreadPool.shutdown();
      }
 
@@ -241,7 +241,7 @@ public class ExtasysTCPServer{
       * @param data
       * is the incoming DataFrame.
       */
-     public void OnDataReceive(TCPClientConnection sender, DataFrame data) {
+     public void onDataReceive(TCPClientConnection sender, DataFrame data) {
 
           // System.out.println(sender.getIPAddress() + " " + new String(data.getBytes()).substring(0, data.getBytes().length));
      }
@@ -252,7 +252,7 @@ public class ExtasysTCPServer{
       * @param client
       * Client.
       */
-     public void OnClientConnect(TCPClientConnection client) {
+     public void onClientConnect(TCPClientConnection client) {
 
           // System.out.println(client.getIPAddress() + " connected.");
      }
@@ -263,7 +263,7 @@ public class ExtasysTCPServer{
       * @param client
       * Client.
       */
-     public void OnClientDisconnect(TCPClientConnection client) {
+     public void onClientDisconnect(TCPClientConnection client) {
 
           // System.out.println(client.getIPAddress() + " disconnected.");
      }
@@ -278,7 +278,7 @@ public class ExtasysTCPServer{
       * @throws com.extasys.network.tcp.server.listener.exceptions.ClientIsDisconnectedException
       * @throws com.extasys.network.tcp.server.listener.exceptions.OutgoingPacketFailedException
       */
-     public void ReplyToSender(String data, TCPClientConnection sender) throws ClientIsDisconnectedException, OutgoingPacketFailedException {
+     public void replyToSender(String data, TCPClientConnection sender) throws ClientIsDisconnectedException, OutgoingPacketFailedException {
 
           sender.SendData(data);
      }
@@ -297,7 +297,7 @@ public class ExtasysTCPServer{
       * @throws com.extasys.network.tcp.server.listener.exceptions.ClientIsDisconnectedException
       * @throws com.extasys.network.tcp.server.listener.exceptions.OutgoingPacketFailedException
       */
-     public void ReplyToSender(byte[] bytes, int offset, int length, TCPClientConnection sender) throws ClientIsDisconnectedException, OutgoingPacketFailedException {
+     public void replyToSender(byte[] bytes, int offset, int length, TCPClientConnection sender) throws ClientIsDisconnectedException, OutgoingPacketFailedException {
 
           sender.SendData(bytes, offset, length);
      }
@@ -308,7 +308,7 @@ public class ExtasysTCPServer{
       * @param data
       * is the string to be send.
       */
-     public void ReplyToAll(String data) {
+     public void replyToAll(String data) {
 
           for (int i = 0; i < fListeners.size(); i++) {
                try {
@@ -328,7 +328,7 @@ public class ExtasysTCPServer{
       * @param length
       * is the number of the bytes to be send.
       */
-     public void ReplyToAll(byte[] bytes, int offset, int length) {
+     public void replyToAll(byte[] bytes, int offset, int length) {
 
           for (int i = 0; i < fListeners.size(); i++) {
                try {
@@ -346,7 +346,7 @@ public class ExtasysTCPServer{
       * @param sender
       * is the TCP client exception.
       */
-     public void ReplyToAllExceptSender(String data, TCPClientConnection sender) {
+     public void replyToAllExceptSender(String data, TCPClientConnection sender) {
 
           for (int i = 0; i < fListeners.size(); i++) {
                try {
@@ -368,7 +368,7 @@ public class ExtasysTCPServer{
       * @param sender
       * is the TCP client exception.
       */
-     public void ReplyToAllExceptSender(byte[] bytes, int offset, int length, TCPClientConnection sender) {
+     public void replyToAllExceptSender(byte[] bytes, int offset, int length, TCPClientConnection sender) {
 
           for (int i = 0; i < fListeners.size(); i++) {
                try {

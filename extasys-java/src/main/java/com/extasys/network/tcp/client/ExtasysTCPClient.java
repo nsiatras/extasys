@@ -77,7 +77,7 @@ public class ExtasysTCPClient{
       * is the read buffer size for this connection in bytes.
       * @return the connector.
       */
-     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize) {
+     public TCPConnector addConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize) {
 
           TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize);
           fConnectors.add(connector);
@@ -99,7 +99,7 @@ public class ExtasysTCPClient{
       * is the End of Text character.
       * @return the connector.
       */
-     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, char ETX) {
+     public TCPConnector addConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, char ETX) {
 
           TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, ETX);
           fConnectors.add(connector);
@@ -121,7 +121,7 @@ public class ExtasysTCPClient{
       * is the message splitter.
       * @return the connector.
       */
-     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, String splitter) {
+     public TCPConnector addConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, String splitter) {
 
           TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, splitter);
           fConnectors.add(connector);
@@ -134,7 +134,7 @@ public class ExtasysTCPClient{
       * @param name
       * is the connector's name.
       */
-     public void RemoveConnector(String name) {
+     public void removeConnector(String name) {
 
           for (int i = 0; i < fConnectors.size(); i++) {
                if (((TCPConnector) fConnectors.get(i)).getName().equals(name)) {
@@ -150,16 +150,16 @@ public class ExtasysTCPClient{
       *
       * @throws java.lang.Exception
       */
-     public void Start() throws Exception {
+     public void start() throws Exception {
 
-          Stop();
+          stop();
 
           try {
                for (int i = 0; i < fConnectors.size(); i++) {
                     ((TCPConnector) fConnectors.get(i)).Start();
                }
           } catch (Exception ex) {
-               Stop();
+               stop();
                throw ex;
           }
      }
@@ -167,20 +167,20 @@ public class ExtasysTCPClient{
      /**
       * Stop the client.
       */
-     public void Stop() {
+     public void stop() {
 
-          Stop(false);
+          stop(false);
      }
 
      /**
       * Force client to stop.
       */
-     public void ForceStop() {
+     public void forceStop() {
 
-          Stop(true);
+          stop(true);
      }
 
-     private void Stop(boolean force) {
+     private void stop(boolean force) {
 
           for (int i = 0; i < fConnectors.size(); i++) {
                if (!force) {
@@ -199,9 +199,9 @@ public class ExtasysTCPClient{
      /**
       * Dispose the client. This method stops the client and disposes all the active members of this class. After calling this method you cannot re-start the client.
       */
-     public void Dispose() {
+     public void dispose() {
 
-          Stop();
+          stop();
           fMyThreadPool.shutdown();
      }
 
@@ -213,7 +213,7 @@ public class ExtasysTCPClient{
       * @throws com.extasys.network.tcp.client.exceptions.ConnectorCannotSendPacketException
       * @throws com.extasys.network.tcp.client.exceptions.ConnectorDisconnectedException
       */
-     public void SendData(String data) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException {
+     public void sendData(String data) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException {
 
           for (int i = 0; i < fConnectors.size(); i++) {
                ((TCPConnector) fConnectors.get(i)).SendData(data);
@@ -232,7 +232,7 @@ public class ExtasysTCPClient{
       * @throws com.extasys.network.tcp.client.exceptions.ConnectorDisconnectedException
       * @throws com.extasys.network.tcp.client.exceptions.ConnectorCannotSendPacketException
       */
-     public void SendData(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException {
+     public void sendData(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException {
 
           for (int i = 0; i < fConnectors.size(); i++) {
                ((TCPConnector) fConnectors.get(i)).SendData(bytes, offset, length);
@@ -247,7 +247,7 @@ public class ExtasysTCPClient{
       * @param data
       * is the received data.
       */
-     public void OnDataReceive(TCPConnector connector, DataFrame data) {
+     public void onDataReceive(TCPConnector connector, DataFrame data) {
 
           // System.out.println(new String(data.getBytes()));
      }
@@ -257,7 +257,7 @@ public class ExtasysTCPClient{
       *
       * @param connector
       */
-     public void OnConnect(TCPConnector connector) {
+     public void onConnect(TCPConnector connector) {
 
           // System.out.println("Connector " + connector.getName() + " connected!");
      }
@@ -267,7 +267,7 @@ public class ExtasysTCPClient{
       *
       * @param connector
       */
-     public void OnDisconnect(TCPConnector connector) {
+     public void onDisconnect(TCPConnector connector) {
 
           // System.out.println("Connector " + connector.getName() + " disconnected!");
      }

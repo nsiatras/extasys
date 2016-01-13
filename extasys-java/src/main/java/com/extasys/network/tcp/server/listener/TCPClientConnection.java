@@ -134,7 +134,7 @@ public final class TCPClientConnection{
                return;
           }
 
-          fMyListener.getMyExtasysTCPServer().OnClientConnect(this);
+          fMyListener.getMyExtasysTCPServer().onClientConnect(this);
 
           fClientDataReaderThread = new Thread(new ClientDataReader(this));
           fClientDataReaderThread.start();
@@ -244,13 +244,13 @@ public final class TCPClientConnection{
                if (!force) {
                     // Wait to process incoming and outgoing TCP Packets
                     if (fLastMessageCollectorPacket != null) {
-                         fLastMessageCollectorPacket.fDone.WaitOne();
+                         fLastMessageCollectorPacket.fDone.waitOne();
                     } else if (fLastIncomingPacket != null) {
-                         fLastIncomingPacket.fDone.WaitOne();
+                         fLastIncomingPacket.fDone.waitOne();
                     }
 
                     if (fLastOutgoingPacket != null) {
-                         fLastOutgoingPacket.fDone.WaitOne();
+                         fLastOutgoingPacket.fDone.waitOne();
                     }
                }
 
@@ -304,7 +304,7 @@ public final class TCPClientConnection{
                fMyMessageCollector = null;
 
                fMyListener.RemoveClient(fIPAddress);
-               fMyListener.getMyExtasysTCPServer().OnClientDisconnect(this);
+               fMyListener.getMyExtasysTCPServer().onClientDisconnect(this);
           }
      }
 

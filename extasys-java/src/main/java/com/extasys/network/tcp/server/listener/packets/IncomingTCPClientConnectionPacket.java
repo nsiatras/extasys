@@ -79,7 +79,7 @@ public final class IncomingTCPClientConnectionPacket implements Runnable{
      public void Cancel() {
 
           fCancel = true;
-          fDone.Set();
+          fDone.set();
      }
 
      @Override
@@ -87,11 +87,11 @@ public final class IncomingTCPClientConnectionPacket implements Runnable{
 
           try {
                if (fPreviousPacket == null) {
-                    fClient.fMyExtasysServer.OnDataReceive(fClient, fData);
+                    fClient.fMyExtasysServer.onDataReceive(fClient, fData);
                } else {
-                    fPreviousPacket.fDone.WaitOne();
+                    fPreviousPacket.fDone.waitOne();
                     if (!fCancel && !fPreviousPacket.fCancel) {
-                         fClient.fMyExtasysServer.OnDataReceive(fClient, fData);
+                         fClient.fMyExtasysServer.onDataReceive(fClient, fData);
                     } else {
                          fCancel = true;
                     }
@@ -102,7 +102,7 @@ public final class IncomingTCPClientConnectionPacket implements Runnable{
           if (fPreviousPacket != null) {
                fPreviousPacket = null;
           }
-          fDone.Set();
+          fDone.set();
      }
 
      /**

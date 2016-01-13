@@ -57,12 +57,12 @@ public class TCPClientConnectionMessageCollector{
      public void AppendData(byte[] bytes) {
 
           try {
-               fIncomingDataBuffer.Append(bytes);
-               fIndexOfETX = fIncomingDataBuffer.IndexOf(fETXStr);
+               fIncomingDataBuffer.append(bytes);
+               fIndexOfETX = fIncomingDataBuffer.indexOf(fETXStr);
                while (fIndexOfETX > -1) {
-                    fMyClient.getMyTCPListener().getMyExtasysTCPServer().OnDataReceive(fMyClient, new DataFrame(fIncomingDataBuffer.SubList(0, fIndexOfETX)));
-                    fIncomingDataBuffer.Delete(0, fIndexOfETX + fETXLength);
-                    fIndexOfETX = fIncomingDataBuffer.IndexOf(fETXStr);
+                    fMyClient.getMyTCPListener().getMyExtasysTCPServer().onDataReceive(fMyClient, new DataFrame(fIncomingDataBuffer.subList(0, fIndexOfETX)));
+                    fIncomingDataBuffer.delete(0, fIndexOfETX + fETXLength);
+                    fIndexOfETX = fIncomingDataBuffer.indexOf(fETXStr);
                }
           } catch (Exception ex) {
                // System.err.println("<TCPCLientConnectionMessageCollector> Error:" + ex.getMessage());

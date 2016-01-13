@@ -32,12 +32,12 @@ public class ManualResetEvent{
           fInitialState = initialState;
      }
 
-     public synchronized void Reset() {
+     public synchronized void reset() {
 
           fInitialState = false;
      }
 
-     public synchronized void WaitOne() {
+     public synchronized void waitOne() {
 
           while (!fInitialState) {
                try {
@@ -47,7 +47,7 @@ public class ManualResetEvent{
           }
      }
 
-     public synchronized void WaitOne(long milliseconds) {
+     public synchronized void waitOne(long milliseconds) {
 
           try {
                if (!fInitialState) {
@@ -57,7 +57,7 @@ public class ManualResetEvent{
           }
      }
 
-     public synchronized void Set() {
+     public synchronized void set() {
 
           fInitialState = true;
           notify();

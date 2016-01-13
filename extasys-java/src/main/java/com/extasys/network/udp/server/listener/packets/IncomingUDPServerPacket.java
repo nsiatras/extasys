@@ -69,7 +69,7 @@ public class IncomingUDPServerPacket implements Runnable{
      public void Cancel() {
 
           fCancel = true;
-          fDone.Set();
+          fDone.set();
      }
 
      @Override
@@ -79,7 +79,7 @@ public class IncomingUDPServerPacket implements Runnable{
                if (fPreviousPacket == null) {
                     fMyListener.getMyExtasysUDPServer().OnDataReceive(fMyListener, fData);
                } else {
-                    fPreviousPacket.fDone.WaitOne();
+                    fPreviousPacket.fDone.waitOne();
                     if (!fCancel && !fPreviousPacket.fCancel) {
                          fMyListener.getMyExtasysUDPServer().OnDataReceive(fMyListener, fData);
                     } else {
@@ -95,7 +95,7 @@ public class IncomingUDPServerPacket implements Runnable{
                fPreviousPacket = null;
           }
 
-          fDone.Set();
+          fDone.set();
      }
 
      /**

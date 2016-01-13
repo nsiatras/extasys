@@ -71,7 +71,7 @@ public class IncomingUDPClientPacket implements Runnable{
      public void Cancel() {
 
           fCancel = true;
-          fDone.Set();
+          fDone.set();
      }
 
      @Override
@@ -81,7 +81,7 @@ public class IncomingUDPClientPacket implements Runnable{
                if (fPreviousPacket == null) {
                     fConnector.getMyExtasysUDPClient().OnDataReceive(fConnector, fData);
                } else {
-                    fPreviousPacket.fDone.WaitOne();
+                    fPreviousPacket.fDone.waitOne();
                     if (!fCancel && !fPreviousPacket.fCancel) {
                          fConnector.getMyExtasysUDPClient().OnDataReceive(fConnector, fData);
                     } else {
@@ -95,7 +95,7 @@ public class IncomingUDPClientPacket implements Runnable{
                fPreviousPacket = null;
           }
 
-          fDone.Set();
+          fDone.set();
      }
 
      /**
