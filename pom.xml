@@ -2,14 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
 	<modelVersion>4.0.0</modelVersion>
-
-	<parent>
-		<groupId>com.extasys</groupId>
-		<artifactId>extasys</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-
-	<artifactId>extasys-network</artifactId>	
+	<groupId>com.extasys</groupId>
+	<artifactId>extasys</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
 	<prerequisites>
 		<maven>3.0.0</maven>
@@ -19,5 +15,10 @@
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
+
+	<modules>
+		<module>extasys-java</module>
+		<module>extasys-java-examples</module>
+	</modules>	
 
 </project>
