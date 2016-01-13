@@ -17,39 +17,40 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
-package Extasys.Examples.TCPChatServer;
 
-import Extasys.Network.TCP.Server.Listener.Exceptions.*;
-import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
+package com.extasys.tcpchatserver;
+
+import com.extasys.network.tcp.server.listener.TCPClientConnection;
+import com.extasys.network.tcp.server.listener.exceptions.ClientIsDisconnectedException;
+import com.extasys.network.tcp.server.listener.exceptions.OutgoingPacketFailedException;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class TCPChatUser
-{
+public class TCPChatUser{
 
-    private String fUsername;
-    private TCPClientConnection fConnection;
+     private String fUsername;
 
-    public TCPChatUser(String username, TCPClientConnection connection)
-    {
-        fUsername = username;
-        fConnection = connection;
-    }
+     private TCPClientConnection fConnection;
 
-    public String getUsername()
-    {
-        return fUsername;
-    }
+     public TCPChatUser(String username, TCPClientConnection connection){
+          fUsername = username;
+          fConnection = connection;
+     }
 
-    public TCPClientConnection getConnection()
-    {
-        return fConnection;
-    }
+     public String getUsername() {
 
-    public void SendData(String data) throws ClientIsDisconnectedException, OutgoingPacketFailedException
-    {
-        fConnection.SendData(data);
-    }
+          return fUsername;
+     }
+
+     public TCPClientConnection getConnection() {
+
+          return fConnection;
+     }
+
+     public void SendData(String data) throws ClientIsDisconnectedException, OutgoingPacketFailedException {
+
+          fConnection.SendData(data);
+     }
 }
