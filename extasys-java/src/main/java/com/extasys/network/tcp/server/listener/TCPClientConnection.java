@@ -107,7 +107,7 @@ public final class TCPClientConnection{
           try {
                fIsConnected = true;
 
-               if (myTCPListener.getConnectionTimeOut() > 0)  // Connection time-out.
+               if (myTCPListener.getConnectionTimeOut() > 0)   // Connection time-out.
                {
                     fConnection.setSoTimeout(myTCPListener.getConnectionTimeOut());
                }

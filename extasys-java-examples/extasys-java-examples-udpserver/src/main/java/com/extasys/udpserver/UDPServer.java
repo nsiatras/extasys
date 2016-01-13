@@ -17,37 +17,34 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
-package Extasys.Examples.UDPServer;
 
-import Extasys.Network.UDP.Server.Listener.UDPListener;
+package com.extasys.udpserver;
+
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+
+import com.extasys.network.udp.server.ExtasysUDPServer;
+import com.extasys.network.udp.server.listener.UDPListener;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class UDPServer extends Extasys.Network.UDP.Server.ExtasysUDPServer
-{
+public class UDPServer extends ExtasysUDPServer{
 
-    public UDPServer(String name, String description, InetAddress listenerIP, int port, int connectionsTimeOut, int corePoolSize, int maximumPoolSize)
-    {
-        super(name, description, corePoolSize, maximumPoolSize);
-        this.AddListener("My UDP Listener", listenerIP, port, 10240, connectionsTimeOut);
-    }
+     public UDPServer(String name, String description, InetAddress listenerIP, int port, int connectionsTimeOut, int corePoolSize, int maximumPoolSize){
+          super(name, description, corePoolSize, maximumPoolSize);
+          this.AddListener("My UDP Listener", listenerIP, port, 10240, connectionsTimeOut);
+     }
 
-    @Override
-    public void OnDataReceive(UDPListener listener, DatagramPacket packet)
-    {
-        //System.out.println("Data received from " + packet.getAddress().toString());
+     @Override
+     public void OnDataReceive(UDPListener listener, DatagramPacket packet) {
+          // System.out.println("Data received from " + packet.getAddress().toString());
 
-        try
-        {
-            // Send data back to the sender.
-            listener.SendData(new DatagramPacket(packet.getData(), 0, packet.getLength(), packet.getAddress(), packet.getPort()));
-        }
-        catch (Exception ex)
-        {
-        }
-    }
+          try {
+               // Send data back to the sender.
+               listener.SendData(new DatagramPacket(packet.getData(), 0, packet.getLength(), packet.getAddress(), packet.getPort()));
+          } catch (Exception ex) {
+          }
+     }
 }

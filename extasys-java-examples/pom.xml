@@ -15,7 +15,10 @@
 	<modules>
 		<module>extasys-java-examples-tcpchatserver</module>
 		<module>extasys-java-examples-tcpchatclient</module>
+		<module>extasys-java-examples-tcpserver</module>
 		<module>extasys-java-examples-tcpclient</module>
+		<module>extasys-java-examples-udpserver</module>
+		<module>extasys-java-examples-udpclient</module>
 	</modules>	
 
 </project>

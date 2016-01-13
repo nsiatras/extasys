@@ -86,9 +86,9 @@ public class UDPConnector{
      }
 
      /**
-      * Start the udp connector.
+      * start the udp connector.
       */
-     public void Start() throws SocketException, Exception {
+     public void start() throws SocketException, Exception {
 
           if (!fActive) {
                try {
@@ -117,16 +117,16 @@ public class UDPConnector{
                          throw ex;
                     }
                } catch (SocketException ex) {
-                    Stop();
+                    stop();
                     throw ex;
                }
           }
      }
 
      /**
-      * Stop the udp connector.
+      * stop the udp connector.
       */
-     public void Stop() {
+     public void stop() {
 
           if (fActive) {
                fActive = false;
@@ -156,7 +156,7 @@ public class UDPConnector{
       * @param data
       * is the string to be send.
       */
-     public void SendData(String data) throws IOException {
+     public void sendData(String data) throws IOException {
 
           DatagramPacket outPacket = new DatagramPacket(data.getBytes(), data.length(), fServerIP, fServerPort);
           fLastOutgoingPacket = new OutgoingUDPClientPacket(this, outPacket, fLastOutgoingPacket);
@@ -172,7 +172,7 @@ public class UDPConnector{
       * @param length
       * is the number of the bytes to be send.
       */
-     public void SendData(byte[] bytes, int offset, int length) throws IOException {
+     public void sendData(byte[] bytes, int offset, int length) throws IOException {
 
           DatagramPacket outPacket = new DatagramPacket(bytes, offset, length, fServerIP, fServerPort);
           fLastOutgoingPacket = new OutgoingUDPClientPacket(this, outPacket, fLastOutgoingPacket);

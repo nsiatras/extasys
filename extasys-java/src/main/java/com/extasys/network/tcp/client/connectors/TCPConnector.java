@@ -523,7 +523,7 @@ class ReadIncomingDataThread extends Thread{
                     bytesRead = fMyTCPConnector.fInput.read(fReadBuffer);
                     fMyTCPConnector.fBytesIn += bytesRead;
                     if (bytesRead > 0) {
-                         if (!fMyTCPConnector.isMessageCollectorInUse())  // No message collector.
+                         if (!fMyTCPConnector.isMessageCollectorInUse())   // No message collector.
                          {
                               try {
                                    synchronized (fMyTCPConnector.fReceiveDataLock) {
