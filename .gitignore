@@ -1,0 +1,15 @@
+git.properties
+.svn
+target/
+bin/
+*~
+*.class
+*.war
+*.log
+*.log*
+CVS*
+.cvsignore*
+.ant-target*.xml
+.project
+.settings
+.classpath
