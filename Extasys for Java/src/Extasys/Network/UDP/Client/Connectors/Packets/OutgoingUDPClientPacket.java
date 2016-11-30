@@ -41,7 +41,7 @@ public class OutgoingUDPClientPacket implements Runnable
      * Use this class to send data from the UDP Connector to a server.
      * This is an outgoing message that will remain in the clients thread pool 
      * as a job for the thread pool workers.
-     * @param UDPConnector is the UDPConnector where this message belongs to.
+     * @param connector is the UDPConnector where this message belongs to.
      * @param data is the outgoing DatagramPacket.
      * @param previousPacket is the previous outgoing packet of the UDPConnector.
      */
