@@ -95,7 +95,7 @@ public class frmTCPServer extends javax.swing.JFrame
         jLabel12.setText("Connection Time-Out (ms):");
 
         jTextFieldTCPServerIP.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jTextFieldTCPServerIP.setText("192.168.2.3");
+        jTextFieldTCPServerIP.setText("127.0.0.1");
 
         jTextFieldTCPServerConnectionsTimeOut.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldTCPServerConnectionsTimeOut.setText("10000");

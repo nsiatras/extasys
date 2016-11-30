@@ -80,7 +80,7 @@ public class frmMain extends javax.swing.JFrame
         jTextFieldTCPClientRemoteHostPort.setText("5000");
 
         jTextFieldTCPClientRemoteHostIP.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jTextFieldTCPClientRemoteHostIP.setText("192.168.2.3");
+        jTextFieldTCPClientRemoteHostIP.setText("127.0.0.1");
 
         jTextFieldTCPClientMaxPoolSize.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldTCPClientMaxPoolSize.setText("1");
