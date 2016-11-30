@@ -27,3 +27,8 @@ If you are using sockets then Extasys is the proper tool for your work. It's bee
 * [Establish a TCP Client](https://github.com/nsiatras/extasys/wiki/Establish-a-TCP-Client)
 * [Establish a UDP Server](https://github.com/nsiatras/extasys/wiki/Establish-a-UDP-Server)
 * [Establish a UDP Client](https://github.com/nsiatras/extasys/wiki/Establish-a-UDP-Client)
+
+## Downloads
+* [Extasys v3.1 for Java (JDK7)](https://github.com/nsiatras/extasys/releases/download/3.1_Java/Extasys_v3.1_JDK7.zip)
+* [Extasys v3.1 for Java (JDK8)](https://github.com/nsiatras/extasys/releases/download/3.1_Java/Extasys_v3.1_JDK8.zip)
+* [Extasys for .NET (TCP Only)](https://github.com/nsiatras/extasys/releases/download/2.0.0.8/Extasys.for.NET.4.-.release.2.0.0.8.TCP.Only.zip)
