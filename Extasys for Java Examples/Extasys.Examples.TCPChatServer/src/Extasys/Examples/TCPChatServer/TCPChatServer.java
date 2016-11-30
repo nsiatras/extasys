@@ -21,9 +21,7 @@ package Extasys.Examples.TCPChatServer;
 
 import Extasys.DataFrame;
 import Extasys.Network.TCP.Server.Listener.Exceptions.*;
-import Extasys.Network.TCP.Server.Listener.Packets.IncomingTCPClientConnectionPacket;
-import Extasys.Network.TCP.Server.Listener.Packets.MessageCollectorTCPClientConnectionPacket;
-import Extasys.Network.TCP.Server.Listener.Packets.OutgoingTCPClientConnectionPacket;
+
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import java.net.InetAddress;
 import java.util.Enumeration;
@@ -33,7 +31,7 @@ import java.util.Hashtable;
  *
  * @author Nikos Siatras
  */
-public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer implements Extasys.Network.TCP.Server.ITCPServer
+public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 {
 
     private Hashtable fConnectedClients;
@@ -188,6 +186,7 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer i
 
     /**
      * Returns true if the username is taken.
+     *
      * @param username is the username to check
      * @return true or false.
      */
@@ -291,7 +290,3 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer i
         fMainForm.UpdateClientsCount();
     }
 }
-
-
-
-

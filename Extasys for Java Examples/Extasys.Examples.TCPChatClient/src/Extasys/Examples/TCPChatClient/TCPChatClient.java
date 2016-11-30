@@ -28,7 +28,7 @@ import java.net.InetAddress;
  *
  * @author Nikos Siatras
  */
-public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient implements Extasys.Network.TCP.Client.ITCPClient
+public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 {
 
     private InetAddress fServerIP;
