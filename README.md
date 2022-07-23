@@ -4,7 +4,7 @@ Extasys
 
 Asynchronous TCP/UDP socket library
 
-Extasys is a fast, accurate and easy to use TCP/UDP socket library for Java, Mono and Microsoft .NET Framework. The power of this socket is the asynchronous data proccessing that offers.
+Extasys is a fast, accurate and easy to use TCP/UDP socket library for Java. The power of this socket is the asynchronous data proccessing that offers.
 
 If you are using sockets then Extasys is the proper tool for your work. It's been designed to take the hard job done and let you think only about the message exchange (the process).
 
@@ -15,7 +15,7 @@ If you are using sockets then Extasys is the proper tool for your work. It's bee
 
 #### Features
 * Dedicated Thread Pool for each TCPServer, TCPClient, UDPServer and UDPClient
-* Multiple listeners per server and multiple connectors per client
+* Multiple listeners per server and multiple connectors per Client
 * TCP message collector with character or string message splitter
 
 ## How to Use
