@@ -1,9 +1,9 @@
 Extasys
 =======
 
-Asynchronous TCP/UDP socket library
+Super Fast Asynchronous TCP/UDP socket library
 
-Extasys is a fast, accurate and easy to use TCP/UDP socket library for Java. The power of this socket is the asynchronous data proccessing that offers.
+Extasys is an open source, high performance, **asynchronous TCP/UDP socket library** originally developed with Java. Its **multi-threaded and lightweight** nature makes it ideal for super fast data transfer even on systems with ARM architecture like smartphones and single-board computers (Raspberry Pi, Orange Pi etc.).
 
 If you are using sockets then Extasys is the proper tool for your work. It's been designed to take the hard job done and let you think only about the message exchange (the process).
 
