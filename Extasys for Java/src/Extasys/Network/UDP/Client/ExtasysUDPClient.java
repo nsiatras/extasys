@@ -103,6 +103,7 @@ public class ExtasysUDPClient
      * Send data from all connector's to all hosts.
      *
      * @param data is the string to be send.
+     * @throws java.io.IOException
      */
     public void SendData(String data) throws IOException
     {
