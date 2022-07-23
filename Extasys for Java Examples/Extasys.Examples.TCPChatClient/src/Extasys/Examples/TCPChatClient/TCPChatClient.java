@@ -23,6 +23,7 @@ import Extasys.DataFrame;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 
 /**
  *
@@ -46,7 +47,7 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
         fUsername = username;
         fMainForm = frmMain;
 
-        super.AddConnector("Main Connector", serverIP, port, 20480, ((char) 3));
+        super.AddConnector("Main Connector", serverIP, port, 20480, Charset.forName("UTF-8"), ((char) 3));
     }
 
     public void Connect()

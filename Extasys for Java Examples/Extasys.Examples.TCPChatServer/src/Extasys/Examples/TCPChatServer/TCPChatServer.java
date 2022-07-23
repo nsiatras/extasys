@@ -24,6 +24,7 @@ import Extasys.Network.TCP.Server.Listener.Exceptions.*;
 
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -44,7 +45,7 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     public TCPChatServer(InetAddress listenerIP, int port, frmTCPChatServer frmMain)
     {
         super("TCP Chat Server", "", 10, 100);
-        super.AddListener("Main Listener", listenerIP, port, 99999, 20480, 10000, 100, ((char) 3));
+        super.AddListener("Main Listener", listenerIP, port, 99999, 20480, 10000, 100, Charset.forName("UTF-8"), ((char) 3));
         fConnectedClients = new Hashtable();
         fMainForm = frmMain;
     }
