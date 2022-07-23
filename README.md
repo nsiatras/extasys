@@ -22,10 +22,21 @@ If you are using sockets then Extasys is the proper tool for your work. It's bee
 
 **Fully functional examples on how to use Extasys can be found** [inside the repository](https://github.com/nsiatras/extasys/tree/master/Extasys%20for%20Java%20Examples). In case you want to take a quick look on how to use Extasys then take a look at the following quick examples. _Also read  the [wiki pages](https://github.com/nsiatras/extasys/wiki)_
 
+## TCP Chat Server - Client Example
+An easy to follow chat Server and Client example can be found inside the Extasys for Java Examples directory.
+
+* [TCP Chat Server Example](https://github.com/nsiatras/extasys/tree/master/Extasys%20for%20Java%20Examples/Extasys.Examples.TCPChatServer) - Chat Server Example with UI
+* [TCP Chat Client Example](https://github.com/nsiatras/extasys/tree/master/Extasys%20for%20Java%20Examples/Extasys.Examples.TCPChatClient) - Chat Client Example with UI
+
+ 
+<img src="https://github.com/nsiatras/extasys/blob/master/Images/ChatServer%20Screenshot.png" alt="Chat Server and Client">
+
 
 #### Quick Examples:
 * [Establish a TCP Server](https://github.com/nsiatras/extasys/wiki/Establish-a-TCP-Server)
 * [Establish a TCP Client](https://github.com/nsiatras/extasys/wiki/Establish-a-TCP-Client)
 * [Establish a UDP Server](https://github.com/nsiatras/extasys/wiki/Establish-a-UDP-Server)
 * [Establish a UDP Client](https://github.com/nsiatras/extasys/wiki/Establish-a-UDP-Client)
+
+
 
