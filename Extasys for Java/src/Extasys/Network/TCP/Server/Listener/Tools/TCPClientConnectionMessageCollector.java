@@ -39,7 +39,7 @@ public class TCPClientConnectionMessageCollector
     public TCPClientConnectionMessageCollector(TCPClientConnection myClient, char splitter)
     {
         fMyClient = myClient;
-        fETXStr = String.valueOf(splitter).getBytes();
+        fETXStr = String.valueOf(splitter).getBytes(fMyClient.fMyListener.getCharset());
         fETXLength = fETXStr.length;
         fIncomingDataBuffer = new ByteArrayBuilder();
     }
@@ -47,7 +47,7 @@ public class TCPClientConnectionMessageCollector
     public TCPClientConnectionMessageCollector(TCPClientConnection myClient, String splitter)
     {
         fMyClient = myClient;
-        fETXStr = splitter.getBytes();
+        fETXStr = splitter.getBytes(fMyClient.fMyListener.getCharset());
         fETXLength = fETXStr.length;
         fIncomingDataBuffer = new ByteArrayBuilder();
     }

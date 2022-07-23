@@ -160,6 +160,7 @@ public class UDPConnector
      * Send data to all host.
      *
      * @param data is the string to be send.
+     * @throws java.io.IOException
      */
     public void SendData(String data) throws IOException
     {
@@ -174,6 +175,7 @@ public class UDPConnector
      * @param offset is the position in the data buffer at witch to begin
      * sending.
      * @param length is the number of the bytes to be send.
+     * @throws java.io.IOException
      */
     public void SendData(byte[] bytes, int offset, int length) throws IOException
     {

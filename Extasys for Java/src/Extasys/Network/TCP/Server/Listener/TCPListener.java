@@ -23,8 +23,8 @@ import Extasys.Network.TCP.Server.ExtasysTCPServer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.nio.charset.Charset;
+import java.util.HashMap;
 
 /**
  *
@@ -32,8 +32,8 @@ import java.util.Hashtable;
  */
 public class TCPListener
 {
-    // Extasys tcp server reference.
 
+    // Extasys tcp server reference.
     private ExtasysTCPServer fMyExtasysTCPServer;
     // Socket.
     private ServerSocket fTcpListener;
@@ -44,7 +44,7 @@ public class TCPListener
     private InetAddress fIPAddress;
     private int fPort;
     // Connections.
-    private Hashtable fConnectedClients;
+    private HashMap<String, TCPClientConnection> fConnectedClients;
     final Object fAddRemoveUsersLock = new Object();
     private int fMaxConnections;
     private int fReadBufferSize;
@@ -55,6 +55,8 @@ public class TCPListener
     // Message collector.
     private boolean fUseMessageCollector = false;
     private String fMessageCollectorSplitter;
+
+    private final Charset fCharset;
 
     /**
      * Constructs a new TCP listener.
@@ -69,10 +71,13 @@ public class TCPListener
      * milliseconds.
      * @param backLog is the number of outstanding connection requests this
      * listener can have.
+     * @param charset the charset to use for this TCPListener ex.
+     * Charset.forName("UTF-8")
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
+    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset)
     {
         Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, false, null);
+        fCharset = charset;
     }
 
     /**
@@ -88,11 +93,14 @@ public class TCPListener
      * milliseconds. Set to 0 for no time-out
      * @param backLog is the number of outstanding connection requests this
      * listener can have.
+     * @param charset the charset to use for this TCPListener ex.
+     * Charset.forName("UTF-8")
      * @param splitter is the message splitter.
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
+    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset, char splitter)
     {
         Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, String.valueOf(splitter));
+        fCharset = charset;
     }
 
     /**
@@ -108,16 +116,19 @@ public class TCPListener
      * milliseconds. Set to 0 for no time-out
      * @param backLog is the number of outstanding connection requests this
      * listener can have.
+     * @param charset the charset to use for this TCPListener ex.
+     * Charset.forName("UTF-8")
      * @param splitter is the message splitter.
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
+    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset, String splitter)
     {
         Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, splitter);
+        fCharset = charset;
     }
 
     private void Initialize(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, boolean useMessageCollector, String splitter)
     {
-        fConnectedClients = new Hashtable();
+        fConnectedClients = new HashMap<>();
         fName = name;
         fIPAddress = ipAddress;
         fPort = port;
@@ -133,6 +144,8 @@ public class TCPListener
 
     /**
      * Start or restart the TCPListener.
+     *
+     * @throws java.io.IOException
      */
     public void Start() throws IOException, Exception
     {
@@ -192,23 +205,15 @@ public class TCPListener
         // Disconnect all connected clients.
         try
         {
-            for (Enumeration e = fConnectedClients.keys(); e.hasMoreElements();)
+            for (TCPClientConnection client : fConnectedClients.values())
             {
-                try
+                if (!force)
                 {
-                    TCPClientConnection tmp = (TCPClientConnection) fConnectedClients.get(e.nextElement());
-                    if (!force)
-                    {
-                        tmp.DisconnectMe();
-                    }
-                    else
-                    {
-                        tmp.ForceDisconnect();
-                    }
+                    client.DisconnectMe();
                 }
-                catch (Exception ex)
+                else
                 {
-                    //System.out.println("Listener failed to disconnect a client");
+                    client.ForceDisconnect();
                 }
             }
         }
@@ -236,7 +241,7 @@ public class TCPListener
         {
             try
             {
-                if (!fConnectedClients.contains(client.getIPAddress()))
+                if (!fConnectedClients.containsKey(client.getIPAddress()))
                 {
                     fConnectedClients.put(client.getIPAddress(), client);
                 }
@@ -278,11 +283,11 @@ public class TCPListener
     {
         synchronized (fAddRemoveUsersLock)
         {
-            for (Object client : fConnectedClients.values())
+            for (TCPClientConnection client : fConnectedClients.values())
             {
                 try
                 {
-                    ((TCPClientConnection) client).SendData(data);
+                    client.SendData(data);
                 }
                 catch (Exception ex)
                 {
@@ -299,15 +304,15 @@ public class TCPListener
      * sending.
      * @param length is the number of the bytes to be send.
      */
-    public void ReplyToAll(byte[] bytes, int offset, int length)
+    public void ReplyToAll(final byte[] bytes, final int offset, final int length)
     {
         synchronized (fAddRemoveUsersLock)
         {
-            for (Object client : fConnectedClients.values())
+            for (TCPClientConnection client : fConnectedClients.values())
             {
                 try
                 {
-                    ((TCPClientConnection) client).SendData(bytes, offset, length);
+                    client.SendData(bytes, offset, length);
                 }
                 catch (Exception ex)
                 {
@@ -322,27 +327,24 @@ public class TCPListener
      * @param data is the string to be send.
      * @param sender is the TCP client exception.
      */
-    public void ReplyToAllExceptSender(String data, TCPClientConnection sender)
+    public void ReplyToAllExceptSender(final String data, final TCPClientConnection sender)
     {
-        if (sender != null)
+        synchronized (fAddRemoveUsersLock)
         {
-            synchronized (fAddRemoveUsersLock)
+            if (sender != null)
             {
-                TCPClientConnection tmp;
-                for (Object client : fConnectedClients.values())
+                for (TCPClientConnection client : fConnectedClients.values())
                 {
-                    tmp = (TCPClientConnection) client;
-                    if (!tmp.getIPAddress().equals(sender.getIPAddress()))
+                    if (client != sender)
                     {
                         try
                         {
-                            tmp.SendData(data);
+                            client.SendData(data);
                         }
                         catch (Exception ex)
                         {
                         }
                     }
-
                 }
             }
         }
@@ -357,27 +359,24 @@ public class TCPListener
      * @param length is the number of the bytes to be send.
      * @param sender is the TCP client exception.
      */
-    public void ReplyToAllExceptSender(byte[] bytes, int offset, int length, TCPClientConnection sender)
+    public void ReplyToAllExceptSender(final byte[] bytes, final int offset, final int length, final TCPClientConnection sender)
     {
-        if (sender != null)
+        synchronized (fAddRemoveUsersLock)
         {
-            synchronized (fAddRemoveUsersLock)
+            if (sender != null)
             {
-                TCPClientConnection tmp;
-                for (Object client : fConnectedClients.values())
+                for (TCPClientConnection client : fConnectedClients.values())
                 {
-                    tmp = (TCPClientConnection) client;
-                    if (!tmp.getIPAddress().equals(sender.getIPAddress()))
+                    if (client != sender)
                     {
                         try
                         {
-                            tmp.SendData(bytes, offset, length);
+                            client.SendData(bytes, offset, length);
                         }
                         catch (Exception ex)
                         {
                         }
                     }
-
                 }
             }
         }
@@ -455,14 +454,13 @@ public class TCPListener
     }
 
     /**
-     * Returns a Hashtable with the connected clients of this listener. The
-     * Hashtable's key is a string contains client's IP address. The Hashtable's
+     * Returns a HashMap with the connected clients of this listener. The
+     * HashMap's key is a string contains client's IP address. The HashMap's
      * value is a TCPClientConnection.
      *
-     * @return the connections hashtable of this listener.
+     * @return the connections HashMap of this listener.
      */
-    @SuppressWarnings("UseOfObsoleteCollectionType")
-    public Hashtable getConnectedClients()
+    public HashMap<String, TCPClientConnection> getConnectedClients()
     {
         return fConnectedClients;
     }
@@ -568,5 +566,15 @@ public class TCPListener
     public String getMessageSplitter()
     {
         return fMessageCollectorSplitter;
+    }
+
+    /**
+     * Return's the charset of this TCPListener
+     *
+     * @return
+     */
+    public Charset getCharset()
+    {
+        return fCharset;
     }
 }

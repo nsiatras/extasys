@@ -33,23 +33,19 @@ import java.nio.charset.Charset;
 public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 {
 
-    private Charset fCharset = Charset.forName("UTF-8");
     private boolean fKeepSendingMessages = false;
-    private String fMessageToExchange = "TESTING EXTASYS TCP SOCKET";
+    private final String fMessageToExchange = "Test Message";
     private final String fMessageSplitter = "#SPLITTER#";
+
+    private final Charset fCharset = Charset.forName("UTF-8"); // This is the default character set to be used for all TCPConnectors
 
     public TCPClient(String name, String description, InetAddress remoteHostIP, int remoteHostPort, int corePoolSize, int maximumPoolSize)
     {
         super(name, description, corePoolSize, maximumPoolSize);
 
-        while (fMessageToExchange.length() < 10240)
-        {
-            fMessageToExchange += "!";
-        }
-
         try
         {
-            super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, fMessageSplitter);
+            super.AddConnector(name, remoteHostIP, remoteHostPort, 16384, fCharset, fMessageSplitter);
         }
         catch (Exception ex)
         {
@@ -61,7 +57,10 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     {
         try
         {
-            // String incomingData = new String(data.getBytes(), fCharset);
+            final String dataReceivedFromServer = new String(data.getBytes(), fCharset);
+
+            // Every time I receive data from the server I send the
+            // fMessageToExchange string back
             if (fKeepSendingMessages)
             {
                 SendData(fMessageToExchange + fMessageSplitter);

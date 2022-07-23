@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -66,25 +67,29 @@ public class TCPConnector
     public MessageCollectorTCPClientPacket fLastMessageCollectorPacket = null;
     private OutgoingTCPClientPacket fLastOutgoingPacket = null;
 
+    private final Charset fCharset;
+
     /**
      * Constructs a new TCP Connector.
      *
      * @param myTCPClient is the TCP connector's main Extasys TCP Client.
      * @param name is the connector's name.
-     * @param serverIP is the server's ip address the connector will use to
+     * @param serverIP is the server's IP address the connector will use to
      * connect.
-     * @param serverPort is the server's tcp port the connector will use to
+     * @param serverPort is the server's TCP port the connector will use to
      * connect.
      * @param readBufferSize is the read buffer size in bytes for this
      * connection.
+     * @param charset is the charset to use for this TCPConnector
      */
-    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize)
+    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset)
     {
         fMyTCPClient = myTCPClient;
         fName = name;
         fServerIP = serverIP;
         fServerPort = serverPort;
         fReadBufferSize = readBufferSize;
+        fCharset = charset;
     }
 
     /**
@@ -92,19 +97,21 @@ public class TCPConnector
      *
      * @param myTCPClient is the TCP connector's main Extasys TCP Client.
      * @param name is the connector's name.
-     * @param serverIP is the server's ip address the connector will connect to.
-     * @param serverPort is the server's tcp port the connector will connect to.
+     * @param serverIP is the server's IP address the connector will connect to.
+     * @param serverPort is the server's TCP port the connector will connect to.
      * @param readBufferSize is the read buffer size in bytes for this
      * connection.
+     * @param charset is the charset to use for this TCPConnector
      * @param ETX is the End of Text character.
      */
-    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, char ETX)
+    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset, char ETX)
     {
         fMyTCPClient = myTCPClient;
         fName = name;
         fServerIP = serverIP;
         fServerPort = serverPort;
         fReadBufferSize = readBufferSize;
+        fCharset = charset;
 
         fUseMessageCollector = true;
         fETX = String.valueOf(ETX);
@@ -116,19 +123,20 @@ public class TCPConnector
      *
      * @param myTCPClient is the TCP connector's main Extasys TCP Client.
      * @param name is the connector's name.
-     * @param serverIP is the server's ip address the connector will connect to.
-     * @param serverPort is the server's tcp port the connector will connect to.
+     * @param serverIP is the server's IP address the connector will connect to.
+     * @param serverPort is the server's TCP port the connector will connect to.
      * @param readBufferSize is the read buffer size in bytes for this
      * connection.
      * @param splitter is the message splitter.
      */
-    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, String splitter)
+    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset, String splitter)
     {
         fMyTCPClient = myTCPClient;
         fName = name;
         fServerIP = serverIP;
         fServerPort = serverPort;
         fReadBufferSize = readBufferSize;
+        fCharset = charset;
 
         fUseMessageCollector = true;
         fETX = splitter;
@@ -137,6 +145,8 @@ public class TCPConnector
 
     /**
      * Start the connector (connect to the server).
+     *
+     * @throws java.lang.Exception
      */
     public void Start() throws Exception
     {
@@ -289,12 +299,16 @@ public class TCPConnector
      * Send string data to server.
      *
      * @param data is the string to send.
+     * @throws
+     * Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException
+     * @throws
+     * Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException
      */
     public void SendData(String data) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
     {
         try
         {
-            byte[] bytes = data.getBytes();
+            byte[] bytes = data.getBytes(fCharset);
             SendData(bytes, 0, bytes.length);
         }
         catch (Exception ex)
@@ -310,6 +324,10 @@ public class TCPConnector
      * @param offset is the position in the data buffer at witch to begin
      * sending.
      * @param length is the number of the bytes to be send.
+     * @throws
+     * Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException
+     * @throws
+     * Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException
      */
     public void SendData(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
     {
@@ -334,7 +352,7 @@ public class TCPConnector
      */
     public void SendDataSynchronous(String data) throws ConnectorDisconnectedException
     {
-        byte[] bytes = data.getBytes();
+        byte[] bytes = data.getBytes(fCharset);
         SendDataSynchronous(bytes, 0, bytes.length);
     }
 
@@ -392,9 +410,9 @@ public class TCPConnector
     }
 
     /**
-     * Returns the remote server's ip address.
+     * Returns the remote server's IP address.
      *
-     * @return the remote server's ip address
+     * @return the remote server's IP address
      */
     public InetAddress getServerIPAddress()
     {
@@ -479,6 +497,16 @@ public class TCPConnector
     public boolean isConnected()
     {
         return fIsConnected;
+    }
+
+    /**
+     * Return's the charset of this TCPConnector
+     *
+     * @return
+     */
+    public Charset getCharset()
+    {
+        return fCharset;
     }
 }
 

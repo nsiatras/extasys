@@ -130,11 +130,11 @@ public final class IncomingTCPClientPacket implements Runnable
     }
 
     /**
-     * Returns the previus incoming packet received by the client. If the packet
+     * Returns the previous incoming packet received by the client. If the packet
      * is null means that the packet has been received and parsed from the
      * client.
      *
-     * @return the previus incoming packet received by the client.
+     * @return the previous incoming packet received by the client.
      */
     public IncomingTCPClientPacket getPreviusPacket()
     {

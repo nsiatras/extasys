@@ -39,14 +39,14 @@ public class TCPClientMessageCollector
     public TCPClientMessageCollector(TCPConnector connector, char ETX)
     {
         fMyConnector = connector;
-        fETXStr = String.valueOf(ETX).getBytes();
+        fETXStr = String.valueOf(ETX).getBytes(connector.getCharset());
         fETXLength = fETXStr.length;
     }
 
     public TCPClientMessageCollector(TCPConnector connector, String splitter)
     {
         fMyConnector = connector;
-        fETXStr = splitter.getBytes();
+        fETXStr = splitter.getBytes(connector.getCharset());
         fETXLength = fETXStr.length;
     }
 

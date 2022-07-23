@@ -251,15 +251,24 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     try
     {
 
-        fTCPServer = new TCPServer("My TCP server", "Example", InetAddress.getByName(jTextFieldTCPServerIP.getText()), Integer.parseInt(jTextFieldTCPServerPort.getText()),
-                Integer.parseInt(jTextFieldTCPServerMaxConnections.getText()), Integer.parseInt(jTextFieldTCPServerConnectionsTimeOut.getText()),
-                Integer.parseInt(jTextFieldTCPServerCorePoolSize.getText()), Integer.parseInt(jTextFieldTCPServerMaxPoolSize.getText()));
+        String serverName = "My TCP server";
+        String serverDescription = "Example";
+        InetAddress listenerIPAddress = InetAddress.getByName(jTextFieldTCPServerIP.getText());
+        int listenerPort = Integer.parseInt(jTextFieldTCPServerPort.getText());
+        int maxConnections = Integer.parseInt(jTextFieldTCPServerMaxConnections.getText());
+        int connectionsTimeout = Integer.parseInt(jTextFieldTCPServerConnectionsTimeOut.getText());
+        int corePoolSize = Integer.parseInt(jTextFieldTCPServerCorePoolSize.getText());
+        int maxPoolSize = Integer.parseInt(jTextFieldTCPServerMaxPoolSize.getText());
+
+        // Initialize and Start a new TCP Server
+        fTCPServer = new TCPServer(serverName, serverDescription, listenerIPAddress, listenerPort, maxConnections, connectionsTimeout, corePoolSize, maxPoolSize);
         fUpdateStatusActive = true;
         fTCPServer.Start();
 
+        // The following thread is to Update the UI every 1000ms (1 second)
         fUpdateStatusThread = new Thread(new Runnable()
         {
-
+            @Override
             public void run()
             {
                 try
@@ -270,7 +279,6 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
                         {
                             if (fTCPServer != null)
                             {
-
                                 Long newBytesIn = fTCPServer.getBytesIn();
                                 Long newBytesOut = fTCPServer.getBytesOut();
 

@@ -37,7 +37,7 @@ public class ExtasysUDPServer
 
     private final String fName;
     private final String fDescription;
-    private final ArrayList fListeners = new ArrayList();
+    private final ArrayList<UDPListener> fListeners = new ArrayList<>();
     private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(50000);
     public final ThreadPoolExecutor fMyThreadPool;
 
@@ -110,13 +110,16 @@ public class ExtasysUDPServer
 
     /**
      * Start or restart the server.
+     *
+     * @throws java.net.SocketException
      */
     public void Start() throws SocketException
     {
         Stop();
-        for (int i = 0; i < fListeners.size(); i++)
+
+        for (UDPListener listener : fListeners)
         {
-            ((UDPListener) fListeners.get(i)).Start();
+            listener.Start();
         }
     }
 
@@ -125,9 +128,9 @@ public class ExtasysUDPServer
      */
     public void Stop()
     {
-        for (int i = 0; i < fListeners.size(); i++)
+        for (UDPListener listener : fListeners)
         {
-            ((UDPListener) fListeners.get(i)).Stop();
+            listener.Stop();
         }
     }
 
@@ -173,12 +176,12 @@ public class ExtasysUDPServer
     }
 
     /**
-     * Returns an ArrayList with this server's tcp listeners. The ArrayList
+     * Returns an ArrayList with this server's UDP listeners. The ArrayList
      * elements are UDPListener classes.
      *
-     * @return ArrayList with this server's udp listeners.
+     * @return ArrayList with this server's UDP listeners.
      */
-    public ArrayList getListeners()
+    public ArrayList<UDPListener> getListeners()
     {
         return fListeners;
     }
@@ -193,15 +196,9 @@ public class ExtasysUDPServer
         long bytesIn = 0;
         try
         {
-            for (int i = 0; i < fListeners.size(); i++)
+            for (UDPListener listener : fListeners)
             {
-                try
-                {
-                    bytesIn += ((UDPListener) fListeners.get(i)).getBytesIn();
-                }
-                catch (Exception ex)
-                {
-                }
+                bytesIn += listener.getBytesIn();
             }
         }
         catch (Exception ex)
@@ -220,15 +217,9 @@ public class ExtasysUDPServer
         long bytesOut = 0;
         try
         {
-            for (int i = 0; i < fListeners.size(); i++)
+            for (UDPListener listener : fListeners)
             {
-                try
-                {
-                    bytesOut += ((UDPListener) fListeners.get(i)).getBytesOut();
-                }
-                catch (Exception ex)
-                {
-                }
+                bytesOut += listener.getBytesOut();
             }
         }
         catch (Exception ex)

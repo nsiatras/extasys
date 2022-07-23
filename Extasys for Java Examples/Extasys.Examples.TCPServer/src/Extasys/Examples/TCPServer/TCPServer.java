@@ -36,7 +36,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 
     private TCPListener fMyTCPListener;
     private final String fMessageSplitter = "#SPLITTER#";
-    private Charset fCharset = Charset.forName("UTF-8");
+    private final Charset fCharset = Charset.forName("UTF-8"); // This is the default character set to be used for all TCPListeners
 
     public TCPServer(String name, String description, InetAddress listenerIP, int port, int maxConnections, int connectionsTimeOut, int corePoolSize, int maximumPoolSize)
     {
@@ -44,8 +44,8 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 
         try
         {
-            // Add listener with message collector.
-            fMyTCPListener = this.AddListener("My listener", listenerIP, 5000, maxConnections, 8192, connectionsTimeOut, 100, fMessageSplitter);
+            // Add a listener with message collector.
+            fMyTCPListener = this.AddListener("My listener", listenerIP, 5000, maxConnections, 8192, connectionsTimeOut, 100, fCharset, fMessageSplitter);
         }
         catch (Exception ex)
         {
@@ -57,8 +57,11 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     {
         try
         {
+            // I received data from a client
             String incomingDataStr = new String(data.getBytes(), fCharset);
-            // System.out.println("Data received: " + incomingDataStr);
+            //System.out.println("Data received: " + incomingDataStr);
+
+            // Send the incoming data back to the client
             sender.SendData(incomingDataStr + fMessageSplitter);
         }
         catch (ClientIsDisconnectedException | OutgoingPacketFailedException ex)

@@ -38,7 +38,7 @@ public class ExtasysUDPClient
 
     private final String fName;
     private final String fDescription;
-    private final ArrayList fConnectors = new ArrayList();
+    private final ArrayList<UDPConnector> fConnectors = new ArrayList<>();
     private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(50000);
     private final ThreadPoolExecutor fMyThreadPool;
 
@@ -230,12 +230,12 @@ public class ExtasysUDPClient
      */
     public long getBytesIn()
     {
-        int result = 0;
+        long result = 0;
         try
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (UDPConnector conn : fConnectors)
             {
-                result += ((UDPConnector) fConnectors.get(i)).getBytesIn();
+                result += conn.getBytesIn();
             }
         }
         catch (Exception ex)
@@ -251,12 +251,12 @@ public class ExtasysUDPClient
      */
     public long getBytesOut()
     {
-        int result = 0;
+        long result = 0;
         try
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (UDPConnector conn : fConnectors)
             {
-                result += ((UDPConnector) fConnectors.get(i)).getBytesOut();
+                result += conn.getBytesOut();
             }
         }
         catch (Exception ex)

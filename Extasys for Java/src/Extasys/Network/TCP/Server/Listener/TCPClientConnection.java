@@ -138,7 +138,7 @@ public final class TCPClientConnection
      */
     public void SendData(String data) throws ClientIsDisconnectedException, OutgoingPacketFailedException
     {
-        byte[] bytes = data.getBytes();
+        byte[] bytes = data.getBytes(fMyListener.getCharset());
         SendData(bytes, 0, bytes.length);
     }
 
@@ -174,7 +174,7 @@ public final class TCPClientConnection
      */
     public void SendDataSynchronous(String data) throws ClientIsDisconnectedException
     {
-        byte[] bytes = data.getBytes();
+        byte[] bytes = data.getBytes(fMyListener.getCharset());
         SendDataSynchronous(bytes, 0, bytes.length);
     }
 

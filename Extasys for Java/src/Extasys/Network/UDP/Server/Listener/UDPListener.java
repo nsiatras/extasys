@@ -35,12 +35,12 @@ import java.net.SocketException;
 public class UDPListener
 {
 
-    private ExtasysUDPServer fMyUDPServer; //Extasys UDP server reference.
-    private String fName;
-    private InetAddress fIPAddress;
-    private int fPort;
-    private int fReadBufferSize;
-    private int fReadDataTimeOut;
+    private final ExtasysUDPServer fMyUDPServer; //Extasys UDP server reference.
+    private final String fName;
+    private final InetAddress fIPAddress;
+    private final int fPort;
+    private final int fReadBufferSize;
+    private final int fReadDataTimeOut;
     public DatagramSocket fSocket;
     private boolean fActive = false;
     private Thread fReadIncomingDataThread;
@@ -52,12 +52,12 @@ public class UDPListener
     /**
      * Constructs a new UDP Listener.
      *
-     * @param myUDPServer is the udp listener's main UDP server.
+     * @param myUDPServer is the UDP listener's main UDP server.
      * @param name is the name of the listener.
      * @param ipAddress is the listener's IP address.
      * @param port is the listener's UDP port.
      * @param readBufferSize is the read buffer size of the listener.
-     * @param readDataTimeOut is the maximum time in milliseconds in wich a
+     * @param readDataTimeOut is the maximum time in milliseconds in which a
      * datagram packet can be received. Set to 0 for no time-out.
      */
     public UDPListener(ExtasysUDPServer myUDPServer, String name, InetAddress ipAddress, int port, int readBufferSize, int readDataTimeOut)
@@ -72,6 +72,8 @@ public class UDPListener
 
     /**
      * Start or restart the UDP listener.
+     *
+     * @throws java.net.SocketException
      */
     public void Start() throws SocketException
     {
@@ -234,7 +236,7 @@ public class UDPListener
 class ReadIncomingDataThread extends Thread
 {
 
-    private UDPListener fMyUDPListener;
+    private final UDPListener fMyUDPListener;
 
     public ReadIncomingDataThread(UDPListener myUDPListener)
     {
