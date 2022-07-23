@@ -23,6 +23,7 @@ import Extasys.Network.UDP.Server.Listener.UDPListener;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -68,11 +69,12 @@ public class ExtasysUDPServer
      * to read incoming bytes at a time.
      * @param readDataTimeOut is the maximum time in milliseconds a client can
      * use to send data to the listener.
+     * @param charset is the Charset to be used on the new UDPListener
      * @return the listener.
      */
-    public UDPListener AddListener(String name, InetAddress ipAddress, int port, int readBufferSize, int readDataTimeOut)
+    public UDPListener AddListener(String name, InetAddress ipAddress, int port, int readBufferSize, int readDataTimeOut, Charset charset)
     {
-        UDPListener listener = new UDPListener(this, name, ipAddress, port, readBufferSize, readDataTimeOut);
+        UDPListener listener = new UDPListener(this, name, ipAddress, port, readBufferSize, readDataTimeOut, charset);
         fListeners.add(listener);
         return listener;
     }
@@ -102,9 +104,9 @@ public class ExtasysUDPServer
      */
     public void SendData(DatagramPacket packet)
     {
-        for (int i = 0; i < fListeners.size(); i++)
+        for (UDPListener listener : fListeners)
         {
-            ((UDPListener) fListeners.get(i)).SendData(packet);
+            listener.SendData(packet);
         }
     }
 
@@ -149,7 +151,7 @@ public class ExtasysUDPServer
     {
         //System.out.println("Data received");
         //System.out.println("---" + packet.getAddress() + ":" + packet.getPort());
-        //System.out.println("---" + new String(packet.getData(), 0, packet.getLength()));
+        //System.out.println("---" + new String(packet.getData(), 0, packet.getLength(), listener.getCharset()));
 
         //DatagramPacket reply = new DatagramPacket(packet.getData(), 0, packet.getLength(), packet.getAddress(), packet.getPort());
         //listener.SendData(reply);

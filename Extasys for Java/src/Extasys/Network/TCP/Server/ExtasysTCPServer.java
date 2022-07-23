@@ -240,7 +240,7 @@ public class ExtasysTCPServer
      */
     public void OnDataReceive(TCPClientConnection sender, DataFrame data)
     {
-        //System.out.println(sender.getIPAddress() + " " + new String(data.getBytes()).substring(0, data.getBytes().length));
+        //System.out.println(sender.getIPAddress() + " " + new String(data.getBytes(), sender.getMyTCPListener().getCharset()).substring(0, data.getBytes().length));
     }
 
     /**

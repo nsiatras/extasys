@@ -42,7 +42,6 @@ import java.util.Date;
  */
 public final class TCPClientConnection
 {
-
     // Connection properties
     protected Socket fConnection;
     protected boolean fActive = false;

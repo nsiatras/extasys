@@ -27,6 +27,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 
 /**
  *
@@ -49,6 +50,8 @@ public class UDPListener
     public IncomingUDPServerPacket fLastIncomingPacket = null;
     public OutgoingUDPServerPacket fLastOutgoingPacket = null;
 
+    private final Charset fCharset;
+
     /**
      * Constructs a new UDP Listener.
      *
@@ -59,8 +62,9 @@ public class UDPListener
      * @param readBufferSize is the read buffer size of the listener.
      * @param readDataTimeOut is the maximum time in milliseconds in which a
      * datagram packet can be received. Set to 0 for no time-out.
+     * @param charset is the the charset to use for this UDPListener.
      */
-    public UDPListener(ExtasysUDPServer myUDPServer, String name, InetAddress ipAddress, int port, int readBufferSize, int readDataTimeOut)
+    public UDPListener(ExtasysUDPServer myUDPServer, String name, InetAddress ipAddress, int port, int readBufferSize, int readDataTimeOut, Charset charset)
     {
         fMyUDPServer = myUDPServer;
         fName = name;
@@ -68,6 +72,7 @@ public class UDPListener
         fPort = port;
         fReadBufferSize = readBufferSize;
         fReadDataTimeOut = readDataTimeOut;
+        fCharset = charset;
     }
 
     /**
@@ -229,6 +234,16 @@ public class UDPListener
     public boolean isActive()
     {
         return fActive;
+    }
+
+    /**
+     * Return's the charset of this UDPListener
+     *
+     * @return
+     */
+    public Charset getCharset()
+    {
+        return fCharset;
     }
 
 }

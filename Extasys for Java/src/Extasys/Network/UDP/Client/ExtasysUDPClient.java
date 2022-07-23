@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -70,11 +71,12 @@ public class ExtasysUDPClient
      * @param serverIP is the server's ip address the connector will use to send
      * data.
      * @param serverPort is the server's udp port.
+     * @param charset is the the charset to use for this UDPConnector.
      * @return the connector.
      */
-    public UDPConnector AddConnector(String name, int readBufferSize, int readTimeOut, InetAddress serverIP, int serverPort)
+    public UDPConnector AddConnector(String name, int readBufferSize, int readTimeOut, InetAddress serverIP, int serverPort, Charset charset)
     {
-        UDPConnector connector = new UDPConnector(this, name, readBufferSize, readTimeOut, serverIP, serverPort);
+        UDPConnector connector = new UDPConnector(this, name, readBufferSize, readTimeOut, serverIP, serverPort, charset);
         fConnectors.add(connector);
         return connector;
     }
@@ -117,12 +119,13 @@ public class ExtasysUDPClient
      * @param offset is the position in the data buffer at witch to begin
      * sending.
      * @param length is the number of the bytes to be send.
+     * @throws java.io.IOException
      */
     public void SendData(byte[] bytes, int offset, int length) throws IOException
     {
-        for (int i = 0; i < fConnectors.size(); i++)
+        for (UDPConnector conn : fConnectors)
         {
-            ((UDPConnector) fConnectors.get(i)).SendData(bytes, offset, length);
+            conn.SendData(bytes, offset, length);
         }
     }
 
@@ -136,9 +139,9 @@ public class ExtasysUDPClient
         Stop();
         try
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (UDPConnector conn : fConnectors)
             {
-                ((UDPConnector) fConnectors.get(i)).Start();
+                conn.Start();
             }
         }
         catch (SocketException ex)
@@ -154,9 +157,9 @@ public class ExtasysUDPClient
     {
         try
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (UDPConnector conn : fConnectors)
             {
-                ((UDPConnector) fConnectors.get(i)).Stop();
+                conn.Stop();
             }
         }
         catch (Exception ex)
@@ -264,4 +267,6 @@ public class ExtasysUDPClient
         }
         return result;
     }
+    
+    
 }

@@ -23,7 +23,7 @@ import java.net.InetAddress;
 
 /**
  *
- * @author  Nikos Siatras
+ * @author Nikos Siatras
  */
 public class frmUDPServer extends javax.swing.JFrame
 {
@@ -39,7 +39,8 @@ public class frmUDPServer extends javax.swing.JFrame
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void initComponents()
+    {
 
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -63,66 +64,70 @@ public class frmUDPServer extends javax.swing.JFrame
         setTitle("Extasys Example UDP Server");
         setResizable(false);
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel2.setText("Listener IP Address:");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel4.setText("Core Pool Size:");
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel3.setText("Listener Port:");
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel5.setText("Max. Pool Size:");
 
-        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel12.setText("Connection Time-Out (ms):");
 
         jTextFieldUDPServerIP.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldUDPServerIP.setText("127.0.0.1");
 
-        jTextFieldUDPServerConnectionsTimeOut.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jTextFieldUDPServerConnectionsTimeOut.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldUDPServerConnectionsTimeOut.setText("10000");
 
-        jTextFieldUDPServerCorePoolSize.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jTextFieldUDPServerCorePoolSize.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldUDPServerCorePoolSize.setText("8");
 
-        jTextFieldUDPServerPort.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jTextFieldUDPServerPort.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldUDPServerPort.setText("5000");
 
-        jTextFieldUDPServerMaxPoolSize.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jTextFieldUDPServerMaxPoolSize.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldUDPServerMaxPoolSize.setText("16");
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14));
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setText("UDP Server");
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jButton1.setText("Start UDP Server");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jButton2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jButton2.setText("Stop TCP Server");
         jButton2.setEnabled(false);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton2.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel7.setText("Bytes Out:");
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel6.setText("Bytes In:");
 
-        jLabelBytesIn.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabelBytesIn.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabelBytesIn.setText("0");
 
-        jLabelBytesOut.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabelBytesOut.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabelBytesOut.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -137,38 +142,39 @@ public class frmUDPServer extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton2)
                         .addGap(96, 96, 96))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel12)
+                                        .addGap(14, 14, 14)
+                                        .addComponent(jTextFieldUDPServerConnectionsTimeOut))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jLabel2)
+                                            .addComponent(jLabel4)
+                                            .addComponent(jLabel3)
+                                            .addComponent(jLabel5))
+                                        .addGap(14, 14, 14)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jTextFieldUDPServerIP)
+                                            .addComponent(jTextFieldUDPServerCorePoolSize, javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jTextFieldUDPServerPort)
+                                            .addComponent(jTextFieldUDPServerMaxPoolSize, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                        .addGap(49, 49, 49))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel7)
                             .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 273, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelBytesIn)
-                            .addComponent(jLabelBytesOut)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(jLabel12)
-                                .addGap(14, 14, 14)
-                                .addComponent(jTextFieldUDPServerConnectionsTimeOut))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel5))
-                                .addGap(14, 14, 14)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextFieldUDPServerIP)
-                                    .addComponent(jTextFieldUDPServerCorePoolSize, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                    .addComponent(jTextFieldUDPServerPort, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                    .addComponent(jTextFieldUDPServerMaxPoolSize, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabelBytesOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelBytesIn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(15, 15, 15))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,12 +225,13 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         fUDPServer = new UDPServer("My UDP server", "Example", InetAddress.getByName(jTextFieldUDPServerIP.getText()), Integer.parseInt(jTextFieldUDPServerPort.getText()),
                 Integer.parseInt(jTextFieldUDPServerConnectionsTimeOut.getText()), Integer.parseInt(jTextFieldUDPServerCorePoolSize.getText()), Integer.parseInt(jTextFieldUDPServerMaxPoolSize.getText()));
         fUDPServer.Start();
-        
+
         fUpdateStatusActive = true;
 
         fUpdateStatusThread = new Thread(new Runnable()
         {
 
+            @Override
             public void run()
             {
                 try
@@ -236,7 +243,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
                             jLabelBytesIn.setText(String.valueOf(fUDPServer.getBytesIn()));
                             jLabelBytesOut.setText(String.valueOf(fUDPServer.getBytesOut()));
                         }
-                        Thread.sleep(500);
+                        Thread.sleep(100);
                     }
                 }
                 catch (Exception ex)
@@ -280,9 +287,12 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     jButton1.setEnabled(true);
 }//GEN-LAST:event_jButton2ActionPerformed
 
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
+    public static void main(String args[])
+    {
+        java.awt.EventQueue.invokeLater(new Runnable()
+        {
+            public void run()
+            {
                 new frmUDPServer().setVisible(true);
             }
         });

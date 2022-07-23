@@ -23,7 +23,7 @@ import java.net.InetAddress;
 
 /**
  *
- * @author  Nikos Siatras
+ * @author Nikos Siatras
  */
 public class frmUDPClient extends javax.swing.JFrame
 {
@@ -39,7 +39,8 @@ public class frmUDPClient extends javax.swing.JFrame
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void initComponents()
+    {
 
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -63,66 +64,70 @@ public class frmUDPClient extends javax.swing.JFrame
         setTitle("Extasys Example UDP Client");
         setResizable(false);
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14));
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel6.setText("UDP Client");
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel7.setText("Remote host IP:");
 
-        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel8.setText("Remote Host Port:");
 
-        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel9.setText("Core Pool Size:");
 
-        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel10.setText("Max. Pool Size:");
 
-        jTextFieldRemoteHostPort.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jTextFieldRemoteHostPort.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldRemoteHostPort.setText("5000");
 
         jTextFieldRemoteHostIP.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldRemoteHostIP.setText("127.0.0.1");
 
-        jTextFieldMaxPoolSize.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jTextFieldMaxPoolSize.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldMaxPoolSize.setText("16");
 
-        jTextFieldCorePoolSize.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jTextFieldCorePoolSize.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldCorePoolSize.setText("8");
 
-        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel11.setText("Read Time-Out:");
 
-        jTextFieldReadTimeOut.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jTextFieldReadTimeOut.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldReadTimeOut.setText("8000");
 
-        jButton5.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jButton5.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jButton5.setText("Start Sending Messages");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton5.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 jButton5ActionPerformed(evt);
             }
         });
 
-        jButton6.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jButton6.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jButton6.setText("Stop Sending Messages");
         jButton6.setEnabled(false);
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton6.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 jButton6ActionPerformed(evt);
             }
         });
 
-        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel12.setText("Bytes Out:");
 
-        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel13.setText("Bytes In:");
 
-        jLabelBytesIn.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabelBytesIn.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabelBytesIn.setText("0");
 
-        jLabelBytesOut.setFont(new java.awt.Font("Tahoma", 0, 10));
+        jLabelBytesOut.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabelBytesOut.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -152,18 +157,17 @@ public class frmUDPClient extends javax.swing.JFrame
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))))
+                                .addComponent(jButton6))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel12)
                             .addComponent(jLabel13))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 283, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 280, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelBytesIn)
                             .addComponent(jLabelBytesOut)))
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGap(15, 15, 15))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -217,14 +221,14 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             fUDPClient = new UDPClient("My UDP client", "Example", Integer.parseInt(jTextFieldReadTimeOut.getText()), Integer.parseInt(jTextFieldCorePoolSize.getText()),
                     Integer.parseInt(jTextFieldMaxPoolSize.getText()), InetAddress.getByName(jTextFieldRemoteHostIP.getText()), Integer.parseInt(jTextFieldRemoteHostPort.getText()));
             fUDPClient.Start();
-            
+
             fUpdateStatusActive = true;
 
             fUDPClient.StartSendingMessages();
 
             fUpdateStatusThread = new Thread(new Runnable()
             {
-
+                @Override
                 public void run()
                 {
                     try
@@ -236,7 +240,7 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
                                 jLabelBytesIn.setText(String.valueOf(fUDPClient.getBytesIn()));
                                 jLabelBytesOut.setText(String.valueOf(fUDPClient.getBytesOut()));
                             }
-                            Thread.sleep(1);
+                            Thread.sleep(100);
                         }
                     }
                     catch (Exception ex)
@@ -275,9 +279,12 @@ private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     }
 }//GEN-LAST:event_jButton6ActionPerformed
 
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
+    public static void main(String args[])
+    {
+        java.awt.EventQueue.invokeLater(new Runnable()
+        {
+            public void run()
+            {
                 new frmUDPClient().setVisible(true);
             }
         });
