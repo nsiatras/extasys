@@ -14,7 +14,7 @@ Extasys project is Developed with <a href="https://netbeans.apache.org/"><b>NetB
 
 ## How to Use
 
-Fully functional examples on how to use Extasys can be found [inside the repository](https://github.com/nsiatras/extasys/tree/master/Extasys%20for%20Java%20Examples). More information on how to use Extasys can be found on the [wiki pages](https://github.com/nsiatras/extasys/wiki)_
+Fully functional examples on how to use Extasys can be found [inside the repository](https://github.com/nsiatras/extasys/tree/master/Extasys%20for%20Java%20Examples). More information on how to use Extasys can be found on the [wiki pages](https://github.com/nsiatras/extasys/wiki)
  
  #### Easy to follow examples:
  * [TCP Server Example](https://github.com/nsiatras/extasys/tree/master/Extasys%20for%20Java%20Examples/Extasys.Examples.TCPServer) - Simple TCP Server with UI
