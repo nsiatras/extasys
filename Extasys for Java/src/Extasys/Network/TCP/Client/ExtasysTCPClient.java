@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class ExtasysTCPClient
 {
 
-    private final String fName, fDescription;
+    private String fName, fDescription;
     private final ArrayList<TCPConnector> fConnectors = new ArrayList<>();
     public final ExtasysThreadPool fMyThreadPool;
 
@@ -125,9 +125,9 @@ public class ExtasysTCPClient
     {
         for (int i = 0; i < fConnectors.size(); i++)
         {
-            if (((TCPConnector) fConnectors.get(i)).getName().equals(name))
+            if (fConnectors.get(i).getName().equals(name))
             {
-                ((TCPConnector) fConnectors.get(i)).Stop();
+                fConnectors.get(i).Stop();
                 fConnectors.remove(i);
                 break;
             }
@@ -145,9 +145,9 @@ public class ExtasysTCPClient
 
         try
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (TCPConnector conn : fConnectors)
             {
-                ((TCPConnector) fConnectors.get(i)).Start();
+                conn.Start();
             }
         }
         catch (Exception ex)
@@ -286,6 +286,16 @@ public class ExtasysTCPClient
     }
 
     /**
+     * Sets the name of the TCPClient
+     *
+     * @param name
+     */
+    public void setName(String name)
+    {
+        fName = name;
+    }
+
+    /**
      * Return the description of the client.
      *
      * @return the description of the client.
@@ -293,6 +303,16 @@ public class ExtasysTCPClient
     public String getDescription()
     {
         return fDescription;
+    }
+
+    /**
+     * Sets the description of the TCPClient
+     *
+     * @param value
+     */
+    public void setDescription(String description)
+    {
+        fDescription = description;
     }
 
     /**

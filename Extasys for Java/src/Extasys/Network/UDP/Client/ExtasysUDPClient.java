@@ -37,8 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class ExtasysUDPClient
 {
 
-    private final String fName;
-    private final String fDescription;
+    private String fName, fDescription;
     private final ArrayList<UDPConnector> fConnectors = new ArrayList<>();
     private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(50000);
     private final ThreadPoolExecutor fMyThreadPool;
@@ -187,7 +186,7 @@ public class ExtasysUDPClient
     }
 
     /**
-     * Return the name of the client.
+     * Return the name of the UDP client.
      *
      * @return the name of the client.
      */
@@ -197,13 +196,33 @@ public class ExtasysUDPClient
     }
 
     /**
-     * Return the description of the client.
+     * Sets the name of the UDP Client.
+     *
+     * @param name
+     */
+    public void setName(String name)
+    {
+        fName = name;
+    }
+
+    /**
+     * Return the description of the UDP client.
      *
      * @return the description of the client.
      */
     public String getDescription()
     {
         return fDescription;
+    }
+
+    /**
+     * Sets the description of the UDP Client.
+     *
+     * @param description
+     */
+    public void setDescription(String description)
+    {
+        fDescription = description;
     }
 
     /**
@@ -268,6 +287,5 @@ public class ExtasysUDPClient
         }
         return result;
     }
-    
-    
+
 }

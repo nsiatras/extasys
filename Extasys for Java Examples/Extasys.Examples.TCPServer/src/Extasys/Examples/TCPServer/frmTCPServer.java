@@ -60,8 +60,8 @@ public class frmTCPServer extends javax.swing.JFrame
         jTextFieldTCPServerCorePoolSize = new javax.swing.JTextField();
         jTextFieldTCPServerPort = new javax.swing.JTextField();
         jTextFieldTCPServerMaxPoolSize = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jButtonStartServer = new javax.swing.JButton();
+        jButtonStopServer = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabelBytesIn = new javax.swing.JLabel();
@@ -112,24 +112,24 @@ public class frmTCPServer extends javax.swing.JFrame
         jTextFieldTCPServerMaxPoolSize.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jTextFieldTCPServerMaxPoolSize.setText("4");
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton1.setText("Start TCP Server");
-        jButton1.addActionListener(new java.awt.event.ActionListener()
+        jButtonStartServer.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jButtonStartServer.setText("Start TCP Server");
+        jButtonStartServer.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                jButton1ActionPerformed(evt);
+                jButtonStartServerActionPerformed(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jButton2.setText("Stop TCP Server");
-        jButton2.setEnabled(false);
-        jButton2.addActionListener(new java.awt.event.ActionListener()
+        jButtonStopServer.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jButtonStopServer.setText("Stop TCP Server");
+        jButtonStopServer.setEnabled(false);
+        jButtonStopServer.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                jButton2ActionPerformed(evt);
+                jButtonStopServerActionPerformed(evt);
             }
         });
 
@@ -179,9 +179,9 @@ public class frmTCPServer extends javax.swing.JFrame
                 .addGap(15, 15, 15))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addComponent(jButton1)
+                .addComponent(jButtonStartServer)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
+                .addComponent(jButtonStopServer)
                 .addGap(98, 98, 98))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(20, 20, 20)
@@ -227,8 +227,8 @@ public class frmTCPServer extends javax.swing.JFrame
                     .addComponent(jTextFieldTCPServerConnectionsTimeOut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1))
+                    .addComponent(jButtonStopServer)
+                    .addComponent(jButtonStartServer))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
@@ -247,7 +247,7 @@ public class frmTCPServer extends javax.swing.JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+private void jButtonStartServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStartServerActionPerformed
     try
     {
 
@@ -265,7 +265,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         fUpdateStatusActive = true;
         fTCPServer.Start();
 
-        // The following thread is to Update the UI every 1000ms (1 second)
+        // The following thread updates the UI every 1000ms (1 second)
         fUpdateStatusThread = new Thread(new Runnable()
         {
             @Override
@@ -306,16 +306,16 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
         fUpdateStatusThread.start();
 
-        jButton2.setEnabled(true);
-        jButton1.setEnabled(false);
+        jButtonStopServer.setEnabled(true);
+        jButtonStartServer.setEnabled(false);
     }
     catch (Exception ex)
     {
         System.err.println(ex.getMessage());
     }
-}//GEN-LAST:event_jButton1ActionPerformed
+}//GEN-LAST:event_jButtonStartServerActionPerformed
 
-private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+private void jButtonStopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStopServerActionPerformed
     try
     {
         if (fTCPServer != null)
@@ -334,9 +334,9 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     {
         System.err.println(ex.getMessage());
     }
-    jButton2.setEnabled(false);
-    jButton1.setEnabled(true);
-}//GEN-LAST:event_jButton2ActionPerformed
+    jButtonStopServer.setEnabled(false);
+    jButtonStartServer.setEnabled(true);
+}//GEN-LAST:event_jButtonStopServerActionPerformed
 
     public static void main(String args[])
     {
@@ -350,8 +350,8 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonStartServer;
+    private javax.swing.JButton jButtonStopServer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

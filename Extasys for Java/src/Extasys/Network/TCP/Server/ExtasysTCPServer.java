@@ -38,8 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class ExtasysTCPServer
 {
 
-    private final String fName;
-    private final String fDescription;
+    private String fName, fDescription;
     private final ArrayList<TCPListener> fListeners = new ArrayList<>();
     public final ExtasysThreadPool fMyThreadPool;
 
@@ -143,9 +142,9 @@ public class ExtasysTCPServer
     {
         for (int i = 0; i < fListeners.size(); i++)
         {
-            if (((TCPListener) fListeners.get(i)).getName().equals(name))
+            if (fListeners.get(i).getName().equals(name))
             {
-                ((TCPListener) fListeners.get(i)).Stop();
+                fListeners.get(i).Stop();
                 fListeners.remove(i);
                 break;
             }
@@ -163,9 +162,9 @@ public class ExtasysTCPServer
         try
         {
             //Start all listeners.
-            for (int i = 0; i < fListeners.size(); i++)
+            for (TCPListener listener : fListeners)
             {
-                ((TCPListener) fListeners.get(i)).Start();
+                listener.Start();
             }
         }
         catch (IOException ex)
@@ -303,15 +302,9 @@ public class ExtasysTCPServer
      */
     public void ReplyToAll(String data)
     {
-        for (int i = 0; i < fListeners.size(); i++)
+        for (TCPListener listener : fListeners)
         {
-            try
-            {
-                ((TCPListener) fListeners.get(i)).ReplyToAll(data);
-            }
-            catch (Exception ex)
-            {
-            }
+            listener.ReplyToAll(data);
         }
     }
 
@@ -329,7 +322,6 @@ public class ExtasysTCPServer
         {
             listener.ReplyToAll(bytes, offset, length);
         }
-
     }
 
     /**
@@ -374,6 +366,16 @@ public class ExtasysTCPServer
     }
 
     /**
+     * Set's the server's name
+     *
+     * @param name
+     */
+    public void setName(String name)
+    {
+        fName = name;
+    }
+
+    /**
      * Server's description.
      *
      * @return server's description.
@@ -381,6 +383,16 @@ public class ExtasysTCPServer
     public String getDescription()
     {
         return fDescription;
+    }
+
+    /**
+     * Set's the server's description
+     *
+     * @param description
+     */
+    public void setDescription(String description)
+    {
+        fDescription = description;
     }
 
     /**
