@@ -32,6 +32,8 @@ public class frmMain extends javax.swing.JFrame
     private Thread fUpdateStatusThread;
     private boolean fUpdateStatusActive = true;
 
+    private long fOldBytesIn = 0, fOldBytesOut = 0;
+
     public frmMain()
     {
         initComponents();
@@ -241,6 +243,7 @@ private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         fUpdateStatusThread = new Thread(new Runnable()
         {
 
+            @Override
             public void run()
             {
                 try
@@ -249,10 +252,16 @@ private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
                     {
                         if (fTCPClient != null)
                         {
-                            jLabelBytesIn.setText(String.valueOf(fTCPClient.getBytesIn()));
-                            jLabelBytesOut.setText(String.valueOf(fTCPClient.getBytesOut()));
+                            Long newBytesIn = fTCPClient.getBytesIn();
+                            Long newBytesOut = fTCPClient.getBytesOut();
+
+                            jLabelBytesIn.setText(String.valueOf(newBytesIn) + " (" + String.valueOf((newBytesIn - fOldBytesIn) / 1000) + "kb/sec)");
+                            jLabelBytesOut.setText(String.valueOf(newBytesOut) + " (" + String.valueOf((newBytesOut - fOldBytesOut) / 1000) + "kb/sec)");
+
+                            fOldBytesIn = newBytesIn;
+                            fOldBytesOut = newBytesOut;
                         }
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     }
                 }
                 catch (Exception ex)

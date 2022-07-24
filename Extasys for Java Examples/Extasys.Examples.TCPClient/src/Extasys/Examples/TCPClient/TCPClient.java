@@ -34,7 +34,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 {
 
     private boolean fKeepSendingMessages = false;
-    private final String fMessageToExchange = "Test Message";
+    private final String fMessageToExchange = "128CharMessage111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
     private final String fMessageSplitter = "#SPLITTER#";
 
     private final Charset fCharset = Charset.forName("UTF-8"); // This is the default character set to be used for all TCPConnectors
@@ -57,7 +57,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     {
         try
         {
-            final String dataReceivedFromServer = new String(data.getBytes(), fCharset);
+            //final String dataReceivedFromServer = new String(data.getBytes(), fCharset);
 
             // Every time I receive data from the server I send the
             // fMessageToExchange string back

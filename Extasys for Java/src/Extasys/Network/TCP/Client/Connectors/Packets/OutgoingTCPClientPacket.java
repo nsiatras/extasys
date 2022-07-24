@@ -32,7 +32,7 @@ import java.util.concurrent.RejectedExecutionException;
 public final class OutgoingTCPClientPacket implements Runnable
 {
 
-    public ManualResetEvent fDone = new ManualResetEvent(false);
+    public final ManualResetEvent fDone = new ManualResetEvent(false);
     private final TCPConnector fConnector;
     private final byte[] fBytes;
     private final int fOffset;

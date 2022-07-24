@@ -30,7 +30,7 @@ import java.util.concurrent.RejectedExecutionException;
 public final class MessageCollectorTCPClientPacket implements Runnable
 {
 
-    public ManualResetEvent fDone = new ManualResetEvent(false);
+    public final ManualResetEvent fDone = new ManualResetEvent(false);
     private final TCPConnector fConnector;
     private final byte[] fData;
     private MessageCollectorTCPClientPacket fPreviousPacket;

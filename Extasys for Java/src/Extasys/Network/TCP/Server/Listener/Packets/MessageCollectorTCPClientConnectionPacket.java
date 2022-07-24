@@ -48,7 +48,7 @@ public final class MessageCollectorTCPClientConnectionPacket implements Runnable
      * @param previousPacket is the previous message collector packet of the
      * TCPClientConnection.
      */
-    public MessageCollectorTCPClientConnectionPacket(TCPClientConnection client, byte[] data, MessageCollectorTCPClientConnectionPacket previousPacket)
+    public MessageCollectorTCPClientConnectionPacket(final TCPClientConnection client, final byte[] data, final MessageCollectorTCPClientConnectionPacket previousPacket)
     {
         fClient = client;
         fData = data;

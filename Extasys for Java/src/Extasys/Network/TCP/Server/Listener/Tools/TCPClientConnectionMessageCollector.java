@@ -30,7 +30,7 @@ import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 public class TCPClientConnectionMessageCollector
 {
 
-    private TCPClientConnection fMyClient;
+    private final TCPClientConnection fMyClient;
     private final byte[] fETXStr;
     private final ByteArrayBuilder fIncomingDataBuffer;
     private int fIndexOfETX;
@@ -52,7 +52,7 @@ public class TCPClientConnectionMessageCollector
         fIncomingDataBuffer = new ByteArrayBuilder();
     }
 
-    public void AppendData(byte[] bytes)
+    public void AppendData(final byte[] bytes)
     {
         try
         {
@@ -60,7 +60,7 @@ public class TCPClientConnectionMessageCollector
             fIndexOfETX = fIncomingDataBuffer.IndexOf(fETXStr);
             while (fIndexOfETX > -1)
             {
-                fMyClient.getMyTCPListener().getMyExtasysTCPServer().OnDataReceive(fMyClient, new DataFrame(fIncomingDataBuffer.SubList(0, fIndexOfETX)));
+                fMyClient.fMyExtasysServer.OnDataReceive(fMyClient, new DataFrame(fIncomingDataBuffer.SubList(0, fIndexOfETX)));
                 fIncomingDataBuffer.Delete(0, fIndexOfETX + fETXLength);
                 fIndexOfETX = fIncomingDataBuffer.IndexOf(fETXStr);
             }
@@ -75,7 +75,7 @@ public class TCPClientConnectionMessageCollector
     {
         try
         {
-            fMyClient = null;
+
         }
         catch (Exception ex)
         {

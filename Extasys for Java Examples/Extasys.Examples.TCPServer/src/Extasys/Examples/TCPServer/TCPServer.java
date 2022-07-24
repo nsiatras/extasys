@@ -58,7 +58,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
         try
         {
             // I received data from a client
-            String incomingDataStr = new String(data.getBytes(), fCharset);
+            final String incomingDataStr = new String(data.getBytes(), fCharset);
             //System.out.println("Data received: " + incomingDataStr);
 
             // Send the incoming data back to the client

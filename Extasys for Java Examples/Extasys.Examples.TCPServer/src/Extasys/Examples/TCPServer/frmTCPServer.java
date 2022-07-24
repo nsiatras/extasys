@@ -282,8 +282,8 @@ private void jButtonStartServerActionPerformed(java.awt.event.ActionEvent evt) {
                                 Long newBytesIn = fTCPServer.getBytesIn();
                                 Long newBytesOut = fTCPServer.getBytesOut();
 
-                                jLabelBytesIn.setText(String.valueOf(newBytesIn) + " (" + String.valueOf(newBytesIn - fOldBytesIn) + "/sec)");
-                                jLabelBytesOut.setText(String.valueOf(newBytesOut) + " (" + String.valueOf(newBytesOut - fOldBytesOut) + "/sec)");
+                                jLabelBytesIn.setText(String.valueOf(newBytesIn) + " (" + String.valueOf((newBytesIn - fOldBytesIn)/1000) + "kb/sec)");
+                                jLabelBytesOut.setText(String.valueOf(newBytesOut) + " (" + String.valueOf((newBytesOut - fOldBytesOut)/1000) + "kb/sec)");
                                 jLabelClientsConnected.setText(String.valueOf(fTCPServer.getCurrentConnectionsNumber()));
 
                                 fOldBytesIn = newBytesIn;

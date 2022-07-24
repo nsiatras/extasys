@@ -57,11 +57,10 @@ public class ByteArrayBuilder
     {
         synchronized (fLock)
         {
-            int i = 0;
             int subArrayLength = subArray.length;
 
             // Find subArray in fBytes
-            for (i = 0; i < fBytes.length; i++)
+            for (int i = 0; i < fBytes.length; i++)
             {
                 byte[] arrayToCompare = Arrays.copyOfRange(fBytes, i, i + subArrayLength);
 

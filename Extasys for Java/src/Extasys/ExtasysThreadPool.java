@@ -32,7 +32,7 @@ public class ExtasysThreadPool extends ThreadPoolExecutor
 
     public ExtasysThreadPool(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit)
     {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ArrayBlockingQueue(500000, true));
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ArrayBlockingQueue(250000, true));
         this.prestartAllCoreThreads();
     }
 

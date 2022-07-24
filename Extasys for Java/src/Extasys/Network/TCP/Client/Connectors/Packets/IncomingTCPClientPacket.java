@@ -31,7 +31,7 @@ import java.util.concurrent.RejectedExecutionException;
 public final class IncomingTCPClientPacket implements Runnable
 {
 
-    public ManualResetEvent fDone = new ManualResetEvent(false);
+    public final ManualResetEvent fDone = new ManualResetEvent(false);
     private final TCPConnector fConnector;
     private final DataFrame fData;
     private IncomingTCPClientPacket fPreviousPacket;
@@ -130,9 +130,9 @@ public final class IncomingTCPClientPacket implements Runnable
     }
 
     /**
-     * Returns the previous incoming packet received by the client. If the packet
-     * is null means that the packet has been received and parsed from the
-     * client.
+     * Returns the previous incoming packet received by the client. If the
+     * packet is null means that the packet has been received and parsed from
+     * the client.
      *
      * @return the previous incoming packet received by the client.
      */

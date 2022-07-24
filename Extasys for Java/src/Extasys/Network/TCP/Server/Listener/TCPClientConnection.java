@@ -42,6 +42,7 @@ import java.util.Date;
  */
 public final class TCPClientConnection
 {
+
     // Connection properties
     protected Socket fConnection;
     protected boolean fActive = false;
@@ -135,9 +136,9 @@ public final class TCPClientConnection
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException
      */
-    public void SendData(String data) throws ClientIsDisconnectedException, OutgoingPacketFailedException
+    public void SendData(final String data) throws ClientIsDisconnectedException, OutgoingPacketFailedException
     {
-        byte[] bytes = data.getBytes(fMyListener.getCharset());
+        final byte[] bytes = data.getBytes(fMyListener.getCharset());
         SendData(bytes, 0, bytes.length);
     }
 
@@ -171,9 +172,9 @@ public final class TCPClientConnection
      * @param data is the string to send.
      * @throws ClientIsDisconnectedException
      */
-    public void SendDataSynchronous(String data) throws ClientIsDisconnectedException
+    public void SendDataSynchronous(final String data) throws ClientIsDisconnectedException
     {
-        byte[] bytes = data.getBytes(fMyListener.getCharset());
+        final byte[] bytes = data.getBytes(fMyListener.getCharset());
         SendDataSynchronous(bytes, 0, bytes.length);
     }
 
