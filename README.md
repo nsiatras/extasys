@@ -1,13 +1,11 @@
 Extasys - Asynchronous TCP/UDP socket library
 =======
 
-Extasys is a high performance, **asynchronous TCP/UDP socket library** originally made with Java. 
-
-Its **multi-threaded and lightweight** nature makes it ideal for super fast data transfer even on systems with ARM architecture like smartphones and single-board computers (Raspberry Pi, Orange Pi etc.).
+Extasys is a high performance, **asynchronous TCP/UDP socket library** originally made with Java. Its **multi-threaded and lightweight** nature makes it ideal for super fast data transfer even on systems with ARM architecture like smartphones and single-board computers (Raspberry Pi, Orange Pi etc.).
 
 If you are using sockets then Extasys is the proper tool for your work. It's been designed to take the hard job done and let you think only about the message exchange (the process).
 
-Developed with <a href="https://netbeans.apache.org/"><b>NetBeans IDE</b><a>
+Extasys project is Developed with <a href="https://netbeans.apache.org/"><b>NetBeans IDE</b><a>
 
 #### Goals
 * Provide fast and accurate TCP and UDP data transfer
