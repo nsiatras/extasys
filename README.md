@@ -5,6 +5,23 @@ Extasys is a high performance, **asynchronous TCP/UDP socket library** originall
 
 If you are using sockets then Extasys is the proper tool for your work. It's been designed to take the hard job done and let you think only about the message exchange (the process).
 
+
+```mermaid
+flowchart  TD;
+
+Client1(Client #1) ---|Data I/O|ExtasysListener(Extasys Listener);
+Client2(Client #2) ---|Data I/O|ExtasysListener(Extasys Listener);
+Client3(Client #3) ---|Data I/O|ExtasysListener(Extasys Listener);
+Client...(Client ...) ---|Data I/O|ExtasysListener(Extasys Listener);
+
+ExtasysListener ---|Asynchronous Data Processing| ThreadPool;
+ThreadPool ---|Asynchronous Data Processing| ExtasysListener;
+
+
+
+
+```
+
 #### Features
 * Dedicated Thread Pool for each TCPServer, TCPClient, UDPServer and UDPClient
 * Multiple listeners per server and multiple connectors per Client
