@@ -14,8 +14,8 @@ Client2(Client #2) ---|Data I/O|ExtasysListener(Extasys Listener);
 Client3(Client #3) ---|Data I/O|ExtasysListener(Extasys Listener);
 Client...(Client ...) ---|Data I/O|ExtasysListener(Extasys Listener);
 
-ExtasysListener ---|Asynchronous Data Processing| ThreadPool;
-ThreadPool ---|Asynchronous Data Processing| ExtasysListener;
+ExtasysListener --> ThreadPool(ThreadPool: Non-Blocking Multithreaded Data Processing);
+ThreadPool --> ExtasysListener;
 
 
 
