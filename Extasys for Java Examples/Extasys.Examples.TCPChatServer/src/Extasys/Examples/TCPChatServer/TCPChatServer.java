@@ -35,7 +35,7 @@ import java.util.Hashtable;
 public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 {
 
-    private Hashtable fConnectedClients;
+    private final Hashtable fConnectedClients;
     private String fSPT = String.valueOf(((char) 2)); // Message splitter character.
     private String fMCChar = String.valueOf(((char) 3)); // Message collector character.
     private Thread fPingThread;
