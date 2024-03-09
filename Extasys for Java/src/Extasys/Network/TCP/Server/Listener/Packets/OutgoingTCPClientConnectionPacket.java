@@ -43,17 +43,14 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
      * job for the thread pool workers.
      *
      * @param client is the client where this message belongs to.
-     * @param bytes is the byte array to be sent.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
+     * @param bytes
      * @param previousPacket is the previous outgoing packet of the client.
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException
      */
     public OutgoingTCPClientConnectionPacket(TCPClientConnection client, byte[] bytes, NetworkPacket previousPacket) throws OutgoingPacketFailedException
     {
-        super(new DataFrame(bytes), previousPacket);
+        super(bytes, previousPacket);
         fClient = client;
 
         SendToThreadPool();
@@ -84,10 +81,10 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
             {
                 try
                 {
-                    fClient.fOutput.write(super.fDataFrame.getBytes());
+                    fClient.fOutput.write(super.fPacketsData);
                     fClient.fOutput.flush();
-                    fClient.fBytesOut += super.fDataFrame.getLength();
-                    fClient.fMyListener.fBytesOut += super.fDataFrame.getLength();
+                    fClient.fBytesOut += super.fPacketsData.length;
+                    fClient.fMyListener.fBytesOut += super.fPacketsData.length;
                 }
                 catch (IOException ioException)
                 {

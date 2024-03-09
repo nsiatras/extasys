@@ -465,7 +465,7 @@ class ClientDataReader implements Runnable
                     // PACKET WITHOUT MESSAGE COLLECTOR
                     synchronized (fClientConnection.fReceiveDataLock)
                     {
-                        fClientConnection.fLastIncomingPacket = new IncomingTCPClientConnectionPacket(fClientConnection, new DataFrame(fReadBuffer, 0, bytesRead), fClientConnection.fLastIncomingPacket);
+                        fClientConnection.fLastIncomingPacket = new IncomingTCPClientConnectionPacket(fClientConnection, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fClientConnection.fLastIncomingPacket);
                     }
                 }
                 else

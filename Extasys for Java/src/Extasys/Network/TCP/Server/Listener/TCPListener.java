@@ -19,6 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener;
 
+import Extasys.Encryption.ConnectionEncryptor;
+import Extasys.Encryption.NullEncryptor;
 import Extasys.MessageCollector.MessageETX;
 import Extasys.Network.TCP.Server.ExtasysTCPServer;
 import java.io.IOException;
@@ -55,6 +57,8 @@ public class TCPListener
     // Message collector.
     private boolean fUseMessageCollector = false;
     private MessageETX fMessageETX = null;
+    // Connection Encryption
+    private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
 
     /**
      * Constructs a new TCP listener.
@@ -553,6 +557,26 @@ public class TCPListener
     public MessageETX getMessageETX()
     {
         return fMessageETX;
+    }
+
+    /**
+     * Returns the connection encryptor
+     *
+     * @return
+     */
+    public ConnectionEncryptor getConnectionEncyptor()
+    {
+        return fConnectionEncryptor;
+    }
+
+    /**
+     * Sets the connection encryptor of this TCPListener
+     *
+     * @param encryptor
+     */
+    public void setConnectionEncryptor(ConnectionEncryptor encryptor)
+    {
+        fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
     }
 
 }

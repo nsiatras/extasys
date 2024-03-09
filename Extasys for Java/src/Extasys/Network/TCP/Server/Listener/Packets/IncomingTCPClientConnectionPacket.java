@@ -40,10 +40,10 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
      * workers.
      *
      * @param client is the client where this message belongs to.
-     * @param data is a DataFrame class.
+     * @param data
      * @param previousPacket is the previous incoming message of the client.
      */
-    public IncomingTCPClientConnectionPacket(TCPClientConnection client, DataFrame data, NetworkPacket previousPacket)
+    public IncomingTCPClientConnectionPacket(TCPClientConnection client, byte[] data, NetworkPacket previousPacket)
     {
         super(data, previousPacket);
         fClient = client;
@@ -75,7 +75,7 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
             // Call on data receive
             if (!fCancel)
             {
-                fClient.fMyExtasysServer.OnDataReceive(fClient, super.fDataFrame);
+                fClient.fMyExtasysServer.OnDataReceive(fClient, new DataFrame(super.fPacketsData));
             }
 
         }

@@ -27,7 +27,7 @@ import java.util.Base64.Encoder;
  *
  * @author Nikos Siatras
  */
-public class Base64Encryptor extends ConnectionEncyptor
+public class Base64Encryptor extends ConnectionEncryptor
 {
 
     private final Encoder fEncoder;

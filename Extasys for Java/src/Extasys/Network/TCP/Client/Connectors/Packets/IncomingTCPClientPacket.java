@@ -41,11 +41,11 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
      * workers.
      *
      * @param connector is the TCP Connector where this message belongs to.
-     * @param data is a DataFrame class.
+     * @param data 
      * @param previousPacket is the previous incoming message of the TCP
      * Connector.
      */
-    public IncomingTCPClientPacket(TCPConnector connector, DataFrame data, NetworkPacket previousPacket)
+    public IncomingTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket)
     {
         super(data, previousPacket);
         fConnector = connector;
@@ -77,7 +77,7 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
             // Call OnDataReceive
             if (!fCancel)
             {
-                fConnector.fMyTCPClient.OnDataReceive(fConnector, super.fDataFrame);
+                fConnector.fMyTCPClient.OnDataReceive(fConnector, new DataFrame(super.fPacketsData));
             }
 
         }

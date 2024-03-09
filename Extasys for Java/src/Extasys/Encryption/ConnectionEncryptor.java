@@ -23,7 +23,7 @@ package Extasys.Encryption;
  *
  * @author Nikos Siatras
  */
-public abstract class ConnectionEncyptor
+public abstract class ConnectionEncryptor
 {
 
     public abstract byte[] Encrypt(byte[] bytes);

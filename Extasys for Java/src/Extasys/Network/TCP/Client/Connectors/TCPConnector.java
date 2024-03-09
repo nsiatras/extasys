@@ -20,6 +20,8 @@
 package Extasys.Network.TCP.Client.Connectors;
 
 import Extasys.DataFrame;
+import Extasys.Encryption.ConnectionEncryptor;
+import Extasys.Encryption.NullEncryptor;
 import Extasys.MessageCollector.MessageETX;
 import Extasys.Network.NetworkPacket;
 import Extasys.Network.TCP.Client.Connectors.Packets.IncomingTCPClientPacket;
@@ -65,6 +67,8 @@ public class TCPConnector
     // Messages IO.
     protected NetworkPacket fLastIncomingPacket = null;
     protected NetworkPacket fLastOutgoingPacket = null;
+    // Connection Encryption
+    private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
 
     /**
      * Constructs a new TCP Connector.
@@ -420,6 +424,26 @@ public class TCPConnector
         return fIsConnected;
     }
 
+    /**
+     * Returns the connection encryptor
+     *
+     * @return
+     */
+    public ConnectionEncryptor getConnectionEncyptor()
+    {
+        return fConnectionEncryptor;
+    }
+
+    /**
+     * Sets the connection encryptor of this TCPConnector
+     *
+     * @param encryptor
+     */
+    public void setConnectionEncryptor(ConnectionEncryptor encryptor)
+    {
+        fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
+    }
+
 }
 
 /**
@@ -538,7 +562,7 @@ class ReadIncomingDataThread extends Thread
                     {
                         synchronized (fMyTCPConnector.fReceiveDataLock)
                         {
-                            fMyTCPConnector.fLastIncomingPacket = new IncomingTCPClientPacket(fMyTCPConnector, new DataFrame(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastIncomingPacket);
+                            fMyTCPConnector.fLastIncomingPacket = new IncomingTCPClientPacket(fMyTCPConnector, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastIncomingPacket);
                         }
                     }
                     catch (Exception ex)

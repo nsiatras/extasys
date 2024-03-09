@@ -23,7 +23,7 @@ package Extasys.Encryption;
  *
  * @author Nikos Siatras
  */
-public class NullEncryptor extends ConnectionEncyptor
+public class NullEncryptor extends ConnectionEncryptor
 {
 
     @Override

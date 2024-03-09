@@ -48,7 +48,7 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
      */
     public MessageCollectorTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket)
     {
-        super(new DataFrame(data), previousPacket);
+        super(data, previousPacket);
         fConnector = connector;
 
         SendToThreadPool();
@@ -78,7 +78,7 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
             // Call append data
             if (!fCancel)
             {
-                fConnector.fMessageCollector.AppendData(super.fDataFrame.getBytes());
+                fConnector.fMessageCollector.AppendData(super.fPacketsData);
             }
         }
         catch (Exception ex)

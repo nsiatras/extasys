@@ -44,9 +44,7 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
      *
      * @param connector is the TCPConnector where this message belongs to.
      * @param bytes is the byte array to be sent.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
+     *
      * @param previousPacket is the previous outgoing packet of the
      * TCPConnector.
      * @throws
@@ -54,7 +52,7 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
      */
     public OutgoingTCPClientPacket(TCPConnector connector, byte[] bytes, NetworkPacket previousPacket) throws ConnectorCannotSendPacketException
     {
-        super(new DataFrame(bytes), previousPacket);
+        super(bytes, previousPacket);
         fConnector = connector;
 
         SendToThreadPool();
@@ -85,9 +83,9 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
             {
                 try
                 {
-                    fConnector.fOutput.write(super.fDataFrame.getBytes());
-                    fConnector.fBytesOut += super.fDataFrame.getLength();
-                    fConnector.fMyTCPClient.fTotalBytesOut += super.fDataFrame.getLength();
+                    fConnector.fOutput.write(super.fPacketsData);
+                    fConnector.fBytesOut += super.fPacketsData.length;
+                    fConnector.fMyTCPClient.fTotalBytesOut += super.fPacketsData.length;
                 }
                 catch (IOException ioException)
                 {

@@ -41,13 +41,13 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
      * workers.
      *
      * @param client is the packets TCPClientConnection.
-     * @param data is the string received.
+     * @param data 
      * @param previousPacket is the previous message collector packet of the
      * TCPClientConnection.
      */
     public MessageCollectorTCPClientConnectionPacket(final TCPClientConnection client, final byte[] data, final NetworkPacket previousPacket)
     {
-        super(new DataFrame(data), previousPacket);
+        super(data, previousPacket);
         fClient = client;
 
         SendToThreadPool();
@@ -77,7 +77,7 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
             // Append Data to Message Collector
             if (!fCancel)
             {
-                fClient.fMyMessageCollector.AppendData(super.fDataFrame.getBytes());
+                fClient.fMyMessageCollector.AppendData(super.fPacketsData);
             }
 
         }
