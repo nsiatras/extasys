@@ -45,7 +45,7 @@ public class UDPClient extends Extasys.Network.UDP.Client.ExtasysUDPClient
     @Override
     public void OnDataReceive(UDPConnector connector, DatagramPacket packet)
     {
-        //System.out.println("Data received: " + new String(packet.getData()));
+        System.out.println("Data received: " + new String(packet.getData()));
     }
 
     public void StartSendingMessages()
@@ -86,7 +86,7 @@ class AutoSendMessages extends Thread
             {
                 messageCount++;
                 String msgToSend = String.valueOf(messageCount);
-                fMyClient.SendData(msgToSend.getBytes(), 0, msgToSend.getBytes().length);
+                fMyClient.SendData(msgToSend.getBytes());
                 Thread.sleep(300);
             }
             catch (Exception ex)

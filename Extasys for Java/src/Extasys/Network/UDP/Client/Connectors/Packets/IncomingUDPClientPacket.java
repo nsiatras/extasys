@@ -20,55 +20,39 @@ THE SOFTWARE.*/
 package Extasys.Network.UDP.Client.Connectors.Packets;
 
 import Extasys.Network.UDP.Client.Connectors.UDPConnector;
-import Extasys.ManualResetEvent;
+import Extasys.Network.NetworkPacket;
 import java.net.DatagramPacket;
+import java.util.Arrays;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class IncomingUDPClientPacket implements Runnable
+public class IncomingUDPClientPacket extends NetworkPacket implements Runnable
 {
 
-    public ManualResetEvent fDone = new ManualResetEvent(false);
     private final UDPConnector fConnector;
-    private final DatagramPacket fData;
-    private IncomingUDPClientPacket fPreviousPacket;
-    public boolean fCancel = false;
+    private final DatagramPacket fDataGram;
 
     /**
      * Constructs a new incoming packet received by a UDP connector.
-     * 
-     * Use this class to receive data from a server.
-     * This is an incoming message that will remain in the clients thread pool 
-     * as a job for the thread pool workers.
-     * 
+     *
+     * Use this class to receive data from a server. This is an incoming message
+     * that will remain in the clients thread pool as a job for the thread pool
+     * workers.
+     *
      * @param UDPConnector is the UDP Connector where this message belongs to.
      * @param data is a DatagramPacket.
-     * @param previousPacket is the previous incoming message of the UDP Connector.
+     * @param previousPacket is the previous incoming message of the UDP
+     * Connector.
      */
-    public IncomingUDPClientPacket(UDPConnector connector, DatagramPacket data, IncomingUDPClientPacket previousPacket)
+    public IncomingUDPClientPacket(UDPConnector connector, DatagramPacket data, NetworkPacket previousPacket)
     {
+        super(new byte[0], previousPacket);
         fConnector = connector;
-        fData = data;
-        fPreviousPacket = previousPacket;
+        fDataGram = data;
 
         connector.getMyExtasysUDPClient().getMyThreadPool().execute(this);
-    }
-
-    /**
-     * Cancel this incoming packet.
-     * 
-     * By calling this method this and all the previous incoming packets that 
-     * are stored in the thread pool will be canceled.
-     * Call this method for the last incoming packet of the UDP Connector
-     * when the UDP Connector stops.
-     * 
-     */
-    public void Cancel()
-    {
-        fCancel = true;
-        fDone.Set();
     }
 
     @Override
@@ -76,30 +60,22 @@ public class IncomingUDPClientPacket implements Runnable
     {
         try
         {
-            if (fPreviousPacket == null)
+            // Wait for previous Packet to be processed
+            // by the thread pool.
+            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+
+            // Call OnDataReceive
+            if (!fCancel)
             {
-                fConnector.getMyExtasysUDPClient().OnDataReceive(fConnector, fData);
-            }
-            else
-            {
-                fPreviousPacket.fDone.WaitOne();
-                if (!fCancel && !fPreviousPacket.fCancel)
-                {
-                    fConnector.getMyExtasysUDPClient().OnDataReceive(fConnector, fData);
-                }
-                else
-                {
-                    fCancel = true;
-                }
+                // Trim the incoming packet
+                byte[] cleanData = Arrays.copyOfRange(fDataGram.getData(), 0, fDataGram.getLength());
+                fDataGram.setData(cleanData, 0, cleanData.length);
+
+                fConnector.getMyExtasysUDPClient().OnDataReceive(fConnector, fDataGram);
             }
         }
         catch (Exception ex)
         {
-        }
-
-        if (fPreviousPacket != null)
-        {
-            fPreviousPacket = null;
         }
 
         fDone.Set();
@@ -107,22 +83,12 @@ public class IncomingUDPClientPacket implements Runnable
 
     /**
      * Returns the DatagramPacket of this incoming UDP packet.
-     * 
+     *
      * @return the DatagramPacket of this incoming UDP packet.
      */
     public DatagramPacket getData()
     {
-        return fData;
+        return fDataGram;
     }
 
-    /**
-     * Returns the previus incoming packet received by the client.
-     * If the packet is null means that the packet has been received and parsed from the client.
-     * 
-     * @return the previus incoming packet received by the client.
-     */
-    public IncomingUDPClientPacket getPreviusPacket()
-    {
-        return fPreviousPacket;
-    }
 }

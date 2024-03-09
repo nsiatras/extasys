@@ -80,7 +80,6 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
             {
                 fConnector.fMyTCPClient.OnDataReceive(fConnector, new DataFrame(super.fPacketsData));
             }
-
         }
         catch (Exception ex)
         {

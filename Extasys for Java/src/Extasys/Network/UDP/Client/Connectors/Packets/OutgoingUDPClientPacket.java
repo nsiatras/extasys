@@ -20,51 +20,38 @@ THE SOFTWARE.*/
 package Extasys.Network.UDP.Client.Connectors.Packets;
 
 import Extasys.Network.UDP.Client.Connectors.UDPConnector;
-import Extasys.ManualResetEvent;
+import Extasys.Network.NetworkPacket;
+import java.io.IOException;
 import java.net.DatagramPacket;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class OutgoingUDPClientPacket implements Runnable
+public class OutgoingUDPClientPacket extends NetworkPacket implements Runnable
 {
 
-    public ManualResetEvent fDone = new ManualResetEvent(false);
-    private UDPConnector fConnector;
-    private DatagramPacket fData;
-    private OutgoingUDPClientPacket fPreviousPacket;
-    public boolean fCancel = false;
+    private final UDPConnector fConnector;
+    private final DatagramPacket fDataGram;
 
     /**
-     * Constructs a new outgoing packet for an existing UDP Connector.
-     * Use this class to send data from the UDP Connector to a server.
-     * This is an outgoing message that will remain in the clients thread pool 
-     * as a job for the thread pool workers.
+     * Constructs a new outgoing packet for an existing UDP Connector. Use this
+     * class to send data from the UDP Connector to a server. This is an
+     * outgoing message that will remain in the clients thread pool as a job for
+     * the thread pool workers.
+     *
      * @param connector is the UDPConnector where this message belongs to.
      * @param data is the outgoing DatagramPacket.
-     * @param previousPacket is the previous outgoing packet of the UDPConnector.
+     * @param previousPacket is the previous outgoing packet of the
+     * UDPConnector.
      */
-    public OutgoingUDPClientPacket(UDPConnector connector, DatagramPacket data, OutgoingUDPClientPacket previousPacket)
+    public OutgoingUDPClientPacket(UDPConnector connector, DatagramPacket data, NetworkPacket previousPacket)
     {
+        super(new byte[0], previousPacket);
         fConnector = connector;
-        fData = data;
-        fPreviousPacket = previousPacket;
+        fDataGram = data;
 
         connector.getMyExtasysUDPClient().getMyThreadPool().execute(this);
-    }
-
-    /**
-     * Cancel this outgoing packet.
-     * By calling this method this and all the previous outgoing packets that 
-     * are stored in the thread pool will be canceled.
-     * Call this method for the last outgoing packet of the UDPConnector
-     * when the UDPConnector disconnects.
-     */
-    public void Cancel()
-    {
-        fCancel = true;
-        fDone.Set();
     }
 
     @Override
@@ -72,55 +59,21 @@ public class OutgoingUDPClientPacket implements Runnable
     {
         try
         {
-            if (fPreviousPacket == null)
+            // Wait for previous Packet to be processed
+            // by the thread pool.
+            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+            
+            if (!fCancel)
             {
-                fConnector.fSocket.send(fData);
-                fConnector.fBytesOut += fData.getLength();
-            }
-            else
-            {
-                fPreviousPacket.fDone.WaitOne();
-                if (!fCancel && !fPreviousPacket.fCancel)
-                {
-                    fConnector.fSocket.send(fData);
-                    fConnector.fBytesOut += fData.getLength();
-                }
-                else
-                {
-                    fCancel = true;
-                }
+                fConnector.fSocket.send(fDataGram);
+                fConnector.fBytesOut += fDataGram.getLength();
             }
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
-        }
-
-        if (fPreviousPacket != null)
-        {
-            fPreviousPacket = null;
         }
 
         fDone.Set();
     }
 
-    /**
-     * Returns the DatagramPacket of this outgoing UDP packet.
-     * @return the DatagramPacket of this outgoing UDP packet.
-     */
-    public DatagramPacket getData()
-    {
-        return fData;
-    }
-
-    /**
-     * Returns the previus outgoing packet of the client.
-     * If the packet is null means that the packet has been send to server.
-     * @return the previus outgoing packet of the client.
-     */
-    public OutgoingUDPClientPacket getPreviusPacket()
-    {
-        return fPreviousPacket;
-    }
 }
-
-

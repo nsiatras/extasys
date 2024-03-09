@@ -20,33 +20,27 @@
 package Extasys.Network.UDP.Server.Listener.Packets;
 
 import Extasys.Network.UDP.Server.Listener.UDPListener;
-import Extasys.ManualResetEvent;
+
+import Extasys.Network.NetworkPacket;
 import java.net.DatagramPacket;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class OutgoingUDPServerPacket implements Runnable
+public class OutgoingUDPServerPacket extends NetworkPacket implements Runnable
 {
 
-    private ManualResetEvent fDone = new ManualResetEvent(false);
-    private boolean fCancel = false;
-    private UDPListener fMyListener;
-    private DatagramPacket fData;
-    private OutgoingUDPServerPacket fPreviousPacket;
+    private final UDPListener fMyListener;
+    private final DatagramPacket fDataGram;
 
-    public OutgoingUDPServerPacket(UDPListener listener, DatagramPacket packet, OutgoingUDPServerPacket previousPacket)
+    public OutgoingUDPServerPacket(UDPListener listener, DatagramPacket packet, NetworkPacket previousPacket)
     {
+        super(new byte[0], previousPacket);
         fMyListener = listener;
-        fData = packet;
-        listener.getMyExtasysUDPServer().fMyThreadPool.execute(this);
-    }
+        fDataGram = packet;
 
-    public void Cancel()
-    {
-        fCancel = true;
-        fDone.Set();
+        listener.getMyExtasysUDPServer().fMyThreadPool.execute(this);
     }
 
     @Override
@@ -54,55 +48,22 @@ public class OutgoingUDPServerPacket implements Runnable
     {
         try
         {
-            if (fPreviousPacket == null)
+            // Wait for previous Packet to be processed
+            // by the thread pool.
+            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+
+            if (!fCancel)
             {
-                fMyListener.fSocket.send(fData);
-                fMyListener.fBytesOut += fData.getLength();
+                fMyListener.fSocket.send(fDataGram);
+                fMyListener.fBytesOut += fDataGram.getLength();
             }
-            else
-            {
-                fPreviousPacket.fDone.WaitOne();
-                if (!fCancel && !fPreviousPacket.fCancel)
-                {
-                    fMyListener.fSocket.send(fData);
-                    fMyListener.fBytesOut += fData.getLength();
-                }
-                else
-                {
-                    fCancel = true;
-                }
-            }
+
         }
         catch (Exception ex)
         {
         }
 
-        if (fPreviousPacket != null)
-        {
-            fPreviousPacket = null;
-        }
-
         fDone.Set();
     }
 
-    /**
-     * Returns the DatagramPacket of this outgoing UDP packet.
-     *
-     * @return the DatagramPacket of this outgoing UDP packet.
-     */
-    public DatagramPacket getData()
-    {
-        return fData;
-    }
-
-    /**
-     * Returns the previus outgoing packet of the server. If the packet is null
-     * means that the packet has been send.
-     *
-     * @return the previus outgoing packet of the server.
-     */
-    public OutgoingUDPServerPacket getPreviusPacket()
-    {
-        return fPreviousPacket;
-    }
 }

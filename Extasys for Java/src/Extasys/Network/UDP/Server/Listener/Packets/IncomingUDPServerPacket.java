@@ -20,53 +20,39 @@ THE SOFTWARE.*/
 package Extasys.Network.UDP.Server.Listener.Packets;
 
 import Extasys.Network.UDP.Server.Listener.UDPListener;
-import Extasys.ManualResetEvent;
+
+import Extasys.Network.NetworkPacket;
 import java.net.DatagramPacket;
+import java.util.Arrays;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class IncomingUDPServerPacket implements Runnable
+public class IncomingUDPServerPacket extends NetworkPacket implements Runnable
 {
 
-    private final ManualResetEvent fDone = new ManualResetEvent(false);
-    private boolean fCancel = false;
     private final UDPListener fMyListener;
-    private final DatagramPacket fData;
-    private IncomingUDPServerPacket fPreviousPacket;
+    private final DatagramPacket fDataGram;
 
     /**
      * Constructs a new incoming UDP packet.
-     * 
-     * Use this class to receive data from a client.
-     * This is an incoming message that will remain in the servers thread pool 
-     * as a job for the thread pool workers.
-     * 
+     *
+     * Use this class to receive data from a client. This is an incoming message
+     * that will remain in the servers thread pool as a job for the thread pool
+     * workers.
+     *
      * @param listener is the listener caught the message.
      * @param packet is a Datagram packet.
      * @param previousPacket is the previous incoming message of the listener.
      */
-    public IncomingUDPServerPacket(UDPListener listener, DatagramPacket packet, IncomingUDPServerPacket previousPacket)
+    public IncomingUDPServerPacket(UDPListener listener, DatagramPacket packet, NetworkPacket previousPacket)
     {
+        super(new byte[0], previousPacket);
         fMyListener = listener;
-        fData = packet;
-        listener.getMyExtasysUDPServer().fMyThreadPool.execute(this);
-    }
+        fDataGram = packet;
 
-    /**
-     * Cancel this incoming packet.
-     * 
-     * By calling this method this and all the previous incoming packets that 
-     * are stored in the thread pool will be canceled.
-     * Call this method for the last incoming packet of the server
-     * when the server stops.
-     * 
-     */
-    public void Cancel()
-    {
-        fCancel = true;
-        fDone.Set();
+        listener.getMyExtasysUDPServer().fMyThreadPool.execute(this);
     }
 
     @Override
@@ -74,55 +60,26 @@ public class IncomingUDPServerPacket implements Runnable
     {
         try
         {
-            if (fPreviousPacket == null)
-            {
-                fMyListener.getMyExtasysUDPServer().OnDataReceive(fMyListener, fData);
-            }
-            else
-            {
-                fPreviousPacket.fDone.WaitOne();
-                if (!fCancel && !fPreviousPacket.fCancel)
-                {
-                    fMyListener.getMyExtasysUDPServer().OnDataReceive(fMyListener, fData);
-                }
-                else
-                {
-                    System.out.println("IncomingUDPServerPacket canceled!");
-                    fCancel = true;
-                }
 
+            // Wait for previous Packet to be processed
+            // by the thread pool.
+            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+
+            // Call OnDataReceive
+            if (!fCancel)
+            {
+                // Trim the incoming packet
+                byte[] cleanData = Arrays.copyOfRange(fDataGram.getData(), 0, fDataGram.getLength());
+                fDataGram.setData(cleanData, 0, cleanData.length);
+
+                fMyListener.getMyExtasysUDPServer().OnDataReceive(fMyListener, fDataGram);
             }
         }
         catch (Exception ex)
         {
         }
 
-        if (fPreviousPacket != null)
-        {
-            fPreviousPacket = null;
-        }
-
         fDone.Set();
     }
 
-    /**
-     * Returns the DatagramPacket of this incoming UDP packet.
-     * 
-     * @return the DatagramPacket of this incoming UDP packet.
-     */
-    public DatagramPacket getData()
-    {
-        return fData;
-    }
-
-    /**
-     * Returns the previus incoming packet received by the server.
-     * If the packet is null means that the packet has been received and parsed from the server.
-     * 
-     * @return the previus incoming packet received by the server.
-     */
-    public IncomingUDPServerPacket getPreviusPacket()
-    {
-        return fPreviousPacket;
-    }
 }

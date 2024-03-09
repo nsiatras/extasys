@@ -39,7 +39,7 @@ public class UDPServer extends Extasys.Network.UDP.Server.ExtasysUDPServer
     @Override
     public void OnDataReceive(UDPListener listener, DatagramPacket packet)
     {
-        System.out.println("Data received from " + packet.getAddress().toString());
+        System.out.println("Data received from " + packet.getAddress().toString() + ": " + new String(packet.getData()));
 
         try
         {

@@ -246,17 +246,17 @@ class ReadIncomingDataThread extends Thread
     @Override
     public void run()
     {
-        byte[] data;
         DatagramPacket receivedPacket;
 
         while (fMyUDPListener.isActive())
         {
             try
             {
-                data = new byte[fMyUDPListener.getReadBufferSize()];
+                byte[] data = new byte[fMyUDPListener.getReadBufferSize()];
                 receivedPacket = new DatagramPacket(data, data.length);
                 fMyUDPListener.fSocket.receive(receivedPacket);
                 fMyUDPListener.fBytesIn += receivedPacket.getLength();
+
                 fMyUDPListener.fLastIncomingPacket = new IncomingUDPServerPacket(fMyUDPListener, receivedPacket, fMyUDPListener.fLastIncomingPacket);
             }
             catch (IOException ex)

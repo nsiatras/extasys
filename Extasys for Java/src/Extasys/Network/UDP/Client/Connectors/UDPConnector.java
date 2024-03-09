@@ -26,6 +26,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Arrays;
 
 /**
  *
@@ -164,8 +165,7 @@ public class UDPConnector
      */
     public void SendData(String data) throws IOException
     {
-        DatagramPacket outPacket = new DatagramPacket(data.getBytes(), data.length(), fServerIP, fServerPort);
-        fLastOutgoingPacket = new OutgoingUDPClientPacket(this, outPacket, fLastOutgoingPacket);
+        SendData(data.getBytes());
     }
 
     /**
@@ -177,9 +177,9 @@ public class UDPConnector
      * @param length is the number of the bytes to be send.
      * @throws java.io.IOException
      */
-    public void SendData(byte[] bytes, int offset, int length) throws IOException
+    public void SendData(byte[] bytes) throws IOException
     {
-        DatagramPacket outPacket = new DatagramPacket(bytes, offset, length, fServerIP, fServerPort);
+        DatagramPacket outPacket = new DatagramPacket(bytes, 0, bytes.length, fServerIP, fServerPort);
         fLastOutgoingPacket = new OutgoingUDPClientPacket(this, outPacket, fLastOutgoingPacket);
     }
 
@@ -219,10 +219,10 @@ public class UDPConnector
     }
 
     /**
-     * Returns the maximum time in milliseconds in wich a datagram packet can be
+     * Returns the maximum time in milliseconds in which a datagram packet can be
      * received.
      *
-     * @return the maximum time in milliseconds in wich a datagram packet can be
+     * @return the maximum time in milliseconds in which a datagram packet can be
      * received.
      */
     public int getReadTimeOut()
@@ -255,7 +255,7 @@ public class UDPConnector
 class ReadIncomingData extends Thread
 {
 
-    private UDPConnector fMyConnector;
+    private final UDPConnector fMyConnector;
 
     public ReadIncomingData(UDPConnector myUDPConnector)
     {
@@ -275,6 +275,7 @@ class ReadIncomingData extends Thread
                 receivedPacket = new DatagramPacket(data, data.length);
                 fMyConnector.fSocket.receive(receivedPacket);
                 fMyConnector.fBytesIn += receivedPacket.getLength();
+
                 fMyConnector.fLastIncomingPacket = new IncomingUDPClientPacket(fMyConnector, receivedPacket, fMyConnector.fLastIncomingPacket);
             }
             catch (IOException ex)
