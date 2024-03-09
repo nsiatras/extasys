@@ -50,7 +50,7 @@ public class OutgoingUDPServerPacket extends NetworkPacket implements Runnable
         {
             // Wait for previous Packet to be processed
             // by the thread pool.
-            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+            super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
 
             // Encrypt outgoing data
             byte[] encryptedData = fMyListener.getConnectionEncyptor().Encrypt(fDataGram.getData());
@@ -66,6 +66,10 @@ public class OutgoingUDPServerPacket extends NetworkPacket implements Runnable
         catch (Exception ex)
         {
         }
+        
+        // Mark previous Packet as null.
+        // GC will take it out later...
+        fPreviousPacket = null;
 
         fDone.Set();
     }

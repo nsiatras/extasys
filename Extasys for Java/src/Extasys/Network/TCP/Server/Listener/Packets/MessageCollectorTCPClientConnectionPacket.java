@@ -72,7 +72,7 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
         {
             // Wait for previous Packet to be processed
             // by the thread pool.
-            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+            super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
 
             // Append Data to Message Collector
             if (!fCancel)
@@ -84,7 +84,11 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
         catch (Exception ex)
         {
         }
-
+        
+        // Mark previous Packet as null.
+        // GC will take it out later...
+        fPreviousPacket = null;
+        
         fDone.Set();
     }
 

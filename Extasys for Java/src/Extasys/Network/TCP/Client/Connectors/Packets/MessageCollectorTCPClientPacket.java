@@ -19,7 +19,6 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Client.Connectors.Packets;
 
-
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.NetworkPacket;
 import java.util.concurrent.RejectedExecutionException;
@@ -73,7 +72,7 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
         {
             // Wait for previous Packet to be processed
             // by the thread pool.
-            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+            super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
 
             // Call append data
             if (!fCancel)
@@ -84,6 +83,10 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
         catch (Exception ex)
         {
         }
+
+        // Mark previous Packet as null.
+        // GC will take it out later...
+        fPreviousPacket = null;
 
         fDone.Set();
     }

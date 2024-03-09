@@ -73,7 +73,7 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
         {
             // Wait for previous Packet to be processed
             // by the thread pool.
-            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+            super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
 
             // Call OnDataReceive
             if (!fCancel)
@@ -85,6 +85,10 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
         {
         }
 
+        // Mark previous Packet as null.
+        // GC will take it out later...
+        fPreviousPacket = null;
+        
         fDone.Set();
     }
 

@@ -63,17 +63,17 @@ public class IncomingUDPServerPacket extends NetworkPacket implements Runnable
 
             // Wait for previous Packet to be processed
             // by the thread pool.
-            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+            super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
 
             // Call OnDataReceive
             if (!fCancel)
             {
                 // Trim the incoming packet
                 byte[] cleanData = Arrays.copyOfRange(fDataGram.getData(), 0, fDataGram.getLength());
-                
+
                 // Decrypt incoming data
                 cleanData = fMyListener.getConnectionEncyptor().Decrypt(cleanData);
-                
+
                 fDataGram.setData(cleanData, 0, cleanData.length);
 
                 fMyListener.getMyExtasysUDPServer().OnDataReceive(fMyListener, fDataGram);
@@ -82,6 +82,10 @@ public class IncomingUDPServerPacket extends NetworkPacket implements Runnable
         catch (Exception ex)
         {
         }
+
+        // Mark previous Packet as null.
+        // GC will take it out later...
+        fPreviousPacket = null;
 
         fDone.Set();
     }

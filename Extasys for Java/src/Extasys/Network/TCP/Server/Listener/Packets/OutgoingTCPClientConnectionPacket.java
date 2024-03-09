@@ -42,14 +42,14 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
      * job for the thread pool workers.
      *
      * @param client is the client where this message belongs to.
-     * @param data 
+     * @param data
      * @param previousPacket is the previous outgoing packet of the client.
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException
      */
     public OutgoingTCPClientConnectionPacket(TCPClientConnection client, byte[] data, NetworkPacket previousPacket) throws OutgoingPacketFailedException
     {
-         // Always encrypt outgoing data !
+        // Always encrypt outgoing data !
         super(client.getMyTCPListener().getConnectionEncyptor().Encrypt(data), previousPacket);
         fClient = client;
 
@@ -75,7 +75,7 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
         {
             // Wait for previous Packet to be processed
             // by the thread pool.
-            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+            super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
 
             if (!fCancel)
             {
@@ -99,8 +99,11 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
         {
         }
 
-        fDone.Set();
+        // Mark previous Packet as null.
+        // GC will take it out later...
+        fPreviousPacket = null;
 
+        fDone.Set();
     }
 
 }
