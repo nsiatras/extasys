@@ -40,6 +40,8 @@ public class UDPClient extends Extasys.Network.UDP.Client.ExtasysUDPClient
         // Add a UDP connector to this UDP client.
         // You can add more than one connectors if you need to.
         UDPConnector conn = super.AddConnector("My connector", 10240, 10000, remoteHostIP, remoteHostPort);
+        
+        // Uncomment the following line to set Encryption for this UDPConnector
         //conn.setConnectionEncryptor(new Base64Encryptor());
     }
 

@@ -35,6 +35,8 @@ public class UDPServer extends Extasys.Network.UDP.Server.ExtasysUDPServer
     {
         super(name, description, corePoolSize, maximumPoolSize);
         UDPListener listener = this.AddListener("My UDP Listener", listenerIP, port, 10240, connectionsTimeOut);
+
+        // Uncomment the following line to set Encryption for this UDPListener
         //listener.setConnectionEncryptor(new Base64Encryptor());
     }
 

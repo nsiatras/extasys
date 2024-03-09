@@ -20,6 +20,7 @@
 package Extasys.Examples.TCPClient;
 
 import Extasys.DataFrame;
+import Extasys.Encryption.Base64Encryptor;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException;
@@ -43,6 +44,9 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
         try
         {
             TCPConnector connector = super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, fMessageSplitter);
+
+            // Uncomment the following line to set Encryption for this TCPConnector
+            //connector.setConnectionEncryptor(new Base64Encryptor());
         }
         catch (Exception ex)
         {

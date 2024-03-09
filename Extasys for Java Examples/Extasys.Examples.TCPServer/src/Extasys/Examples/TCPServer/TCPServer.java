@@ -46,6 +46,9 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
         {
             // Add a listener with message collector.
             fMyTCPListener = this.AddListener("My listener", listenerIP, 5000, maxConnections, 8192, connectionsTimeOut, 100,  fMessageSplitter);
+            
+            // Uncomment the following line to set Encryption for this TCP listener
+            //fMyTCPListener.setConnectionEncryptor(new Base64Encryptor());
         }
         catch (Exception ex)
         {
@@ -59,7 +62,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
         {
             // I received data from a client
             final String incomingDataStr = new String(data.getBytes());
-            //System.out.println("Data received: " + incomingDataStr);
+            System.out.println("Data received: " + incomingDataStr);
 
             // Send the incoming data back to the client
             sender.SendData(incomingDataStr + fMessageSplitter);
