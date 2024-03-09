@@ -12,13 +12,14 @@
     <import file="nbproject/build-impl.xml"/>
     
     <!-- Το παρακάτω Target Δημιουργεί ένα FAT Jar -->
-    <target name="00-Release-Fat-Jar" depends="jar">
+    <target name="00-Release-Fat-Jar-WithJavaDocs" depends="jar">
         
         <property name="store.jar.name" value="Extasys"/>
         <property name="LibraryVersion" value="NT_1.0.2"/>
         
         <!-- don't edit below this line -->
         <property name="store.dir" value="00_Release"/>
+        <property name="src.dir" value="${basedir}/src" />
         
         <property name="store.jar" value="${store.dir}/${store.jar.name}_${LibraryVersion}.jar"/>
         <echo message="Packaging ${application.title} into a single JAR at ${store.jar}..."/>
@@ -31,10 +32,20 @@
                 <attribute name="Main-Class" value="${main.class}"/>
             </manifest>
         </jar>
+        
         <zip destfile="${store.jar}">
             <zipfileset src="${store.dir}/temp_final.jar" excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
         </zip>
         <delete file="${store.dir}/temp_final.jar"/>
-    </target>
+        
+        <!-- JAVA DOCS -->
+
+        <javadoc destdir="${store.dir}/${store.jar.name}_${LibraryVersion}_javadocs" packagenames="*.*"
+                 author="false" private="true" version="true" windowtitle="Simple Documentation">
+            <packageset dir="${src.dir}" />
+        </javadoc>
+        
+        
+    </target> 
 
 </project>
