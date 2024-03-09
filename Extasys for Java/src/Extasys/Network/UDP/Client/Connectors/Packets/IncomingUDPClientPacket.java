@@ -41,7 +41,7 @@ public class IncomingUDPClientPacket extends NetworkPacket implements Runnable
      * that will remain in the clients thread pool as a job for the thread pool
      * workers.
      *
-     * @param UDPConnector is the UDP Connector where this message belongs to.
+     * @param connector is the UDP Connector where this message belongs to.
      * @param data is a DatagramPacket.
      * @param previousPacket is the previous incoming message of the UDP
      * Connector.

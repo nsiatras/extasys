@@ -316,7 +316,7 @@ public abstract class ExtasysTCPClient
     /**
      * Sets the description of the TCPClient
      *
-     * @param value
+     * @param description is the TCPClient's description
      */
     public void setDescription(String description)
     {

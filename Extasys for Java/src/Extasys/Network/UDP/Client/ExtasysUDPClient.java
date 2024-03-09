@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ExtasysUDPClient
 {
-    
+
     private String fName, fDescription;
     private final ArrayList<UDPConnector> fConnectors = new ArrayList<>();
     private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(50000);
@@ -99,7 +99,7 @@ public class ExtasysUDPClient
      * Send data from all connector's to all hosts.
      *
      * @param data is the string to be send.
-     * @throws java.io.IOException
+     * @throws java.io.IOException 
      */
     public void SendData(String data) throws IOException
     {
@@ -171,7 +171,7 @@ public class ExtasysUDPClient
         Stop();
         fMyThreadPool.shutdown();
     }
-    
+
     public void OnDataReceive(UDPConnector connector, DatagramPacket packet)
     {
         //System.out.println("Data received");
@@ -281,5 +281,5 @@ public class ExtasysUDPClient
         }
         return result;
     }
-    
+
 }

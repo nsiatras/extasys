@@ -366,7 +366,7 @@ public abstract class ExtasysTCPServer
     /**
      * Set's the server's description
      *
-     * @param description
+     * @param description is the server's description
      */
     public void setDescription(String description)
     {

@@ -176,9 +176,6 @@ public class UDPConnector
      * Send data to host.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
      * @throws java.io.IOException
      */
     public void SendData(byte[] bytes) throws IOException
