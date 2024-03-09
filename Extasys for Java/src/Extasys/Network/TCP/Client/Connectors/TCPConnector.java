@@ -20,11 +20,12 @@
 package Extasys.Network.TCP.Client.Connectors;
 
 import Extasys.DataFrame;
+import Extasys.MessageCollector.MessageETX;
+import Extasys.Network.NetworkPacket;
 import Extasys.Network.TCP.Client.Connectors.Packets.IncomingTCPClientPacket;
 import Extasys.Network.TCP.Client.Connectors.Packets.MessageCollectorTCPClientPacket;
 import Extasys.Network.TCP.Client.Connectors.Packets.OutgoingTCPClientPacket;
 import Extasys.Network.TCP.Client.ExtasysTCPClient;
-import Extasys.Network.TCP.Client.Connectors.Tools.TCPClientMessageCollector;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException;
 import java.io.IOException;
@@ -32,7 +33,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 /**
@@ -48,7 +48,7 @@ public class TCPConnector
     private final int fServerPort;
     private boolean fActive;
     protected boolean fIsConnected = false;
-    //Socket properties.
+    // Socket properties.
     public Socket fConnection;
     private final int fReadBufferSize;
     public InputStream fInput;
@@ -56,18 +56,15 @@ public class TCPConnector
     protected final Object fSendDataLock = new Object();
     protected final Object fReceiveDataLock = new Object();
     private ReadIncomingDataThread fReadIncomingDataThread;
-    //Data throughput.
+    // Data throughput.
     public long fBytesIn = 0, fBytesOut = 0;
-    //Message collector properties.
+    // Message collector properties.
     private boolean fUseMessageCollector;
-    private String fETX;
-    public TCPClientMessageCollector fMessageCollector;
-    //Messages IO.
-    public IncomingTCPClientPacket fLastIncomingPacket = null;
-    public MessageCollectorTCPClientPacket fLastMessageCollectorPacket = null;
-    private OutgoingTCPClientPacket fLastOutgoingPacket = null;
-
-    private final Charset fCharset;
+    public TCPConnectorMessageCollector fMessageCollector;
+    private MessageETX fMessageETX = null;
+    // Messages IO.
+    protected NetworkPacket fLastIncomingPacket = null;
+    protected NetworkPacket fLastOutgoingPacket = null;
 
     /**
      * Constructs a new TCP Connector.
@@ -80,16 +77,15 @@ public class TCPConnector
      * connect.
      * @param readBufferSize is the read buffer size in bytes for this
      * connection.
-     * @param charset is the charset to use for this TCPConnector
+     *
      */
-    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset)
+    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize)
     {
         fMyTCPClient = myTCPClient;
         fName = name;
         fServerIP = serverIP;
         fServerPort = serverPort;
         fReadBufferSize = readBufferSize;
-        fCharset = charset;
     }
 
     /**
@@ -101,46 +97,19 @@ public class TCPConnector
      * @param serverPort is the server's TCP port the connector will connect to.
      * @param readBufferSize is the read buffer size in bytes for this
      * connection.
-     * @param charset is the charset to use for this TCPConnector
-     * @param ETX is the End of Text character.
+     * @param ETX is the End of Text byte[].
      */
-    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset, char ETX)
+    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, byte[] ETX)
     {
         fMyTCPClient = myTCPClient;
         fName = name;
         fServerIP = serverIP;
         fServerPort = serverPort;
         fReadBufferSize = readBufferSize;
-        fCharset = charset;
 
         fUseMessageCollector = true;
-        fETX = String.valueOf(ETX);
-        fMessageCollector = new TCPClientMessageCollector(this, ETX);
-    }
-
-    /**
-     * Constructs a new TCP Connector with message collector use (Splitter).
-     *
-     * @param myTCPClient is the TCP connector's main Extasys TCP Client.
-     * @param name is the connector's name.
-     * @param serverIP is the server's IP address the connector will connect to.
-     * @param serverPort is the server's TCP port the connector will connect to.
-     * @param readBufferSize is the read buffer size in bytes for this
-     * connection.
-     * @param splitter is the message splitter.
-     */
-    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset, String splitter)
-    {
-        fMyTCPClient = myTCPClient;
-        fName = name;
-        fServerIP = serverIP;
-        fServerPort = serverPort;
-        fReadBufferSize = readBufferSize;
-        fCharset = charset;
-
-        fUseMessageCollector = true;
-        fETX = splitter;
-        fMessageCollector = new TCPClientMessageCollector(this, splitter);
+        fMessageETX = new MessageETX(ETX);
+        fMessageCollector = new TCPConnectorMessageCollector(this, fMessageETX);
     }
 
     /**
@@ -166,7 +135,6 @@ public class TCPConnector
             }
 
             fLastIncomingPacket = null;
-            fLastMessageCollectorPacket = null;
             fLastOutgoingPacket = null;
 
             try
@@ -205,11 +173,7 @@ public class TCPConnector
             if (!force)
             {
                 // Wait to process incoming and outgoing TCP Packets
-                if (fLastMessageCollectorPacket != null)
-                {
-                    fLastMessageCollectorPacket.fDone.WaitOne();
-                }
-                else if (fLastIncomingPacket != null)
+                if (fLastIncomingPacket != null)
                 {
                     fLastIncomingPacket.fDone.WaitOne();
                 }
@@ -260,11 +224,6 @@ public class TCPConnector
                 fLastIncomingPacket.Cancel();
             }
 
-            if (fLastMessageCollectorPacket != null)
-            {
-                fLastMessageCollectorPacket.Cancel();
-            }
-
             if (fLastOutgoingPacket != null)
             {
                 fLastOutgoingPacket.Cancel();
@@ -308,8 +267,8 @@ public class TCPConnector
     {
         try
         {
-            byte[] bytes = data.getBytes(fCharset);
-            SendData(bytes, 0, bytes.length);
+            byte[] bytes = data.getBytes();
+            SendData(bytes);
         }
         catch (Exception ex)
         {
@@ -321,61 +280,23 @@ public class TCPConnector
      * Send data to server.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
      * @throws
      * Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException
      * @throws
      * Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException
      */
-    public void SendData(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
+    public void SendData(byte[] bytes) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
     {
         synchronized (fSendDataLock)
         {
             if (fIsConnected)
             {
-                fLastOutgoingPacket = new OutgoingTCPClientPacket(this, bytes, offset, length, fLastOutgoingPacket);
+                fLastOutgoingPacket = new OutgoingTCPClientPacket(this, bytes, fLastOutgoingPacket);
             }
             else
             {
                 throw new ConnectorDisconnectedException(this);
             }
-        }
-    }
-
-    /**
-     * Send data to server and wait until data transfer complete.
-     *
-     * @param data is the string data to send
-     * @throws ConnectorDisconnectedException
-     */
-    public void SendDataSynchronous(String data) throws ConnectorDisconnectedException
-    {
-        byte[] bytes = data.getBytes(fCharset);
-        SendDataSynchronous(bytes, 0, bytes.length);
-    }
-
-    /**
-     * Send data to server and wait until data transfer complete.
-     *
-     * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
-     * @throws ConnectorDisconnectedException
-     */
-    public void SendDataSynchronous(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException
-    {
-        try
-        {
-            fOutput.write(bytes, offset, length);
-            fBytesOut += length;
-        }
-        catch (IOException ex)
-        {
-            Stop();
-            throw new ConnectorDisconnectedException(this);
         }
     }
 
@@ -474,19 +395,19 @@ public class TCPConnector
      *
      * @return the message collector of this connector.
      */
-    public TCPClientMessageCollector getMyMessageCollector()
+    public TCPConnectorMessageCollector getMyMessageCollector()
     {
         return fMessageCollector;
     }
 
     /**
-     * Returns message collector's splitter in string format.
+     * Returns message collector's splitter
      *
-     * @return the message collector's splitter in string format.
+     * @return the message collector's splitter.
      */
-    public String getMessageSplitter()
+    public MessageETX getMessageETX()
     {
-        return fETX;
+        return fMessageETX;
     }
 
     /**
@@ -499,15 +420,6 @@ public class TCPConnector
         return fIsConnected;
     }
 
-    /**
-     * Return's the charset of this TCPConnector
-     *
-     * @return
-     */
-    public Charset getCharset()
-    {
-        return fCharset;
-    }
 }
 
 /**
@@ -518,8 +430,8 @@ public class TCPConnector
 class ReadIncomingDataThread extends Thread
 {
 
-    private TCPConnector fMyTCPConnector;
-    private byte[] fReadBuffer;
+    private final TCPConnector fMyTCPConnector;
+    private final byte[] fReadBuffer;
     private boolean fActive = false;
 
     public ReadIncomingDataThread(TCPConnector myTCPConnector)
@@ -556,6 +468,19 @@ class ReadIncomingDataThread extends Thread
     @Override
     public void run()
     {
+        if (fMyTCPConnector.isMessageCollectorInUse())
+        {
+            ConnectionWithMessageCollector();
+        }
+        else
+        {
+            ConnectionWithoutMessageCollector();
+        }
+
+    }
+
+    private void ConnectionWithMessageCollector()
+    {
         int bytesRead = 0;
 
         while (fActive)
@@ -564,35 +489,19 @@ class ReadIncomingDataThread extends Thread
             {
                 bytesRead = fMyTCPConnector.fInput.read(fReadBuffer);
                 fMyTCPConnector.fBytesIn += bytesRead;
+                fMyTCPConnector.fMyTCPClient.fTotalBytesIn += bytesRead;
                 if (bytesRead > 0)
                 {
-                    if (!fMyTCPConnector.isMessageCollectorInUse()) //No message collector.
+                    try
                     {
-                        try
+                        synchronized (fMyTCPConnector.fReceiveDataLock)
                         {
-                            synchronized (fMyTCPConnector.fReceiveDataLock)
-                            {
-                                fMyTCPConnector.fLastIncomingPacket = new IncomingTCPClientPacket(fMyTCPConnector, new DataFrame(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastIncomingPacket);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            fMyTCPConnector.Stop();
+                            fMyTCPConnector.fLastIncomingPacket = new MessageCollectorTCPClientPacket(fMyTCPConnector, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastIncomingPacket);
                         }
                     }
-                    else //Message collector is enabled.
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            synchronized (fMyTCPConnector.fReceiveDataLock)
-                            {
-                                fMyTCPConnector.fLastMessageCollectorPacket = new MessageCollectorTCPClientPacket(fMyTCPConnector, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastMessageCollectorPacket);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            fMyTCPConnector.Stop();
-                        }
+                        fMyTCPConnector.Stop();
                     }
                 }
                 else
@@ -609,4 +518,47 @@ class ReadIncomingDataThread extends Thread
             }
         }
     }
+
+    private void ConnectionWithoutMessageCollector()
+    {
+        int bytesRead = 0;
+
+        while (fActive)
+        {
+            try
+            {
+                bytesRead = fMyTCPConnector.fInput.read(fReadBuffer);
+                fMyTCPConnector.fBytesIn += bytesRead;
+
+                fMyTCPConnector.fMyTCPClient.fTotalBytesIn += bytesRead;
+
+                if (bytesRead > 0)
+                {
+                    try
+                    {
+                        synchronized (fMyTCPConnector.fReceiveDataLock)
+                        {
+                            fMyTCPConnector.fLastIncomingPacket = new IncomingTCPClientPacket(fMyTCPConnector, new DataFrame(fReadBuffer, 0, bytesRead), fMyTCPConnector.fLastIncomingPacket);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        fMyTCPConnector.Stop();
+                    }
+                }
+                else
+                {
+                    fMyTCPConnector.Stop();
+                }
+            }
+            catch (IOException ex)
+            {
+                fMyTCPConnector.Stop();
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+    }
+
 }

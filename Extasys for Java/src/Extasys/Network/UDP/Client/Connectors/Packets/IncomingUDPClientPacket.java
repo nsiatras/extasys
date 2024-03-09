@@ -31,8 +31,8 @@ public class IncomingUDPClientPacket implements Runnable
 {
 
     public ManualResetEvent fDone = new ManualResetEvent(false);
-    private UDPConnector fConnector;
-    private DatagramPacket fData;
+    private final UDPConnector fConnector;
+    private final DatagramPacket fData;
     private IncomingUDPClientPacket fPreviousPacket;
     public boolean fCancel = false;
 

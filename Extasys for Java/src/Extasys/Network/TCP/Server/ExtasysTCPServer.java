@@ -26,7 +26,6 @@ import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.Network.TCP.Server.Listener.TCPListener;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Nikos Siatras
  */
-public class ExtasysTCPServer
+public abstract class ExtasysTCPServer
 {
 
     private String fName, fDescription;
@@ -72,12 +71,11 @@ public class ExtasysTCPServer
      * to 0 for no time-out.
      * @param backLog is the number of outstanding connection requests the
      * listener can have.
-     * @param charset is the charset to use for this TCPListener
-     * @return the listener.
+     *
      */
-    public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset)
+    public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, charset);
+        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog);
         listener.setMyExtasysTCPServer(this);
         fListeners.add(listener);
         return listener;
@@ -96,13 +94,12 @@ public class ExtasysTCPServer
      * to 0 for no time-out.
      * @param backLog is the number of outstanding connection requests the
      * listener can have.
-     * @param charset is the charset to use for this TCPListener
      * @param splitter is the message splitter.
      * @return the listener.
      */
-    public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset, char splitter)
+    public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, charset, splitter);
+        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
         listener.setMyExtasysTCPServer(this);
         fListeners.add(listener);
         return listener;
@@ -121,13 +118,12 @@ public class ExtasysTCPServer
      * to 0 for no time-out.
      * @param backLog is the number of outstanding connection requests the
      * listener can have.
-     * @param charset is the charset to use for this TCPListener
      * @param splitter is the message splitter.
      * @return the listener.
      */
-    public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset, String splitter)
+    public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, charset, splitter);
+        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
         listener.setMyExtasysTCPServer(this);
         fListeners.add(listener);
         return listener;
@@ -197,7 +193,7 @@ public class ExtasysTCPServer
 
     private void Stop(boolean force)
     {
-        //Stop all listeners.
+        // Stop all listeners.
         for (TCPListener listener : fListeners)
         {
             if (!force)
@@ -237,30 +233,21 @@ public class ExtasysTCPServer
      * @param sender is the client sends the data to this server.
      * @param data is the incoming DataFrame.
      */
-    public void OnDataReceive(TCPClientConnection sender, DataFrame data)
-    {
-        //System.out.println(sender.getIPAddress() + " " + new String(data.getBytes(), sender.getMyTCPListener().getCharset()).substring(0, data.getBytes().length));
-    }
+    public abstract void OnDataReceive(TCPClientConnection sender, DataFrame data);
 
     /**
      * A client connects to this server.
      *
      * @param client Client.
      */
-    public void OnClientConnect(TCPClientConnection client)
-    {
-        //System.out.println(client.getIPAddress() + " connected.");
-    }
+    public abstract void OnClientConnect(TCPClientConnection client);
 
     /**
      * A client disconnects from this server.
      *
      * @param client Client.
      */
-    public void OnClientDisconnect(TCPClientConnection client)
-    {
-        //System.out.println(client.getIPAddress() + " disconnected.");
-    }
+    public abstract void OnClientDisconnect(TCPClientConnection client);
 
     /**
      * Send data to a client.
@@ -281,18 +268,15 @@ public class ExtasysTCPServer
      * Send data to a client.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
      * @param sender is the client connection to receive the data.
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException
      */
-    public void ReplyToSender(byte[] bytes, int offset, int length, TCPClientConnection sender) throws ClientIsDisconnectedException, OutgoingPacketFailedException
+    public void ReplyToSender(byte[] bytes, TCPClientConnection sender) throws ClientIsDisconnectedException, OutgoingPacketFailedException
     {
-        sender.SendData(bytes, offset, length);
+        sender.SendData(bytes);
     }
 
     /**
@@ -312,15 +296,12 @@ public class ExtasysTCPServer
      * Send data to all connected clients.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
      */
-    public void ReplyToAll(byte[] bytes, int offset, int length)
+    public void ReplyToAll(byte[] bytes)
     {
         for (TCPListener listener : fListeners)
         {
-            listener.ReplyToAll(bytes, offset, length);
+            listener.ReplyToAll(bytes);
         }
     }
 
@@ -342,16 +323,13 @@ public class ExtasysTCPServer
      * Send data to all connected clients excepts sender.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
      * @param sender is the TCP client exception.
      */
-    public void ReplyToAllExceptSender(byte[] bytes, int offset, int length, TCPClientConnection sender)
+    public void ReplyToAllExceptSender(byte[] bytes, TCPClientConnection sender)
     {
         for (TCPListener listener : fListeners)
         {
-            listener.ReplyToAllExceptSender(bytes, offset, length, sender);
+            listener.ReplyToAllExceptSender(bytes, sender);
         }
     }
 

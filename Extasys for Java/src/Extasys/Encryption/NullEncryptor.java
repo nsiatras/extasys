@@ -17,71 +17,25 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.*/
-package Extasys;
+package Extasys.Encryption;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class ManualResetEvent
+public class NullEncryptor extends ConnectionEncyptor
 {
 
-    private final Object fLock = new Object();
-    private volatile boolean fIsOpen;
-
-    public ManualResetEvent(boolean initialState)
+    @Override
+    public byte[] Encrypt(byte[] bytes)
     {
-        fIsOpen = initialState;
+        return bytes;
     }
 
-    public void Reset()
+    @Override
+    public byte[] Decrypt(byte[] bytes)
     {
-        fIsOpen = false;
+        return bytes;
     }
 
-    public void WaitOne()
-    {
-        synchronized (fLock)
-        {
-            while (!fIsOpen)
-            {
-                try
-                {
-                    fLock.wait();
-                }
-                catch (InterruptedException ex)
-                {
-                }
-            }
-        }
-    }
-
-    public boolean WaitOne(long milliseconds) throws InterruptedException
-    {
-        synchronized (fLock)
-        {
-            if (fIsOpen)
-            {
-                return true;
-            }
-
-            fLock.wait(milliseconds);
-            return fIsOpen;
-        }
-    }
-
-    
-    public void Set()
-    {
-        synchronized (fLock)
-        {
-            fIsOpen = true;
-            fLock.notifyAll();
-        }
-    }
-
-    public boolean getState()
-    {
-        return fIsOpen;
-    }
 }

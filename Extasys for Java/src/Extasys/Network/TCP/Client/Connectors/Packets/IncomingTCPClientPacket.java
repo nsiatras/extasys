@@ -21,21 +21,17 @@ package Extasys.Network.TCP.Client.Connectors.Packets;
 
 import Extasys.DataFrame;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
-import Extasys.ManualResetEvent;
+import Extasys.Network.NetworkPacket;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
  *
  * @author Nikos Siatras
  */
-public final class IncomingTCPClientPacket implements Runnable
+public final class IncomingTCPClientPacket extends NetworkPacket implements Runnable
 {
 
-    public final ManualResetEvent fDone = new ManualResetEvent(false);
     private final TCPConnector fConnector;
-    private final DataFrame fData;
-    private IncomingTCPClientPacket fPreviousPacket;
-    public boolean fCancel = false;
 
     /**
      * Constructs a new incoming packet received by a TCP connector.
@@ -49,11 +45,10 @@ public final class IncomingTCPClientPacket implements Runnable
      * @param previousPacket is the previous incoming message of the TCP
      * Connector.
      */
-    public IncomingTCPClientPacket(TCPConnector connector, DataFrame data, IncomingTCPClientPacket previousPacket)
+    public IncomingTCPClientPacket(TCPConnector connector, DataFrame data, NetworkPacket previousPacket)
     {
+        super(data, previousPacket);
         fConnector = connector;
-        fData = data;
-        fPreviousPacket = previousPacket;
 
         SendToThreadPool();
     }
@@ -70,74 +65,27 @@ public final class IncomingTCPClientPacket implements Runnable
         }
     }
 
-    /**
-     * Cancel this incoming packet.
-     *
-     * By calling this method this and all the previous incoming packets that
-     * are stored in the thread pool will be canceled. Call this method for the
-     * last incoming packet of the TCP Connector when the TCP Connector
-     * disconnects.
-     *
-     */
-    public void Cancel()
-    {
-        fCancel = true;
-        fDone.Set();
-    }
-
     @Override
     public void run()
     {
         try
         {
-            if (fPreviousPacket == null)
+            // Wait for previous Packet to be processed
+            // by the thread pool.
+            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+
+            // Call OnDataReceive
+            if (!fCancel)
             {
-                fConnector.fMyTCPClient.OnDataReceive(fConnector, fData);
+                fConnector.fMyTCPClient.OnDataReceive(fConnector, super.fDataFrame);
             }
-            else
-            {
-                fPreviousPacket.fDone.WaitOne();
-                if (!fCancel && !fPreviousPacket.fCancel)
-                {
-                    fConnector.fMyTCPClient.OnDataReceive(fConnector, fData);
-                }
-                else
-                {
-                    fCancel = true;
-                }
-            }
+
         }
         catch (Exception ex)
         {
         }
 
-        if (fPreviousPacket != null)
-        {
-            fPreviousPacket = null;
-        }
-
         fDone.Set();
     }
 
-    /**
-     * Returns the data of this packet.
-     *
-     * @return the data of this packet.
-     */
-    public DataFrame getData()
-    {
-        return fData;
-    }
-
-    /**
-     * Returns the previous incoming packet received by the client. If the
-     * packet is null means that the packet has been received and parsed from
-     * the client.
-     *
-     * @return the previous incoming packet received by the client.
-     */
-    public IncomingTCPClientPacket getPreviusPacket()
-    {
-        return fPreviousPacket;
-    }
 }

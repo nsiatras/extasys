@@ -17,71 +17,38 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.*/
-package Extasys;
+package Extasys.Encryption;
+
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class ManualResetEvent
+public class Base64Encryptor extends ConnectionEncyptor
 {
 
-    private final Object fLock = new Object();
-    private volatile boolean fIsOpen;
+    private final Encoder fEncoder;
+    private final Decoder fDecoder;
 
-    public ManualResetEvent(boolean initialState)
+    public Base64Encryptor()
     {
-        fIsOpen = initialState;
+        fEncoder = Base64.getEncoder();
+        fDecoder = Base64.getDecoder();
     }
 
-    public void Reset()
+    @Override
+    public byte[] Encrypt(byte[] bytes)
     {
-        fIsOpen = false;
+        return fEncoder.encode(bytes);
     }
 
-    public void WaitOne()
+    @Override
+    public byte[] Decrypt(byte[] bytes)
     {
-        synchronized (fLock)
-        {
-            while (!fIsOpen)
-            {
-                try
-                {
-                    fLock.wait();
-                }
-                catch (InterruptedException ex)
-                {
-                }
-            }
-        }
+        return fDecoder.decode(bytes);
     }
 
-    public boolean WaitOne(long milliseconds) throws InterruptedException
-    {
-        synchronized (fLock)
-        {
-            if (fIsOpen)
-            {
-                return true;
-            }
-
-            fLock.wait(milliseconds);
-            return fIsOpen;
-        }
-    }
-
-    
-    public void Set()
-    {
-        synchronized (fLock)
-        {
-            fIsOpen = true;
-            fLock.notifyAll();
-        }
-    }
-
-    public boolean getState()
-    {
-        return fIsOpen;
-    }
 }

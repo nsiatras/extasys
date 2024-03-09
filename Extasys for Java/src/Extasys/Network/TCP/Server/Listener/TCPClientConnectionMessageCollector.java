@@ -19,51 +19,29 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
+import Extasys.DataFrame;
+import Extasys.MessageCollector.MessageCollector;
+import Extasys.MessageCollector.MessageETX;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class TCPListenerThread implements Runnable
+public class TCPClientConnectionMessageCollector extends MessageCollector
 {
 
-    private final ServerSocket fSocket;
-    private final TCPListener fMyListener;
+    private final TCPClientConnection fMyClient;
 
-    public TCPListenerThread(ServerSocket socket, TCPListener myListener)
+    public TCPClientConnectionMessageCollector(TCPClientConnection myClient, MessageETX messageETX)
     {
-        fSocket = socket;
-        fMyListener = myListener;
+        super(messageETX);
+        fMyClient = myClient;
     }
 
     @Override
-    public void run()
+    public void MessageCollected(byte[] bytes)
     {
-        while (fMyListener.isActive())
-        {
-            try
-            {
-                TCPClientConnection client = new TCPClientConnection(fSocket.accept(), fMyListener, fMyListener.isMessageCollectorInUse(), fMyListener.getMessageETX());
-                if (fMyListener.getConnectedClients().size() >= fMyListener.getMaxConnections())
-                {
-                    client.DisconnectMe();
-                }
-            }
-            catch (SocketTimeoutException ex)
-            {
-            }
-            catch (SocketException ex)
-            {
-            }
-            catch (SecurityException | IOException ex)
-            {
-            }
-        }
-
-        //System.out.println("Listener thread interrupted.");
+        fMyClient.fMyExtasysServer.OnDataReceive(fMyClient, new DataFrame(bytes));
     }
+
 }

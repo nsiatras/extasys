@@ -19,11 +19,11 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener;
 
+import Extasys.MessageCollector.MessageETX;
 import Extasys.Network.TCP.Server.ExtasysTCPServer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 
 /**
@@ -54,9 +54,7 @@ public class TCPListener
     public long fBytesIn, fBytesOut;
     // Message collector.
     private boolean fUseMessageCollector = false;
-    private String fMessageCollectorSplitter;
-
-    private final Charset fCharset;
+    private MessageETX fMessageETX = null;
 
     /**
      * Constructs a new TCP listener.
@@ -71,13 +69,11 @@ public class TCPListener
      * milliseconds.
      * @param backLog is the number of outstanding connection requests this
      * listener can have.
-     * @param charset the charset to use for this TCPListener ex.
-     * Charset.forName("UTF-8")
+     *
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset)
+    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
     {
         Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, false, null);
-        fCharset = charset;
     }
 
     /**
@@ -93,14 +89,11 @@ public class TCPListener
      * milliseconds. Set to 0 for no time-out
      * @param backLog is the number of outstanding connection requests this
      * listener can have.
-     * @param charset the charset to use for this TCPListener ex.
-     * Charset.forName("UTF-8")
      * @param splitter is the message splitter.
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset, char splitter)
+    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
     {
-        Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, String.valueOf(splitter));
-        fCharset = charset;
+        Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, String.valueOf(splitter).getBytes());
     }
 
     /**
@@ -116,17 +109,14 @@ public class TCPListener
      * milliseconds. Set to 0 for no time-out
      * @param backLog is the number of outstanding connection requests this
      * listener can have.
-     * @param charset the charset to use for this TCPListener ex.
-     * Charset.forName("UTF-8")
      * @param splitter is the message splitter.
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, Charset charset, String splitter)
+    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
     {
-        Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, splitter);
-        fCharset = charset;
+        Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, splitter.getBytes());
     }
 
-    private void Initialize(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, boolean useMessageCollector, String splitter)
+    private void Initialize(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, boolean useMessageCollector, byte[] splitter)
     {
         fConnectedClients = new HashMap<>();
         fName = name;
@@ -137,7 +127,10 @@ public class TCPListener
         fConnectionTimeOut = connectionTimeOut;
         fBackLog = backLog;
         fUseMessageCollector = useMessageCollector;
-        fMessageCollectorSplitter = splitter;
+        if (splitter != null)
+        {
+            fMessageETX = new MessageETX(splitter);
+        }
         fBytesIn = 0;
         fBytesOut = 0;
     }
@@ -300,11 +293,8 @@ public class TCPListener
      * Send data to all connected clients.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
      */
-    public void ReplyToAll(final byte[] bytes, final int offset, final int length)
+    public void ReplyToAll(final byte[] bytes)
     {
         synchronized (fAddRemoveUsersLock)
         {
@@ -312,7 +302,7 @@ public class TCPListener
             {
                 try
                 {
-                    client.SendData(bytes, offset, length);
+                    client.SendData(bytes);
                 }
                 catch (Exception ex)
                 {
@@ -354,12 +344,9 @@ public class TCPListener
      * Send data to all connected clients excepts sender.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
      * @param sender is the TCP client exception.
      */
-    public void ReplyToAllExceptSender(final byte[] bytes, final int offset, final int length, final TCPClientConnection sender)
+    public void ReplyToAllExceptSender(final byte[] bytes, final TCPClientConnection sender)
     {
         synchronized (fAddRemoveUsersLock)
         {
@@ -371,7 +358,7 @@ public class TCPListener
                     {
                         try
                         {
-                            client.SendData(bytes, offset, length);
+                            client.SendData(bytes);
                         }
                         catch (Exception ex)
                         {
@@ -563,18 +550,9 @@ public class TCPListener
      *
      * @return the message collector's splitter in string format.
      */
-    public String getMessageSplitter()
+    public MessageETX getMessageETX()
     {
-        return fMessageCollectorSplitter;
+        return fMessageETX;
     }
 
-    /**
-     * Return's the charset of this TCPListener
-     *
-     * @return
-     */
-    public Charset getCharset()
-    {
-        return fCharset;
-    }
 }

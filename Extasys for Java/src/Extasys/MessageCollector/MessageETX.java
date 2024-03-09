@@ -17,71 +17,34 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.*/
-package Extasys;
+package Extasys.MessageCollector;
 
 /**
  *
- * @author Nikos Siatras
+ * @author Nikos Siatras - https://github.com/nsiatras
  */
-public class ManualResetEvent
+public class MessageETX
 {
 
-    private final Object fLock = new Object();
-    private volatile boolean fIsOpen;
+    private final byte[] fBytes;
 
-    public ManualResetEvent(boolean initialState)
+    public MessageETX(String messageETX)
     {
-        fIsOpen = initialState;
+        fBytes = messageETX.getBytes();
     }
 
-    public void Reset()
+    public MessageETX(byte[] bytes)
     {
-        fIsOpen = false;
+        fBytes = bytes;
     }
-
-    public void WaitOne()
-    {
-        synchronized (fLock)
-        {
-            while (!fIsOpen)
-            {
-                try
-                {
-                    fLock.wait();
-                }
-                catch (InterruptedException ex)
-                {
-                }
-            }
-        }
-    }
-
-    public boolean WaitOne(long milliseconds) throws InterruptedException
-    {
-        synchronized (fLock)
-        {
-            if (fIsOpen)
-            {
-                return true;
-            }
-
-            fLock.wait(milliseconds);
-            return fIsOpen;
-        }
-    }
-
     
-    public void Set()
+    public byte[] getBytes()
     {
-        synchronized (fLock)
-        {
-            fIsOpen = true;
-            fLock.notifyAll();
-        }
+        return fBytes;
     }
 
-    public boolean getState()
+    public int getLength()
     {
-        return fIsOpen;
+        return fBytes.length;
     }
 }

@@ -20,13 +20,14 @@
 package Extasys.Network.TCP.Server.Listener;
 
 import Extasys.DataFrame;
+import Extasys.MessageCollector.MessageETX;
+import Extasys.Network.NetworkPacket;
 import Extasys.Network.TCP.Server.ExtasysTCPServer;
 import Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException;
 import Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException;
 import Extasys.Network.TCP.Server.Listener.Packets.IncomingTCPClientConnectionPacket;
 import Extasys.Network.TCP.Server.Listener.Packets.MessageCollectorTCPClientConnectionPacket;
 import Extasys.Network.TCP.Server.Listener.Packets.OutgoingTCPClientConnectionPacket;
-import Extasys.Network.TCP.Server.Listener.Tools.TCPClientConnectionMessageCollector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -65,11 +66,10 @@ public final class TCPClientConnection
     public TCPClientConnectionMessageCollector fMyMessageCollector;
     protected final boolean fUseMessageCollector;
     // Messages IO.
-    public IncomingTCPClientConnectionPacket fLastIncomingPacket = null;
-    public OutgoingTCPClientConnectionPacket fLastOutgoingPacket = null;
-    public MessageCollectorTCPClientConnectionPacket fLastMessageCollectorPacket = null;
+    protected NetworkPacket fLastIncomingPacket = null;
+    protected NetworkPacket fLastOutgoingPacket = null;
 
-    public TCPClientConnection(Socket socket, TCPListener myTCPListener, boolean useMessageCollector, String ETX)
+    public TCPClientConnection(Socket socket, TCPListener myTCPListener, boolean useMessageCollector, MessageETX messageETX)
     {
         fConnection = socket;
 
@@ -80,7 +80,7 @@ public final class TCPClientConnection
 
         // Initialize a new message collector or not
         fUseMessageCollector = useMessageCollector;
-        fMyMessageCollector = (fUseMessageCollector) ? new TCPClientConnectionMessageCollector(this, ETX) : null;
+        fMyMessageCollector = (fUseMessageCollector) ? new TCPClientConnectionMessageCollector(this, messageETX) : null;
 
         // Connection startup time
         fConnectionStartUpDateTime = System.currentTimeMillis();
@@ -138,23 +138,21 @@ public final class TCPClientConnection
      */
     public void SendData(final String data) throws ClientIsDisconnectedException, OutgoingPacketFailedException
     {
-        final byte[] bytes = data.getBytes(fMyListener.getCharset());
-        SendData(bytes, 0, bytes.length);
+        final byte[] bytes = data.getBytes();
+        SendData(bytes);
     }
 
     /**
      * Send data to client.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
+     *
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException
      */
-    public void SendData(byte[] bytes, int offset, int length) throws ClientIsDisconnectedException, OutgoingPacketFailedException
+    public void SendData(byte[] bytes) throws ClientIsDisconnectedException, OutgoingPacketFailedException
     {
         synchronized (fSendDataLock)
         {
@@ -162,52 +160,7 @@ public final class TCPClientConnection
             {
                 throw new ClientIsDisconnectedException(this);
             }
-            fLastOutgoingPacket = new OutgoingTCPClientConnectionPacket(this, bytes, offset, length, fLastOutgoingPacket);
-        }
-    }
-
-    /**
-     * Send data to client and wait until data transfer complete.
-     *
-     * @param data is the string to send.
-     * @throws ClientIsDisconnectedException
-     */
-    public void SendDataSynchronous(final String data) throws ClientIsDisconnectedException
-    {
-        final byte[] bytes = data.getBytes(fMyListener.getCharset());
-        SendDataSynchronous(bytes, 0, bytes.length);
-    }
-
-    /**
-     * Send data to client and wait until data transfer complete.
-     *
-     * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * @param length is the number of the bytes to be send.
-     * @throws
-     * Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException
-     */
-    public void SendDataSynchronous(byte[] bytes, int offset, int length) throws ClientIsDisconnectedException
-    {
-        if (!this.fIsConnected)
-        {
-            throw new ClientIsDisconnectedException(this);
-        }
-
-        try
-        {
-            fOutput.write(bytes, offset, length);
-            fBytesOut += length;
-            fMyListener.fBytesOut += length;
-        }
-        catch (IOException ex)
-        {
-            if (fLastOutgoingPacket != null)
-            {
-                fLastOutgoingPacket.Cancel();
-            }
-            this.DisconnectMe();
-            throw new ClientIsDisconnectedException(this);
+            fLastOutgoingPacket = new OutgoingTCPClientConnectionPacket(this, bytes, fLastOutgoingPacket);
         }
     }
 
@@ -237,11 +190,7 @@ public final class TCPClientConnection
             if (!force)
             {
                 // Wait to process incoming and outgoing TCP Packets
-                if (fLastMessageCollectorPacket != null)
-                {
-                    fLastMessageCollectorPacket.fDone.WaitOne();
-                }
-                else if (fLastIncomingPacket != null)
+                if (fLastIncomingPacket != null)
                 {
                     fLastIncomingPacket.fDone.WaitOne();
                 }
@@ -294,11 +243,6 @@ public final class TCPClientConnection
                 fLastOutgoingPacket.Cancel();
             }
 
-            if (fLastMessageCollectorPacket != null)
-            {
-                fLastMessageCollectorPacket.Cancel();
-            }
-
             try
             {
                 fClientDataReaderThread.interrupt();
@@ -316,7 +260,6 @@ public final class TCPClientConnection
             fConnection = null;
             fLastIncomingPacket = null;
             fLastOutgoingPacket = null;
-            fLastMessageCollectorPacket = null;
             fMyMessageCollector = null;
 
             fMyListener.RemoveClient(fIPAddress);
@@ -485,7 +428,7 @@ class ClientDataReader implements Runnable
                     // PACKET WITH MESSAGE COLLECTOR
                     synchronized (fClientConnection.fReceiveDataLock)
                     {
-                        fClientConnection.fLastMessageCollectorPacket = new MessageCollectorTCPClientConnectionPacket(fClientConnection, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fClientConnection.fLastMessageCollectorPacket);
+                        fClientConnection.fLastIncomingPacket = new MessageCollectorTCPClientConnectionPacket(fClientConnection, Arrays.copyOfRange(fReadBuffer, 0, bytesRead), fClientConnection.fLastIncomingPacket);
                     }
                 }
                 else

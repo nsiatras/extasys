@@ -26,7 +26,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.nio.charset.Charset;
 
 /**
  *
@@ -49,8 +48,6 @@ public class UDPConnector
     public IncomingUDPClientPacket fLastIncomingPacket = null;
     public OutgoingUDPClientPacket fLastOutgoingPacket = null;
 
-    private final Charset fCharset;
-
     /**
      * Constructs a new UDP Connector.
      *
@@ -63,9 +60,8 @@ public class UDPConnector
      * @param serverIP is the server's IP address the connector will use to send
      * data.
      * @param serverPort is the server's UDP port.
-     * @param charset is the the charset to use for this UDPConnector.
      */
-    public UDPConnector(ExtasysUDPClient myClient, String name, int readBufferSize, int readTimeOut, InetAddress serverIP, int serverPort, Charset charset)
+    public UDPConnector(ExtasysUDPClient myClient, String name, int readBufferSize, int readTimeOut, InetAddress serverIP, int serverPort)
     {
         fMyUDPClient = myClient;
         fName = name;
@@ -73,7 +69,6 @@ public class UDPConnector
         fReadTimeOut = readTimeOut;
         fServerIP = serverIP;
         fServerPort = serverPort;
-        fCharset = charset;
     }
 
     /**
@@ -169,7 +164,7 @@ public class UDPConnector
      */
     public void SendData(String data) throws IOException
     {
-        DatagramPacket outPacket = new DatagramPacket(data.getBytes(fCharset), data.length(), fServerIP, fServerPort);
+        DatagramPacket outPacket = new DatagramPacket(data.getBytes(), data.length(), fServerIP, fServerPort);
         fLastOutgoingPacket = new OutgoingUDPClientPacket(this, outPacket, fLastOutgoingPacket);
     }
 
@@ -255,15 +250,6 @@ public class UDPConnector
         return fBytesOut;
     }
 
-    /**
-     * Return's the charset selected for this UDPConnector
-     *
-     * @return
-     */
-    public Charset getCharset()
-    {
-        return fCharset;
-    }
 }
 
 class ReadIncomingData extends Thread

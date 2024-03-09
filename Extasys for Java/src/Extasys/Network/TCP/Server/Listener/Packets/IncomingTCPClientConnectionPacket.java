@@ -21,21 +21,17 @@ package Extasys.Network.TCP.Server.Listener.Packets;
 
 import Extasys.DataFrame;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
-import Extasys.ManualResetEvent;
+import Extasys.Network.NetworkPacket;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
  *
  * @author Nikos Siatras
  */
-public final class IncomingTCPClientConnectionPacket implements Runnable
+public final class IncomingTCPClientConnectionPacket extends NetworkPacket implements Runnable
 {
 
-    public final ManualResetEvent fDone = new ManualResetEvent(false);
     private final TCPClientConnection fClient;
-    private final DataFrame fData;
-    private IncomingTCPClientConnectionPacket fPreviousPacket;
-    public boolean fCancel = false;
 
     /**
      * Constructs a new incoming packet for an existing TCP client connection.
@@ -47,11 +43,10 @@ public final class IncomingTCPClientConnectionPacket implements Runnable
      * @param data is a DataFrame class.
      * @param previousPacket is the previous incoming message of the client.
      */
-    public IncomingTCPClientConnectionPacket(TCPClientConnection client, DataFrame data, IncomingTCPClientConnectionPacket previousPacket)
+    public IncomingTCPClientConnectionPacket(TCPClientConnection client, DataFrame data, NetworkPacket previousPacket)
     {
+        super(data, previousPacket);
         fClient = client;
-        fData = data;
-        fPreviousPacket = previousPacket;
 
         SendToThreadPool();
     }
@@ -68,59 +63,27 @@ public final class IncomingTCPClientConnectionPacket implements Runnable
         }
     }
 
-    /**
-     * Cancel this incoming packet.
-     *
-     * By calling this method this and all the previous incoming packets that
-     * are stored in the thread pool will be canceled. Call this method for the
-     * last incoming packet of the client when the client disconnects.
-     */
-    public void Cancel()
-    {
-        fCancel = true;
-        fDone.Set();
-    }
-
     @Override
     public void run()
     {
         try
         {
-            if (fPreviousPacket == null)
+            // Wait for previous Packet to be processed
+            // by the thread pool.
+            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+
+            // Call on data receive
+            if (!fCancel)
             {
-                fClient.fMyExtasysServer.OnDataReceive(fClient, fData);
+                fClient.fMyExtasysServer.OnDataReceive(fClient, super.fDataFrame);
             }
-            else
-            {
-                fPreviousPacket.fDone.WaitOne();
-                if (!fCancel && !fPreviousPacket.fCancel)
-                {
-                    fClient.fMyExtasysServer.OnDataReceive(fClient, fData);
-                }
-                else
-                {
-                    fCancel = true;
-                }
-            }
+
         }
         catch (Exception ex)
         {
         }
 
-        if (fPreviousPacket != null)
-        {
-            fPreviousPacket = null;
-        }
         fDone.Set();
     }
 
-    /**
-     * Returns the data of this packet.
-     *
-     * @return the data of this packet.
-     */
-    public DataFrame getData()
-    {
-        return fData;
-    }
 }

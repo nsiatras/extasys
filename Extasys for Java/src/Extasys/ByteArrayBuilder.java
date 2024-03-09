@@ -59,14 +59,27 @@ public class ByteArrayBuilder
         {
             int subArrayLength = subArray.length;
 
-            // Find subArray in fBytes
-            for (int i = 0; i < fBytes.length; i++)
+            if (subArrayLength == 1)
             {
-                byte[] arrayToCompare = Arrays.copyOfRange(fBytes, i, i + subArrayLength);
-
-                if (Arrays.equals(arrayToCompare, subArray))
+                for (int i = 0; i < fBytes.length; i++)
                 {
-                    return i;
+                    if (fBytes[i] == subArray[0])
+                    {
+                        return i;
+                    }
+                }
+            }
+            else
+            {
+                // Find subArray in fBytes
+                for (int i = 0; i < fBytes.length; i++)
+                {
+                    byte[] arrayToCompare = Arrays.copyOfRange(fBytes, i, i + subArrayLength);
+
+                    if (Arrays.equals(arrayToCompare, subArray))
+                    {
+                        return i;
+                    }
                 }
             }
 

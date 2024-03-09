@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -70,12 +69,10 @@ public class ExtasysUDPClient
      * @param serverIP is the server's ip address the connector will use to send
      * data.
      * @param serverPort is the server's udp port.
-     * @param charset is the the charset to use for this UDPConnector.
-     * @return the connector.
      */
-    public UDPConnector AddConnector(String name, int readBufferSize, int readTimeOut, InetAddress serverIP, int serverPort, Charset charset)
+    public UDPConnector AddConnector(String name, int readBufferSize, int readTimeOut, InetAddress serverIP, int serverPort)
     {
-        UDPConnector connector = new UDPConnector(this, name, readBufferSize, readTimeOut, serverIP, serverPort, charset);
+        UDPConnector connector = new UDPConnector(this, name, readBufferSize, readTimeOut, serverIP, serverPort);
         fConnectors.add(connector);
         return connector;
     }

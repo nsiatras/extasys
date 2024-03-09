@@ -24,7 +24,6 @@ import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 
 /**
  *
@@ -35,9 +34,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 
     private boolean fKeepSendingMessages = false;
     private final String fMessageToExchange = "128CharMessage111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
-    private final String fMessageSplitter = "#SPLITTER#";
-
-    private final Charset fCharset = Charset.forName("UTF-8"); // This is the default character set to be used for all TCPConnectors
+    private final char fMessageSplitter = (char) 3;
 
     public TCPClient(String name, String description, InetAddress remoteHostIP, int remoteHostPort, int corePoolSize, int maximumPoolSize)
     {
@@ -45,7 +42,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 
         try
         {
-            super.AddConnector(name, remoteHostIP, remoteHostPort, 16384, fCharset, fMessageSplitter);
+            super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, fMessageSplitter);
         }
         catch (Exception ex)
         {
@@ -57,13 +54,13 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     {
         try
         {
-            //final String dataReceivedFromServer = new String(data.getBytes(), fCharset);
+            //final String dataReceivedFromServer = new String(data.getBytes());
 
             // Every time I receive data from the server I send the
             // fMessageToExchange string back
             if (fKeepSendingMessages)
             {
-                SendData(fMessageToExchange + fMessageSplitter);
+                connector.SendData(fMessageToExchange + fMessageSplitter);
             }
         }
         catch (ConnectorCannotSendPacketException | ConnectorDisconnectedException ex)
@@ -90,7 +87,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
         fKeepSendingMessages = true;
         try
         {
-            SendData(fMessageToExchange + "#SPLITTER#");
+            SendData(fMessageToExchange + fMessageSplitter);
         }
         catch (ConnectorDisconnectedException | ConnectorCannotSendPacketException ex)
         {

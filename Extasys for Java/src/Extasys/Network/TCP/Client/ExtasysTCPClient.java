@@ -24,7 +24,6 @@ import Extasys.ExtasysThreadPool;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,12 +32,14 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Nikos Siatras
  */
-public class ExtasysTCPClient
+public abstract class ExtasysTCPClient
 {
 
     private String fName, fDescription;
     private final ArrayList<TCPConnector> fConnectors = new ArrayList<>();
+    private final Object fConnectorsLock = new Object();
     public final ExtasysThreadPool fMyThreadPool;
+    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
      * Constructs a new Extasys TCP Client.
@@ -65,15 +66,16 @@ public class ExtasysTCPClient
      * @param serverPort is the remote host's (server) port.
      * @param readBufferSize is the read buffer size for this connection in
      * bytes.
-     * @param charset the charset to use for this connector ex.
-     * Charset.forName("UTF-8")
      * @return the connector.
      */
-    public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset)
+    public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize)
     {
-        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, charset);
-        fConnectors.add(connector);
-        return connector;
+        synchronized (fConnectorsLock)
+        {
+            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize);
+            fConnectors.add(connector);
+            return connector;
+        }
     }
 
     /**
@@ -85,15 +87,17 @@ public class ExtasysTCPClient
      * @param readBufferSize is the read buffer size for this connection in
      * bytes.
      * @param ETX is the End of Text character.
-     * @param charset the charset to use for this connector ex.
-     * Charset.forName("UTF-8")
+     *
      * @return the connector.
      */
-    public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset, char ETX)
+    public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, char ETX)
     {
-        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, charset, ETX);
-        fConnectors.add(connector);
-        return connector;
+        synchronized (fConnectorsLock)
+        {
+            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, String.valueOf(ETX).getBytes());
+            fConnectors.add(connector);
+            return connector;
+        }
     }
 
     /**
@@ -105,15 +109,16 @@ public class ExtasysTCPClient
      * @param readBufferSize is the read buffer size for this connection in
      * bytes.
      * @param splitter is the message splitter.
-     * @param charset the charset to use for this connector ex.
-     * Charset.forName("UTF-8")
      * @return the connector.
      */
-    public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, Charset charset, String splitter)
+    public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, String splitter)
     {
-        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, charset, splitter);
-        fConnectors.add(connector);
-        return connector;
+        synchronized (fConnectorsLock)
+        {
+            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, splitter.getBytes());
+            fConnectors.add(connector);
+            return connector;
+        }
     }
 
     /**
@@ -123,13 +128,16 @@ public class ExtasysTCPClient
      */
     public void RemoveConnector(String name)
     {
-        for (int i = 0; i < fConnectors.size(); i++)
+        synchronized (fConnectorsLock)
         {
-            if (fConnectors.get(i).getName().equals(name))
+            for (int i = 0; i < fConnectors.size(); i++)
             {
-                fConnectors.get(i).Stop();
-                fConnectors.remove(i);
-                break;
+                if (fConnectors.get(i).getName().equals(name))
+                {
+                    fConnectors.get(i).Stop();
+                    fConnectors.remove(i);
+                    break;
+                }
             }
         }
     }
@@ -141,19 +149,22 @@ public class ExtasysTCPClient
      */
     public void Start() throws Exception
     {
-        Stop();
-
-        try
-        {
-            for (TCPConnector conn : fConnectors)
-            {
-                conn.Start();
-            }
-        }
-        catch (Exception ex)
+        synchronized (fConnectorsLock)
         {
             Stop();
-            throw ex;
+
+            try
+            {
+                for (TCPConnector conn : fConnectors)
+                {
+                    conn.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                Stop();
+                throw ex;
+            }
         }
     }
 
@@ -175,24 +186,27 @@ public class ExtasysTCPClient
 
     private void Stop(boolean force)
     {
-        for (int i = 0; i < fConnectors.size(); i++)
+        synchronized (fConnectorsLock)
         {
-            if (!force)
+            for (int i = 0; i < fConnectors.size(); i++)
             {
-                ((TCPConnector) fConnectors.get(i)).Stop();
+                if (!force)
+                {
+                    ((TCPConnector) fConnectors.get(i)).Stop();
+                }
+                else
+                {
+                    ((TCPConnector) fConnectors.get(i)).ForceStop();
+                }
             }
-            else
-            {
-                ((TCPConnector) fConnectors.get(i)).ForceStop();
-            }
-        }
 
-        try
-        {
-            fMyThreadPool.getQueue().clear();
-        }
-        catch (Exception ex)
-        {
+            try
+            {
+                fMyThreadPool.getQueue().clear();
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 
@@ -218,9 +232,12 @@ public class ExtasysTCPClient
      */
     public void SendData(String data) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
     {
-        for (int i = 0; i < fConnectors.size(); i++)
+        synchronized (fConnectorsLock)
         {
-            ((TCPConnector) fConnectors.get(i)).SendData(data);
+            for (int i = 0; i < fConnectors.size(); i++)
+            {
+                ((TCPConnector) fConnectors.get(i)).SendData(data);
+            }
         }
     }
 
@@ -228,19 +245,19 @@ public class ExtasysTCPClient
      * Send data from all connector's to all hosts.
      *
      * @param bytes is the byte array to be send.
-     * @param offset is the position in the data buffer at witch to begin
-     * sending.
-     * @param length is the number of the bytes to be send.
      * @throws
      * Extasys.Network.TCP.Client.Exceptions.ConnectorDisconnectedException
      * @throws
      * Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException
      */
-    public void SendData(byte[] bytes, int offset, int length) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
+    public void SendData(byte[] bytes) throws ConnectorDisconnectedException, ConnectorCannotSendPacketException
     {
-        for (int i = 0; i < fConnectors.size(); i++)
+        synchronized (fConnectorsLock)
         {
-            ((TCPConnector) fConnectors.get(i)).SendData(bytes, offset, length);
+            for (int i = 0; i < fConnectors.size(); i++)
+            {
+                ((TCPConnector) fConnectors.get(i)).SendData(bytes);
+            }
         }
     }
 
@@ -250,30 +267,21 @@ public class ExtasysTCPClient
      * @param connector is the client's connector.
      * @param data is the received data.
      */
-    public void OnDataReceive(TCPConnector connector, DataFrame data)
-    {
-        System.out.println(new String(data.getBytes(), connector.getCharset()));
-    }
+    public abstract void OnDataReceive(TCPConnector connector, DataFrame data);
 
     /**
      * A connector of this client connected to a server.
      *
      * @param connector
      */
-    public void OnConnect(TCPConnector connector)
-    {
-        //System.out.println("Connector " + connector.getName() + " connected!");
-    }
+    public abstract void OnConnect(TCPConnector connector);
 
     /**
      * A connector of this client has been disconnected.
      *
      * @param connector
      */
-    public void OnDisconnect(TCPConnector connector)
-    {
-        //System.out.println("Connector " + connector.getName() + " disconnected!");
-    }
+    public abstract void OnDisconnect(TCPConnector connector);
 
     /**
      * Return the name of the client.
@@ -345,18 +353,7 @@ public class ExtasysTCPClient
      */
     public long getBytesIn()
     {
-        long bytesIn = 0;
-        try
-        {
-            for (TCPConnector conn : fConnectors)
-            {
-                bytesIn += conn.getBytesIn();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return bytesIn;
+        return fTotalBytesIn;
     }
 
     /**
@@ -368,17 +365,6 @@ public class ExtasysTCPClient
      */
     public long getBytesOut()
     {
-        long bytesOut = 0;
-        try
-        {
-            for (TCPConnector conn : fConnectors)
-            {
-                bytesOut += conn.getBytesOut();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return bytesOut;
+        return fTotalBytesOut;
     }
 }

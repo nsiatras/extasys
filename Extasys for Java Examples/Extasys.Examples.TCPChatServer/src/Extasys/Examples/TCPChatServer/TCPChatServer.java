@@ -24,9 +24,8 @@ import Extasys.Network.TCP.Server.Listener.Exceptions.*;
 
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 /**
  *
@@ -35,7 +34,7 @@ import java.util.Hashtable;
 public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 {
 
-    private final Hashtable fConnectedClients;
+    private final HashMap<String, TCPChatUser> fConnectedClients;
     private String fSPT = String.valueOf(((char) 2)); // Message splitter character.
     private String fMCChar = String.valueOf(((char) 3)); // Message collector character.
     private Thread fPingThread;
@@ -45,8 +44,8 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     public TCPChatServer(InetAddress listenerIP, int port, frmTCPChatServer frmMain)
     {
         super("TCP Chat Server", "", 10, 100);
-        super.AddListener("Main Listener", listenerIP, port, 99999, 20480, 10000, 100, Charset.forName("UTF-8"), ((char) 3));
-        fConnectedClients = new Hashtable();
+        super.AddListener("Main Listener", listenerIP, port, 99999, 20480, 10000, 100, ((char) 3));
+        fConnectedClients = new HashMap<>();
         fMainForm = frmMain;
     }
 
@@ -176,7 +175,7 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
             }
             else
             {
-                System.out.println(sender.getIPAddress().toString() + " sends wrong message");
+                System.out.println(sender.getIPAddress() + " sends wrong message");
             }
         }
         catch (Exception ex)
@@ -193,19 +192,14 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
      */
     private boolean IsUsernameTaken(String username)
     {
-        for (Enumeration e = fConnectedClients.keys(); e.hasMoreElements();)
+        for (TCPChatUser user : fConnectedClients.values())
         {
-            try
+            if (user.getUsername().equals(username))
             {
-                if (((TCPChatUser) fConnectedClients.get(e.nextElement())).getUsername().equals(username))
-                {
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
+                return true;
             }
         }
+
         return false;
     }
 
@@ -221,25 +215,18 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     private void SendToAllClients(String message)
     {
         message = message + fMCChar;
-        for (Enumeration e = fConnectedClients.keys(); e.hasMoreElements();)
+        for (TCPChatUser user : fConnectedClients.values())
         {
             try
             {
-                ((TCPChatUser) fConnectedClients.get(e.nextElement())).getConnection().SendData(message);
+                user.SendData(message);
             }
-            catch (ClientIsDisconnectedException ex)
-            {
-                System.err.println(ex.getMessage());
-            }
-            catch (OutgoingPacketFailedException ex)
-            {
-                System.err.println(ex.getMessage());
-            }
-            catch (Exception ex)
+            catch (ClientIsDisconnectedException | OutgoingPacketFailedException ex)
             {
                 System.err.println(ex.getMessage());
             }
         }
+
     }
 
     private void SendToClient(String data, TCPClientConnection sender)
@@ -266,10 +253,11 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     private String GetConnectedClientsList()
     {
         String list = "";
-        for (Enumeration e = fConnectedClients.keys(); e.hasMoreElements();)
+        for (TCPChatUser user : fConnectedClients.values())
         {
-            list = list + ((TCPChatUser) fConnectedClients.get(e.nextElement())).getUsername() + String.valueOf(((char) 1));
+            list = list + user.getUsername() + String.valueOf(((char) 1));
         }
+
         return "User_List" + fSPT + list;
     }
 

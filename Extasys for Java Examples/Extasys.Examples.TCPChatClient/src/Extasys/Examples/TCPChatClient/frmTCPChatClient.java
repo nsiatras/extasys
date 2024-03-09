@@ -19,6 +19,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
 package Extasys.Examples.TCPChatClient;
 
+import java.awt.event.KeyEvent;
 import java.net.InetAddress;
 import javax.swing.DefaultListModel;
 
@@ -37,9 +38,109 @@ public class frmTCPChatClient extends javax.swing.JFrame
         initComponents();
     }
 
+    public void MarkAsConnected()
+    {
+        jButton1.setEnabled(false);
+        jButton2.setEnabled(true);
+
+        jTextFieldServerIP.setEnabled(false);
+        jTextFieldServerPort.setEnabled(false);
+        jTextFieldUsername.setEnabled(false);
+    }
+
+    public void MarkAsDisconnected()
+    {
+        jButton1.setEnabled(true);
+        jButton2.setEnabled(false);
+
+        jTextFieldServerIP.setEnabled(true);
+        jTextFieldServerPort.setEnabled(true);
+        jTextFieldUsername.setEnabled(true);
+        fClientsListModel = new DefaultListModel();
+        jListConnectedClients.setModel(fClientsListModel);
+    }
+
+    public void DisplayMessage(String message)
+    {
+        jTextArea1.append(message + "\r\n");
+    }
+
+    private void Connect()
+    {
+        Disconnect();
+
+        try
+        {
+            fClient = new TCPChatClient(InetAddress.getByName(jTextFieldServerIP.getText()), Integer.parseInt(jTextFieldServerPort.getText()), jTextFieldUsername.getText(), this);
+            fClient.Start();
+        }
+        catch (Exception ex)
+        {
+            Disconnect();
+        }
+    }
+
+    private void Disconnect()
+    {
+        if (fClient != null)
+        {
+            fClient.Stop();
+            fClient = null;
+        }
+
+        MarkAsDisconnected();
+    }
+
+    private void SendMessage()
+    {
+        if (fClient != null)
+        {
+            String message = jTextField1.getText().trim();
+            if (!message.equals(""))
+            {
+                fClient.SendDataToServer("Message" + String.valueOf(((char) 2)) + jTextField1.getText());
+                jTextField1.setText("");
+            }
+        }
+    }
+
+    public void AddUserInList(String username)
+    {
+        System.out.println("Adding user " + username);
+
+        try
+        {
+            fClientsListModel.addElement(username);
+            jListConnectedClients.setModel(fClientsListModel);
+        }
+        catch (Exception ex)
+        {
+            System.err.println(ex.getMessage());
+        }
+    }
+
+    public void RemoveUser(String username)
+    {
+        int pos = -1;
+        for (int i = 0; i < fClientsListModel.getSize(); i++)
+        {
+            if (fClientsListModel.getElementAt(i).toString().equals(username))
+            {
+                pos = i;
+                break;
+            }
+        }
+        if (pos > -1)
+        {
+            fClientsListModel.removeElementAt(pos);
+            jListConnectedClients.setModel(fClientsListModel);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private void initComponents()
+    {
 
         jLabel1 = new javax.swing.JLabel();
         jTextFieldServerIP = new javax.swing.JTextField();
@@ -73,15 +174,19 @@ public class frmTCPChatClient extends javax.swing.JFrame
         jTextFieldUsername.setText("Guest");
 
         jButton1.setText("Connect");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 jButton1ActionPerformed(evt);
             }
         });
 
         jButton2.setText("Disconnect");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton2.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 jButton2ActionPerformed(evt);
             }
         });
@@ -92,9 +197,19 @@ public class frmTCPChatClient extends javax.swing.JFrame
 
         jLabel4.setText("Message:");
 
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter()
+        {
+            public void keyPressed(java.awt.event.KeyEvent evt)
+            {
+                jTextField1KeyPressed(evt);
+            }
+        });
+
         jButton3.setText("Send");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton3.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
                 jButton3ActionPerformed(evt);
             }
         });
@@ -126,7 +241,7 @@ public class frmTCPChatClient extends javax.swing.JFrame
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(jLabel3)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jTextFieldUsername))
+                            .addComponent(jTextFieldUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel1)
@@ -176,120 +291,32 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_jButton1ActionPerformed
 
 private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-    if (fClient != null)
-    {
-        fClient.SendDataToServer("Message" + String.valueOf(((char) 2)) + jTextField1.getText());
-        jTextField1.setText("");
-    }
+    SendMessage();
 }//GEN-LAST:event_jButton3ActionPerformed
 
 private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
     Disconnect();
 }//GEN-LAST:event_jButton2ActionPerformed
 
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
+    private void jTextField1KeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_jTextField1KeyPressed
+    {//GEN-HEADEREND:event_jTextField1KeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+        {
+            SendMessage();
+        }
+    }//GEN-LAST:event_jTextField1KeyPressed
+
+    public static void main(String args[])
+    {
+        java.awt.EventQueue.invokeLater(new Runnable()
+        {
+            public void run()
+            {
                 new frmTCPChatClient().setVisible(true);
             }
         });
     }
-    
-    public void MarkAsConnected()
-    {
-        jButton1.setEnabled(false);
-        jButton2.setEnabled(true);
-        
-        jTextFieldServerIP.setEnabled(false);
-        jTextFieldServerPort.setEnabled(false);
-        jTextFieldUsername.setEnabled(false);
-    }
-    
-    public void MarkAsDisconnected()
-    {
-        jButton1.setEnabled(true);
-        jButton2.setEnabled(false);
-        
-        jTextFieldServerIP.setEnabled(true);
-        jTextFieldServerPort.setEnabled(true);
-        jTextFieldUsername.setEnabled(true);
-        fClientsListModel = new DefaultListModel();
-        jListConnectedClients.setModel(fClientsListModel);
-    }
-    
-    public void DisplayMessage(String message)
-    {
-        jTextArea1.append(message+"\r\n");
-    }
-    
-    private void Connect() 
-    {
-        Disconnect();
 
-        try
-        {
-            fClient = new TCPChatClient(InetAddress.getByName(jTextFieldServerIP.getText()), Integer.parseInt(jTextFieldServerPort.getText()), jTextFieldUsername.getText(), this);
-            fClient.Start();
-        }
-        catch (Exception ex)
-        {
-           Disconnect();
-        }
-    }
-    
-    private void Disconnect()
-    {        
-        if(fClient!= null)
-        {
-            fClient.Stop();
-            fClient = null;
-        }
-        
-        MarkAsDisconnected();
-    }
-    
-    private void SendMessage(String message)
-    {
-        if(fClient!= null)
-        {
-            fClient.SendDataToServer("Message" +String.valueOf(((char)2)) + message + String.valueOf(((char)3)));
-        }
-    }
-    
-    public void AddUserInList(String username)
-    {
-        System.out.println("Adding user " + username);
-        
-        try
-        {         
-            fClientsListModel.addElement(username);
-            jListConnectedClients.setModel(fClientsListModel);
-        }
-        catch (Exception ex)
-        {
-           System.err.println(ex.getMessage()) ;
-        }
-    }
-    
-    public void RemoveUser(String username)
-    {
-        int pos = -1;
-        for(int i=0; i <fClientsListModel.getSize(); i ++)
-        {
-            if(fClientsListModel.getElementAt(i).toString().equals(username))
-            {
-                pos = i;
-                break;
-            }
-        }
-        if(pos>-1)
-        {
-            fClientsListModel.removeElementAt(pos);
-            jListConnectedClients.setModel(fClientsListModel);
-        }
-    }
-    
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

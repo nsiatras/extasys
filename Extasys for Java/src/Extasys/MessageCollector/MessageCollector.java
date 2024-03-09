@@ -1,4 +1,4 @@
-/*Copyright (c) 2008 Nikos Siatras
+/*Copyright (c) 2024 Nikos Siatras
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -17,37 +17,24 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.*/
-package Extasys.Network.TCP.Client.Connectors.Tools;
+package Extasys.MessageCollector;
 
 import Extasys.ByteArrayBuilder;
-import Extasys.DataFrame;
-import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class TCPClientMessageCollector
+public abstract class MessageCollector
 {
 
-    private final TCPConnector fMyConnector;
-    private final byte[] fETXStr;
     private final ByteArrayBuilder fIncomingDataBuffer = new ByteArrayBuilder();
-    private final int fETXLength;
-    private int fIndexOfETX;
+    private final MessageETX fMessageETX;
+    private int fIndexOf = -1;
 
-    public TCPClientMessageCollector(TCPConnector connector, char ETX)
+    public MessageCollector(MessageETX messageETX)
     {
-        fMyConnector = connector;
-        fETXStr = String.valueOf(ETX).getBytes(connector.getCharset());
-        fETXLength = fETXStr.length;
-    }
-
-    public TCPClientMessageCollector(TCPConnector connector, String splitter)
-    {
-        fMyConnector = connector;
-        fETXStr = splitter.getBytes(connector.getCharset());
-        fETXLength = fETXStr.length;
+        fMessageETX = messageETX;
     }
 
     public void AppendData(final byte[] bytes)
@@ -55,12 +42,12 @@ public class TCPClientMessageCollector
         try
         {
             fIncomingDataBuffer.Append(bytes);
-            fIndexOfETX = fIncomingDataBuffer.IndexOf(fETXStr);
-            while (fIndexOfETX > -1)
+            fIndexOf = fIncomingDataBuffer.IndexOf(fMessageETX.getBytes());
+            while (fIndexOf > -1)
             {
-                fMyConnector.fMyTCPClient.OnDataReceive(fMyConnector, new DataFrame(fIncomingDataBuffer.SubList(0, fIndexOfETX)));
-                fIncomingDataBuffer.Delete(0, fIndexOfETX + fETXLength);
-                fIndexOfETX = fIncomingDataBuffer.IndexOf(fETXStr);
+                MessageCollected(fIncomingDataBuffer.SubList(0, fIndexOf));
+                fIncomingDataBuffer.Delete(0, fIndexOf + fMessageETX.getLength());
+                fIndexOf = fIncomingDataBuffer.IndexOf(fMessageETX.getBytes());
             }
         }
         catch (Exception ex)
@@ -69,14 +56,16 @@ public class TCPClientMessageCollector
         }
     }
 
+    /**
+     * This method is called every time the message collector collects a message
+     *
+     * @param bytes
+     */
+    public abstract void MessageCollected(final byte[] bytes);
+
     public void Dispose()
     {
-        try
-        {
-            //fMyConnector = null;
-        }
-        catch (Exception ex)
-        {
-        }
+        // Do nothing..
     }
+
 }

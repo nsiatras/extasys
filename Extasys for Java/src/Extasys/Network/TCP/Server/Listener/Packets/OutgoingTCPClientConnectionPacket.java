@@ -19,8 +19,9 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener.Packets;
 
+import Extasys.DataFrame;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
-import Extasys.ManualResetEvent;
+import Extasys.Network.NetworkPacket;
 import Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException;
 import java.io.IOException;
 import java.util.concurrent.RejectedExecutionException;
@@ -29,16 +30,10 @@ import java.util.concurrent.RejectedExecutionException;
  *
  * @author Nikos Siatras
  */
-public final class OutgoingTCPClientConnectionPacket implements Runnable
+public final class OutgoingTCPClientConnectionPacket extends NetworkPacket implements Runnable
 {
 
-    public final ManualResetEvent fDone = new ManualResetEvent(false);
     private final TCPClientConnection fClient;
-    private final byte[] fBytes;
-    private final int fOffset;
-    private final int fLength;
-    private OutgoingTCPClientConnectionPacket fPreviousPacket;
-    public boolean fCancel = false;
 
     /**
      * Constructs a new outgoing packet for an existing TCP client connection.
@@ -56,13 +51,10 @@ public final class OutgoingTCPClientConnectionPacket implements Runnable
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException
      */
-    public OutgoingTCPClientConnectionPacket(TCPClientConnection client, byte[] bytes, int offset, int length, OutgoingTCPClientConnectionPacket previousPacket) throws OutgoingPacketFailedException
+    public OutgoingTCPClientConnectionPacket(TCPClientConnection client, byte[] bytes, NetworkPacket previousPacket) throws OutgoingPacketFailedException
     {
+        super(new DataFrame(bytes), previousPacket);
         fClient = client;
-        fBytes = bytes;
-        fOffset = offset;
-        fLength = length;
-        fPreviousPacket = previousPacket;
 
         SendToThreadPool();
     }
@@ -79,67 +71,31 @@ public final class OutgoingTCPClientConnectionPacket implements Runnable
         }
     }
 
-    /**
-     * Cancel this outgoing packet.
-     *
-     * By calling this method this and all the previous outgoing packets that
-     * are stored in the thread pool will be canceled. Call this method for the
-     * last outgoing packet of the client when the client disconnects.
-     *
-     */
-    public void Cancel()
-    {
-        fCancel = true;
-        fDone.Set();
-    }
-
     @Override
     public void run()
     {
         try
         {
-            if (fPreviousPacket == null)
+            // Wait for previous Packet to be processed
+            // by the thread pool.
+            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
+
+            if (!fCancel)
             {
                 try
                 {
-                    fClient.fOutput.write(fBytes, fOffset, fLength);
+                    fClient.fOutput.write(super.fDataFrame.getBytes());
                     fClient.fOutput.flush();
-                    fClient.fBytesOut += fLength;
-                    fClient.fMyListener.fBytesOut += fLength;
+                    fClient.fBytesOut += super.fDataFrame.getLength();
+                    fClient.fMyListener.fBytesOut += super.fDataFrame.getLength();
                 }
                 catch (IOException ioException)
                 {
                     fCancel = true;
                     fDone.Set();
                     fClient.DisconnectMe();
+                    return;
                 }
-            }
-            else
-            {
-                fPreviousPacket.fDone.WaitOne();
-
-                if (!fCancel && !fPreviousPacket.fCancel)
-                {
-                    try
-                    {
-                        fClient.fOutput.write(fBytes, fOffset, fLength);
-                        fClient.fOutput.flush();
-                        fClient.fBytesOut += fLength;
-                        fClient.fMyListener.fBytesOut += fLength;
-                    }
-                    catch (IOException ioException)
-                    {
-                        fCancel = true;
-                        fDone.Set();
-                        fClient.DisconnectMe();
-                    }
-                }
-                else
-                {
-                    fCancel = true;
-                }
-
-                fPreviousPacket = null;
             }
         }
         catch (Exception ex)
@@ -150,33 +106,4 @@ public final class OutgoingTCPClientConnectionPacket implements Runnable
 
     }
 
-    /**
-     * Returns the byte array of this packet.
-     *
-     * @return the byte array of this packet.
-     */
-    public byte[] getBytes()
-    {
-        return fBytes;
-    }
-
-    /**
-     * Returns the offset of this packet.
-     *
-     * @return the offset of this packet.
-     */
-    public int getOffset()
-    {
-        return fOffset;
-    }
-
-    /**
-     * Returns the number of bytes to send from this packet.
-     *
-     * @return the number of bytes to send from this packet.
-     */
-    public int getLength()
-    {
-        return fLength;
-    }
 }

@@ -30,10 +30,10 @@ import java.net.DatagramPacket;
 public class IncomingUDPServerPacket implements Runnable
 {
 
-    private ManualResetEvent fDone = new ManualResetEvent(false);
+    private final ManualResetEvent fDone = new ManualResetEvent(false);
     private boolean fCancel = false;
-    private UDPListener fMyListener;
-    private DatagramPacket fData;
+    private final UDPListener fMyListener;
+    private final DatagramPacket fData;
     private IncomingUDPServerPacket fPreviousPacket;
 
     /**

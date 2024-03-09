@@ -19,22 +19,20 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Client.Connectors.Packets;
 
+import Extasys.DataFrame;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
-import Extasys.ManualResetEvent;
+
+import Extasys.Network.NetworkPacket;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
  *
  * @author Nikos Siatras
  */
-public final class MessageCollectorTCPClientPacket implements Runnable
+public final class MessageCollectorTCPClientPacket extends NetworkPacket implements Runnable
 {
 
-    public final ManualResetEvent fDone = new ManualResetEvent(false);
     private final TCPConnector fConnector;
-    private final byte[] fData;
-    private MessageCollectorTCPClientPacket fPreviousPacket;
-    public boolean fCancel = false;
 
     /**
      * Constructs a new (incoming) message collector packet.
@@ -48,11 +46,10 @@ public final class MessageCollectorTCPClientPacket implements Runnable
      * @param previousPacket is the previous message collector packet of the TCP
      * Connector.
      */
-    public MessageCollectorTCPClientPacket(TCPConnector connector, byte[] data, MessageCollectorTCPClientPacket previousPacket)
+    public MessageCollectorTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket)
     {
+        super(new DataFrame(data), previousPacket);
         fConnector = connector;
-        fData = data;
-        fPreviousPacket = previousPacket;
 
         SendToThreadPool();
     }
@@ -69,43 +66,19 @@ public final class MessageCollectorTCPClientPacket implements Runnable
         }
     }
 
-    /**
-     * Cancel this message collector packet.
-     *
-     * By calling this method this and all the previous message collector
-     * packets that are stored in the thread pool will be canceled. Call this
-     * method for the last message collector packet of the connector when the
-     * connector disconnects.
-     *
-     */
-    public void Cancel()
-    {
-        fCancel = true;
-        fDone.Set();
-    }
-
     @Override
     public void run()
     {
         try
         {
-            if (fPreviousPacket == null)
-            {
-                fConnector.fMessageCollector.AppendData(fData);
-            }
-            else
-            {
-                fPreviousPacket.fDone.WaitOne();
-                if (!fCancel && !fPreviousPacket.fCancel)
-                {
-                    fConnector.fMessageCollector.AppendData(fData);
-                }
-                else
-                {
-                    fCancel = true;
-                }
+            // Wait for previous Packet to be processed
+            // by the thread pool.
+            this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
 
-                fPreviousPacket = null;
+            // Call append data
+            if (!fCancel)
+            {
+                fConnector.fMessageCollector.AppendData(super.fDataFrame.getBytes());
             }
         }
         catch (Exception ex)
@@ -115,13 +88,4 @@ public final class MessageCollectorTCPClientPacket implements Runnable
         fDone.Set();
     }
 
-    /**
-     * Returns the data of this packet.
-     *
-     * @return the data of this packet.
-     */
-    public byte[] getData()
-    {
-        return fData;
-    }
 }
