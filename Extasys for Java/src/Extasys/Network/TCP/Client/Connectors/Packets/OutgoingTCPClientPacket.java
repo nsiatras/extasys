@@ -19,7 +19,6 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Client.Connectors.Packets;
 
-import Extasys.DataFrame;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.NetworkPacket;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException;
@@ -43,16 +42,17 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
      * for the thread pool workers.
      *
      * @param connector is the TCPConnector where this message belongs to.
-     * @param bytes is the byte array to be sent.
+     * @param data is the byte array to be sent.
      *
      * @param previousPacket is the previous outgoing packet of the
      * TCPConnector.
      * @throws
      * Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException
      */
-    public OutgoingTCPClientPacket(TCPConnector connector, byte[] bytes, NetworkPacket previousPacket) throws ConnectorCannotSendPacketException
+    public OutgoingTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket) throws ConnectorCannotSendPacketException
     {
-        super(bytes, previousPacket);
+        // Always encrypt outgoing data !
+        super(connector.getConnectionEncyptor().Encrypt(data), previousPacket);
         fConnector = connector;
 
         SendToThreadPool();

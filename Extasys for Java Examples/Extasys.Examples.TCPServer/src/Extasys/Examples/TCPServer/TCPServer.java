@@ -20,6 +20,7 @@
 package Extasys.Examples.TCPServer;
 
 import Extasys.DataFrame;
+import Extasys.Encryption.Base64Encryptor;
 import Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException;
 import Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;

@@ -19,7 +19,6 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener.Packets;
 
-import Extasys.DataFrame;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.Network.NetworkPacket;
 import java.util.concurrent.RejectedExecutionException;
@@ -41,13 +40,14 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
      * workers.
      *
      * @param client is the packets TCPClientConnection.
-     * @param data 
+     * @param data
      * @param previousPacket is the previous message collector packet of the
      * TCPClientConnection.
      */
     public MessageCollectorTCPClientConnectionPacket(final TCPClientConnection client, final byte[] data, final NetworkPacket previousPacket)
     {
-        super(data, previousPacket);
+        // Always decrypt incoming data !
+        super(client.getMyTCPListener().getConnectionEncyptor().Decrypt(data), previousPacket);
         fClient = client;
 
         SendToThreadPool();

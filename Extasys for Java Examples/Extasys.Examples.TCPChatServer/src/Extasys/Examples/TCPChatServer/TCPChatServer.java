@@ -24,7 +24,6 @@ import Extasys.Network.TCP.Server.Listener.Exceptions.*;
 
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import java.net.InetAddress;
-import java.util.Enumeration;
 import java.util.HashMap;
 
 /**
@@ -35,11 +34,11 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 {
 
     private final HashMap<String, TCPChatUser> fConnectedClients;
-    private String fSPT = String.valueOf(((char) 2)); // Message splitter character.
-    private String fMCChar = String.valueOf(((char) 3)); // Message collector character.
+    private final String fSPT = String.valueOf(((char) 2)); // Message splitter character.
+    private final String fMCChar = String.valueOf(((char) 3)); // Message collector character.
     private Thread fPingThread;
     private boolean fServerIsActive;
-    private frmTCPChatServer fMainForm;
+    private final frmTCPChatServer fMainForm;
 
     public TCPChatServer(InetAddress listenerIP, int port, frmTCPChatServer frmMain)
     {

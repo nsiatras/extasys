@@ -19,9 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Client.Connectors.Packets;
 
-import Extasys.DataFrame;
-import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 
+import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.NetworkPacket;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -48,7 +47,8 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
      */
     public MessageCollectorTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket)
     {
-        super(data, previousPacket);
+        // Always decrypt incoming data !
+        super(connector.getConnectionEncyptor().Decrypt(data), previousPacket);
         fConnector = connector;
 
         SendToThreadPool();

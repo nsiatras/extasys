@@ -19,7 +19,6 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener.Packets;
 
-import Extasys.DataFrame;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.Network.NetworkPacket;
 import Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException;
@@ -43,14 +42,15 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
      * job for the thread pool workers.
      *
      * @param client is the client where this message belongs to.
-     * @param bytes
+     * @param data 
      * @param previousPacket is the previous outgoing packet of the client.
      * @throws
      * Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException
      */
-    public OutgoingTCPClientConnectionPacket(TCPClientConnection client, byte[] bytes, NetworkPacket previousPacket) throws OutgoingPacketFailedException
+    public OutgoingTCPClientConnectionPacket(TCPClientConnection client, byte[] data, NetworkPacket previousPacket) throws OutgoingPacketFailedException
     {
-        super(bytes, previousPacket);
+         // Always encrypt outgoing data !
+        super(client.getMyTCPListener().getConnectionEncyptor().Encrypt(data), previousPacket);
         fClient = client;
 
         SendToThreadPool();

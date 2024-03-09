@@ -45,7 +45,8 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
      */
     public IncomingTCPClientConnectionPacket(TCPClientConnection client, byte[] data, NetworkPacket previousPacket)
     {
-        super(data, previousPacket);
+        // Always decrypt incoming data !
+        super(client.getMyTCPListener().getConnectionEncyptor().Decrypt(data), previousPacket);
         fClient = client;
 
         SendToThreadPool();

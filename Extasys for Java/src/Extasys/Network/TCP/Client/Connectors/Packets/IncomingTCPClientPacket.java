@@ -47,7 +47,8 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
      */
     public IncomingTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket)
     {
-        super(data, previousPacket);
+        // Always decrypt incoming data !
+        super(connector.getConnectionEncyptor().Decrypt(data), previousPacket);
         fConnector = connector;
 
         SendToThreadPool();

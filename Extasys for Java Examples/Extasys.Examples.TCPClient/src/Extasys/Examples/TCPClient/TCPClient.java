@@ -42,7 +42,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 
         try
         {
-            super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, fMessageSplitter);
+            TCPConnector connector = super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, fMessageSplitter);
         }
         catch (Exception ex)
         {
