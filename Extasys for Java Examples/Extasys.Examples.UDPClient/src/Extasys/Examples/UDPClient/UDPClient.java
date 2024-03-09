@@ -22,7 +22,7 @@ package Extasys.Examples.UDPClient;
 import Extasys.Network.UDP.Client.Connectors.UDPConnector;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
+
 
 /**
  *
@@ -39,7 +39,7 @@ public class UDPClient extends Extasys.Network.UDP.Client.ExtasysUDPClient
 
         // Add a UDP connector to this UDP client.
         // You can add more than one connectors if you need to.
-        super.AddConnector("My connector", 10240, 10000, remoteHostIP, remoteHostPort, Charset.forName("UTF-8"));
+        super.AddConnector("My connector", 10240, 10000, remoteHostIP, remoteHostPort);
     }
 
     @Override

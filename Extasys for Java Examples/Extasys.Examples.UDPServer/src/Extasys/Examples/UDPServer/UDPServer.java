@@ -22,7 +22,6 @@ package Extasys.Examples.UDPServer;
 import Extasys.Network.UDP.Server.Listener.UDPListener;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 
 /**
  *
@@ -34,7 +33,7 @@ public class UDPServer extends Extasys.Network.UDP.Server.ExtasysUDPServer
     public UDPServer(String name, String description, InetAddress listenerIP, int port, int connectionsTimeOut, int corePoolSize, int maximumPoolSize)
     {
         super(name, description, corePoolSize, maximumPoolSize);
-        this.AddListener("My UDP Listener", listenerIP, port, 10240, connectionsTimeOut, Charset.forName("UTF-8"));
+        this.AddListener("My UDP Listener", listenerIP, port, 10240, connectionsTimeOut);
     }
 
     @Override
