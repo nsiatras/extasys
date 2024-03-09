@@ -19,6 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Client.Connectors;
 
+import Extasys.Encryption.ConnectionEncryptor;
+import Extasys.Encryption.NullEncryptor;
 import Extasys.Network.UDP.Client.Connectors.Packets.*;
 import Extasys.Network.UDP.Client.ExtasysUDPClient;
 import java.io.IOException;
@@ -26,7 +28,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.Arrays;
 
 /**
  *
@@ -36,18 +37,21 @@ public class UDPConnector
 {
 
     private boolean fActive = false;
-    private ExtasysUDPClient fMyUDPClient; //Extasys UDP Client reference.
+    private final ExtasysUDPClient fMyUDPClient; //Extasys UDP Client reference.
     public DatagramSocket fSocket;
-    private InetAddress fServerIP;
-    private int fServerPort;
+    private final InetAddress fServerIP;
+    private final int fServerPort;
     private Thread fReadDataThread;
-    private String fName;
-    private int fReadBufferSize;
-    private int fReadTimeOut;
+    private final String fName;
+    private final int fReadBufferSize;
+    private final int fReadTimeOut;
     public long fBytesIn = 0, fBytesOut = 0;
 
     public IncomingUDPClientPacket fLastIncomingPacket = null;
     public OutgoingUDPClientPacket fLastOutgoingPacket = null;
+
+    // Connection Encryption
+    private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
 
     /**
      * Constructs a new UDP Connector.
@@ -219,11 +223,11 @@ public class UDPConnector
     }
 
     /**
-     * Returns the maximum time in milliseconds in which a datagram packet can be
-     * received.
+     * Returns the maximum time in milliseconds in which a datagram packet can
+     * be received.
      *
-     * @return the maximum time in milliseconds in which a datagram packet can be
-     * received.
+     * @return the maximum time in milliseconds in which a datagram packet can
+     * be received.
      */
     public int getReadTimeOut()
     {
@@ -248,6 +252,26 @@ public class UDPConnector
     public long getBytesOut()
     {
         return fBytesOut;
+    }
+
+    /**
+     * Returns the connection encryptor
+     *
+     * @return
+     */
+    public ConnectionEncryptor getConnectionEncyptor()
+    {
+        return fConnectionEncryptor;
+    }
+
+    /**
+     * Sets the connection encryptor of this UDPConnector
+     *
+     * @param encryptor
+     */
+    public void setConnectionEncryptor(ConnectionEncryptor encryptor)
+    {
+        fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
     }
 
 }

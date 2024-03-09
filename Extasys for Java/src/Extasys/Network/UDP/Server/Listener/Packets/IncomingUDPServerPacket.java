@@ -70,6 +70,10 @@ public class IncomingUDPServerPacket extends NetworkPacket implements Runnable
             {
                 // Trim the incoming packet
                 byte[] cleanData = Arrays.copyOfRange(fDataGram.getData(), 0, fDataGram.getLength());
+                
+                // Decrypt incoming data
+                cleanData = fMyListener.getConnectionEncyptor().Decrypt(cleanData);
+                
                 fDataGram.setData(cleanData, 0, cleanData.length);
 
                 fMyListener.getMyExtasysUDPServer().OnDataReceive(fMyListener, fDataGram);

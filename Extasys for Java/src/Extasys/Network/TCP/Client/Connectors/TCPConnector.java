@@ -19,7 +19,6 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Client.Connectors;
 
-import Extasys.DataFrame;
 import Extasys.Encryption.ConnectionEncryptor;
 import Extasys.Encryption.NullEncryptor;
 import Extasys.MessageCollector.MessageETX;

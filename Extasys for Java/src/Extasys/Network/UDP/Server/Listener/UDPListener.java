@@ -19,6 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Server.Listener;
 
+import Extasys.Encryption.ConnectionEncryptor;
+import Extasys.Encryption.NullEncryptor;
 import Extasys.Network.UDP.Server.ExtasysUDPServer;
 import Extasys.Network.UDP.Server.Listener.Packets.IncomingUDPServerPacket;
 import Extasys.Network.UDP.Server.Listener.Packets.OutgoingUDPServerPacket;
@@ -48,6 +50,9 @@ public class UDPListener
     //Messages IO.
     public IncomingUDPServerPacket fLastIncomingPacket = null;
     public OutgoingUDPServerPacket fLastOutgoingPacket = null;
+
+    // Connection Encryption
+    private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
 
     /**
      * Constructs a new UDP Listener.
@@ -229,6 +234,26 @@ public class UDPListener
     public boolean isActive()
     {
         return fActive;
+    }
+
+    /**
+     * Returns the connection encryptor
+     *
+     * @return
+     */
+    public ConnectionEncryptor getConnectionEncyptor()
+    {
+        return fConnectionEncryptor;
+    }
+
+    /**
+     * Sets the connection encryptor of this UDPListener
+     *
+     * @param encryptor
+     */
+    public void setConnectionEncryptor(ConnectionEncryptor encryptor)
+    {
+        fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
     }
 
 }

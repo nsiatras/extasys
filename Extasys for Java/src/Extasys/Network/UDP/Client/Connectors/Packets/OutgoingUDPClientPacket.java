@@ -62,7 +62,11 @@ public class OutgoingUDPClientPacket extends NetworkPacket implements Runnable
             // Wait for previous Packet to be processed
             // by the thread pool.
             this.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
-            
+
+            // Encrypt outgoing data
+            byte[] encryptedData = fConnector.getConnectionEncyptor().Encrypt(fDataGram.getData());
+            fDataGram.setData(encryptedData, 0, encryptedData.length);
+
             if (!fCancel)
             {
                 fConnector.fSocket.send(fDataGram);

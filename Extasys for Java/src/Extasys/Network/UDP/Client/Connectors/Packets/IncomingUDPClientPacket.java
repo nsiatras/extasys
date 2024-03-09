@@ -69,6 +69,11 @@ public class IncomingUDPClientPacket extends NetworkPacket implements Runnable
             {
                 // Trim the incoming packet
                 byte[] cleanData = Arrays.copyOfRange(fDataGram.getData(), 0, fDataGram.getLength());
+
+                // Decrypt incoming data
+                cleanData = fConnector.getConnectionEncyptor().Decrypt(cleanData);
+
+                // Set trimmed and decrypted data to fDataGram
                 fDataGram.setData(cleanData, 0, cleanData.length);
 
                 fConnector.getMyExtasysUDPClient().OnDataReceive(fConnector, fDataGram);
