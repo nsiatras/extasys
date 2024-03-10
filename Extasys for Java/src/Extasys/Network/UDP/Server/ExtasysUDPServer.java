@@ -19,14 +19,12 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Server;
 
+import Extasys.ExtasysThreadPool;
 import Extasys.Network.UDP.Server.Listener.UDPListener;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -37,8 +35,7 @@ public class ExtasysUDPServer
 
     private String fName, fDescription;
     private final ArrayList<UDPListener> fListeners = new ArrayList<>();
-    private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(50000);
-    public final ThreadPoolExecutor fMyThreadPool;
+    public final ExtasysThreadPool fMyThreadPool;
 
     /**
      * Constructs a new Extasys UDP Server.
@@ -54,7 +51,7 @@ public class ExtasysUDPServer
     {
         fName = name;
         fDescription = description;
-        fMyThreadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 2, TimeUnit.SECONDS, fThreadPoolQueue);
+        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
     }
 
     /**

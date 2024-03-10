@@ -19,15 +19,14 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Client;
 
+import Extasys.ExtasysThreadPool;
 import Extasys.Network.UDP.Client.Connectors.UDPConnector;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -38,8 +37,7 @@ public class ExtasysUDPClient
 
     private String fName, fDescription;
     private final ArrayList<UDPConnector> fConnectors = new ArrayList<>();
-    private final ArrayBlockingQueue fThreadPoolQueue = new ArrayBlockingQueue(50000);
-    private final ThreadPoolExecutor fMyThreadPool;
+    private final ExtasysThreadPool fMyThreadPool;
 
     /**
      * Constructs a new Extasys UDP Client.
@@ -55,7 +53,7 @@ public class ExtasysUDPClient
     {
         fName = name;
         fDescription = description;
-        fMyThreadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 2, TimeUnit.SECONDS, fThreadPoolQueue);
+        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
     }
 
     /**
@@ -99,7 +97,7 @@ public class ExtasysUDPClient
      * Send data from all connector's to all hosts.
      *
      * @param data is the string to be send.
-     * @throws java.io.IOException 
+     * @throws java.io.IOException
      */
     public void SendData(String data) throws IOException
     {

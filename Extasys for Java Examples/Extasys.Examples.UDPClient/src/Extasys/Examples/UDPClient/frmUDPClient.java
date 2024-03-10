@@ -89,10 +89,10 @@ public class frmUDPClient extends javax.swing.JFrame
         jTextFieldRemoteHostIP.setText("127.0.0.1");
 
         jTextFieldMaxPoolSize.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jTextFieldMaxPoolSize.setText("16");
+        jTextFieldMaxPoolSize.setText("1");
 
         jTextFieldCorePoolSize.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        jTextFieldCorePoolSize.setText("8");
+        jTextFieldCorePoolSize.setText("1");
 
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel11.setText("Read Time-Out:");
