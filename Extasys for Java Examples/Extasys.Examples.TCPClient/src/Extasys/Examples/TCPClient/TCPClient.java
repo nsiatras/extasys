@@ -34,8 +34,8 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 {
 
     private boolean fKeepSendingMessages = false;
-    private final String fMessageToExchange = "128CharMessage111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
     private final char fMessageSplitter = (char) 3;
+    private int fPreviousNumber = 0;
 
     public TCPClient(String name, String description, InetAddress remoteHostIP, int remoteHostPort, int corePoolSize, int maximumPoolSize)
     {
@@ -58,13 +58,23 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     {
         try
         {
-            //final String dataReceivedFromServer = new String(data.getBytes());
+            final String dataReceivedFromServer = new String(data.getBytes());
+
+            int number = Integer.parseInt(dataReceivedFromServer);
+            if (fPreviousNumber != number)
+            {
+                System.err.println("Message Lost");
+            }
+            else
+            {
+                fPreviousNumber += 1;
+            }
 
             // Every time I receive data from the server I send the
             // fMessageToExchange string back
             if (fKeepSendingMessages)
             {
-                connector.SendData(fMessageToExchange + fMessageSplitter);
+                connector.SendData(String.valueOf(fPreviousNumber) + fMessageSplitter);
             }
         }
         catch (ConnectorCannotSendPacketException | ConnectorDisconnectedException ex)
@@ -91,7 +101,8 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
         fKeepSendingMessages = true;
         try
         {
-            SendData(fMessageToExchange + fMessageSplitter);
+            fPreviousNumber = 1000000000;
+            SendData(String.valueOf(fPreviousNumber) + fMessageSplitter);
         }
         catch (ConnectorDisconnectedException | ConnectorCannotSendPacketException ex)
         {

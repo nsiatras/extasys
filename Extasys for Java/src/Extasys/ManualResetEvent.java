@@ -70,7 +70,6 @@ public class ManualResetEvent
         }
     }
 
-    
     public void Set()
     {
         synchronized (fLock)

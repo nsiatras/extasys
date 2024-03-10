@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -55,7 +54,7 @@ public abstract class ExtasysTCPServer
     {
         fName = name;
         fDescription = description;
-        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize, 10, TimeUnit.SECONDS);
+        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
     }
 
     /**

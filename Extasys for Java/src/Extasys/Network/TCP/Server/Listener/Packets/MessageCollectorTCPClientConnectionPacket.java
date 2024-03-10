@@ -79,16 +79,15 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
             {
                 fClient.fMyMessageCollector.AppendData(super.fPacketsData);
             }
-
         }
         catch (Exception ex)
         {
         }
-        
+
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-        
+
         fDone.Set();
     }
 

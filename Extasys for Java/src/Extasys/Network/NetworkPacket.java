@@ -31,7 +31,7 @@ public class NetworkPacket
     public final ManualResetEvent fDone = new ManualResetEvent(false);
     public final byte[] fPacketsData;
     public NetworkPacket fPreviousPacket;
-    public boolean fCancel = false;
+    public volatile boolean fCancel = false;
 
     public NetworkPacket(byte[] data, NetworkPacket previousPacket)
     {
@@ -61,14 +61,18 @@ public class NetworkPacket
     /**
      * Cancel this network packet.
      *
-     * Calling this method marks this and all next network packets, stored in
-     * the thread pool, as canceled. Call this method for the last incoming
-     * packet of a connection when the connection drops.
+     * Calling this method marks this and its previous NetworkPacket as
+     * Canceled. Call this method for the last incoming packet of a connection
+     * when the connection drops.
      */
     public void Cancel()
     {
         fCancel = true;
-        fDone.Set();
+
+        if (fPreviousPacket != null)
+        {
+            fPreviousPacket.Cancel();
+        }
     }
 
 }

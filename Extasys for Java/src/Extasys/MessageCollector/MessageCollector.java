@@ -37,7 +37,7 @@ public abstract class MessageCollector
         fMessageETX = messageETX;
     }
 
-    public void AppendData(final byte[] bytes)
+    public synchronized void AppendData(final byte[] bytes)
     {
         try
         {

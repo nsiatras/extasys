@@ -82,7 +82,6 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
                 try
                 {
                     fClient.fOutput.write(super.fPacketsData);
-                    fClient.fOutput.flush();
                     fClient.fBytesOut += super.fPacketsData.length;
                     fClient.fMyListener.fBytesOut += super.fPacketsData.length;
                 }

@@ -19,7 +19,6 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener;
 
-import Extasys.DataFrame;
 import Extasys.MessageCollector.MessageETX;
 import Extasys.Network.NetworkPacket;
 import Extasys.Network.TCP.Server.ExtasysTCPServer;
@@ -60,7 +59,7 @@ public final class TCPClientConnection
     public OutputStream fOutput;
     protected final Object fSendDataLock = new Object();
     protected final Object fReceiveDataLock = new Object();
-    // Data throughput.
+    // Data I/O counters.
     public long fBytesIn = 0, fBytesOut = 0;
     // Message collector.
     public TCPClientConnectionMessageCollector fMyMessageCollector;

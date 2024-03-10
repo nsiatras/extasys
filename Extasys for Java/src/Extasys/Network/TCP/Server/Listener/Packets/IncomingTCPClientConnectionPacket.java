@@ -78,12 +78,11 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
             {
                 fClient.fMyExtasysServer.OnDataReceive(fClient, new DataFrame(super.fPacketsData));
             }
-
         }
         catch (Exception ex)
         {
         }
-        
+
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;

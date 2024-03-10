@@ -42,6 +42,11 @@ public class frmTCPServer extends javax.swing.JFrame
         initComponents();
         // Open form in middle of screen
         this.setLocationRelativeTo(null);
+
+        int cpuCores = Runtime.getRuntime().availableProcessors();
+
+        jTextFieldTCPServerCorePoolSize.setText(String.valueOf(cpuCores));
+        jTextFieldTCPServerMaxPoolSize.setText(String.valueOf(cpuCores));
     }
 
     @SuppressWarnings("unchecked")
@@ -162,29 +167,29 @@ public class frmTCPServer extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel12))
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextFieldTCPServerIP)
-                            .addComponent(jTextFieldTCPServerConnectionsTimeOut)
-                            .addComponent(jTextFieldTCPServerMaxConnections)
-                            .addComponent(jTextFieldTCPServerCorePoolSize, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextFieldTCPServerPort)
-                            .addComponent(jTextFieldTCPServerMaxPoolSize, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel12))
+                                .addGap(14, 14, 14)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextFieldTCPServerIP)
+                                    .addComponent(jTextFieldTCPServerConnectionsTimeOut)
+                                    .addComponent(jTextFieldTCPServerMaxConnections)
+                                    .addComponent(jTextFieldTCPServerCorePoolSize, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jTextFieldTCPServerPort)
+                                    .addComponent(jTextFieldTCPServerMaxPoolSize, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButtonStartServer)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonStopServer))))
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jButtonStartServer)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonStopServer)
-                .addGap(98, 98, 98))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -252,7 +257,6 @@ public class frmTCPServer extends javax.swing.JFrame
 private void jButtonStartServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStartServerActionPerformed
     try
     {
-
         String serverName = "My TCP server";
         String serverDescription = "Example";
         InetAddress listenerIPAddress = InetAddress.getByName(jTextFieldTCPServerIP.getText());

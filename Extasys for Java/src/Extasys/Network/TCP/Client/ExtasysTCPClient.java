@@ -26,7 +26,6 @@ import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -55,7 +54,7 @@ public abstract class ExtasysTCPClient
     {
         fName = name;
         fDescription = description;
-        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize, corePoolSize, TimeUnit.SECONDS);
+        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
     }
 
     /**

@@ -37,9 +37,9 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
     /**
      * Constructs a new outgoing packet for an existing TCP Connector.
      *
-     * Use this class to send data from the TCP Connector to a server. This is
-     * an outgoing message that will remain in the servers thread pool as a job
-     * for the thread pool workers.
+     * Use this class to send data from a TCP Connector. This is an outgoing
+     * message that will remain in the server's thread pool as a job for the
+     * thread pool workers.
      *
      * @param connector is the TCPConnector where this message belongs to.
      * @param data is the byte array to be sent.
@@ -103,7 +103,7 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-        
+
         fDone.Set();
     }
 }

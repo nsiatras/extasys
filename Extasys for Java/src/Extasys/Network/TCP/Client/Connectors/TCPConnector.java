@@ -504,17 +504,19 @@ class ReadIncomingDataThread extends Thread
 
     private void ConnectionWithMessageCollector()
     {
-        int bytesRead = 0;
+        int bytesRead;
 
         while (fActive)
         {
             try
             {
                 bytesRead = fMyTCPConnector.fInput.read(fReadBuffer);
-                fMyTCPConnector.fBytesIn += bytesRead;
-                fMyTCPConnector.fMyTCPClient.fTotalBytesIn += bytesRead;
+
                 if (bytesRead > 0)
                 {
+                    fMyTCPConnector.fBytesIn += bytesRead;
+                    fMyTCPConnector.fMyTCPClient.fTotalBytesIn += bytesRead;
+                    
                     try
                     {
                         synchronized (fMyTCPConnector.fReceiveDataLock)
@@ -544,19 +546,19 @@ class ReadIncomingDataThread extends Thread
 
     private void ConnectionWithoutMessageCollector()
     {
-        int bytesRead = 0;
+        int bytesRead;
 
         while (fActive)
         {
             try
             {
                 bytesRead = fMyTCPConnector.fInput.read(fReadBuffer);
-                fMyTCPConnector.fBytesIn += bytesRead;
-
-                fMyTCPConnector.fMyTCPClient.fTotalBytesIn += bytesRead;
 
                 if (bytesRead > 0)
                 {
+                    fMyTCPConnector.fBytesIn += bytesRead;
+                    fMyTCPConnector.fMyTCPClient.fTotalBytesIn += bytesRead;
+
                     try
                     {
                         synchronized (fMyTCPConnector.fReceiveDataLock)

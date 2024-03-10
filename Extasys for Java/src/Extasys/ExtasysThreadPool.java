@@ -19,7 +19,7 @@
  THE SOFTWARE.*/
 package Extasys;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -30,9 +30,12 @@ import java.util.concurrent.TimeUnit;
 public class ExtasysThreadPool extends ThreadPoolExecutor
 {
 
-    public ExtasysThreadPool(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit)
+    public ExtasysThreadPool(int corePoolSize, int maximumPoolSize)
     {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ArrayBlockingQueue(250000, true));
+        //super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ArrayBlockingQueue(250000, true));
+
+        // It appears that LinkedBlockingQueue has better performance than the ArrayBlockingQueue
+        super(corePoolSize, maximumPoolSize, 10, TimeUnit.SECONDS, new LinkedBlockingQueue(250000));
         this.prestartAllCoreThreads();
     }
 
