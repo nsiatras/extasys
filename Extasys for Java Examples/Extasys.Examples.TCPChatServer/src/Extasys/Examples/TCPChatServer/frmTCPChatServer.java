@@ -4,17 +4,22 @@ import java.net.InetAddress;
 
 /**
  *
- * @author  Nikos Siatras
+ * @author Nikos Siatras
  */
 public class frmTCPChatServer extends javax.swing.JFrame
 {
 
     private TCPChatServer fServer = null;
 
-    /** Creates new form frmTCPChatServer */
+    /**
+     * Creates new form frmTCPChatServer
+     */
     public frmTCPChatServer()
     {
         initComponents();
+
+        // Open form in middle of screen
+        this.setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -142,18 +147,21 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     }
 }//GEN-LAST:event_jButton2ActionPerformed
 
+    public void UpdateClientsCount()
+    {
+        jLabelConnectedClients.setText(String.valueOf(fServer.getCurrentConnectionsNumber()));
+    }
 
-public void UpdateClientsCount()
-{
-    jLabelConnectedClients.setText(String.valueOf(fServer.getCurrentConnectionsNumber()));
-}
     /**
-    * @param args the command line arguments
-    */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
+     * @param args the command line arguments
+     */
+    public static void main(String args[])
+    {
+        java.awt.EventQueue.invokeLater(new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
                 new frmTCPChatServer().setVisible(true);
             }
         });

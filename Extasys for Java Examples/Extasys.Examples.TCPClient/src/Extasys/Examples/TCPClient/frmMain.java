@@ -37,6 +37,8 @@ public class frmMain extends javax.swing.JFrame
     public frmMain()
     {
         initComponents();
+        // Open form in middle of screen
+        this.setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")

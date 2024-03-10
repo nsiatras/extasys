@@ -35,6 +35,9 @@ public class frmUDPServer extends javax.swing.JFrame
     public frmUDPServer()
     {
         initComponents();
+
+        // Open form in middle of screen
+        this.setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")

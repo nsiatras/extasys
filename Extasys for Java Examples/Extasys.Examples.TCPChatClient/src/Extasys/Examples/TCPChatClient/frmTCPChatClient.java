@@ -36,6 +36,9 @@ public class frmTCPChatClient extends javax.swing.JFrame
     public frmTCPChatClient()
     {
         initComponents();
+
+        // Open form in middle of screen
+        this.setLocationRelativeTo(null);
     }
 
     public void MarkAsConnected()
