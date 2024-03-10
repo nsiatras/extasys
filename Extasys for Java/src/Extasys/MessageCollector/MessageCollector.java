@@ -43,6 +43,7 @@ public abstract class MessageCollector
         {
             fIncomingDataBuffer.Append(bytes);
             fIndexOf = fIncomingDataBuffer.IndexOf(fMessageETX.getBytes());
+
             while (fIndexOf > -1)
             {
                 MessageCollected(fIncomingDataBuffer.SubList(0, fIndexOf));

@@ -40,8 +40,9 @@ public class NetworkPacket
     }
 
     /**
-     * This method waits until this packet is processed by the Thread Pool and
-     * checks if it was canceled.
+     * This method waits until this packet is processed by the Thread Pool. It
+     * also checks if the previous packet was Canceled in order to mark it self
+     * as canceled too.
      */
     public void WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled()
     {

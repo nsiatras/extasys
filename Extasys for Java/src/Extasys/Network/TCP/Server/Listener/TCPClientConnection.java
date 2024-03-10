@@ -45,7 +45,6 @@ public final class TCPClientConnection
 
     // Connection properties
     protected Socket fConnection;
-    protected boolean fActive = false;
     protected boolean fIsConnected = false;
     public final TCPListener fMyListener;
     public final ExtasysTCPServer fMyExtasysServer;
@@ -103,12 +102,11 @@ public final class TCPClientConnection
         }
 
         fMyListener.AddClient(this);
-        StartReceivingData();
+        StartReceivingAndSendingData();
     }
 
-    private void StartReceivingData()
+    private void StartReceivingAndSendingData()
     {
-        fActive = true;
         try
         {
             fInput = fConnection.getInputStream();
@@ -184,7 +182,7 @@ public final class TCPClientConnection
      */
     private void Disconnect(boolean force)
     {
-        if (fActive)
+        if (fIsConnected)
         {
             if (!force)
             {
@@ -200,7 +198,6 @@ public final class TCPClientConnection
                 }
             }
 
-            fActive = false;
             fIsConnected = false;
 
             try
@@ -367,11 +364,6 @@ public final class TCPClientConnection
         return fBytesOut;
     }
 
-    public boolean isActive()
-    {
-        return fActive;
-    }
-
     /**
      * Returns the message collector of this client.
      *
@@ -413,7 +405,7 @@ class ClientDataReader implements Runnable
     {
         int bytesRead;
 
-        while (fClientConnection.fActive)
+        while (fClientConnection.fIsConnected)
         {
             try
             {
@@ -432,16 +424,16 @@ class ClientDataReader implements Runnable
                 }
                 else
                 {
-                    fClientConnection.DisconnectMe();
+                    fClientConnection.ForceDisconnect();
                 }
             }
             catch (SocketTimeoutException ex) //Socket timeout.
             {
-                fClientConnection.DisconnectMe();
+                fClientConnection.ForceDisconnect();
             }
             catch (IOException | StringIndexOutOfBoundsException ex)
             {
-                fClientConnection.DisconnectMe();
+                fClientConnection.ForceDisconnect();
             }
         }
     }
@@ -450,7 +442,7 @@ class ClientDataReader implements Runnable
     {
         int bytesRead;
 
-        while (fClientConnection.fActive)
+        while (fClientConnection.fIsConnected)
         {
             try
             {
@@ -469,16 +461,16 @@ class ClientDataReader implements Runnable
                 }
                 else
                 {
-                    fClientConnection.DisconnectMe();
+                    fClientConnection.ForceDisconnect();
                 }
             }
             catch (SocketTimeoutException ex) //Socket timeout.
             {
-                fClientConnection.DisconnectMe();
+                fClientConnection.ForceDisconnect();
             }
             catch (IOException | StringIndexOutOfBoundsException ex)
             {
-                fClientConnection.DisconnectMe();
+                fClientConnection.ForceDisconnect();
             }
         }
     }
