@@ -26,7 +26,7 @@ ThreadPool --> ExtasysListener;
 * Dedicated Thread Pool for each TCPServer, TCPClient, UDPServer and UDPClient
 * Multiple listeners per server and multiple connectors per Client
 * TCP message collector with character or string message splitter
-* On the fly Data Encryption
+* On-the-Fly Data Encryption
 
 Extasys project is Developed with <a href="https://netbeans.apache.org/"><b>NetBeans IDE</b><a>
 
