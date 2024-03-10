@@ -48,7 +48,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
             fMyTCPListener = this.AddListener("My listener", listenerIP, port, maxConnections, 8192, connectionsTimeOut, 100,  fMessageSplitter);
             
             // Uncomment the following line to set Encryption for this TCP listener
-            //fMyTCPListener.setConnectionEncryptor(new Base64Encryptor());
+            fMyTCPListener.setConnectionEncryptor(new Base64Encryptor());
         }
         catch (Exception ex)
         {

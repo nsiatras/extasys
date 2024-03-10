@@ -45,8 +45,7 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
      */
     public IncomingTCPClientConnectionPacket(TCPClientConnection client, byte[] data, NetworkPacket previousPacket)
     {
-        // Always decrypt incoming data !
-        super(client.getMyTCPListener().getConnectionEncyptor().Decrypt(data), previousPacket);
+        super(data, previousPacket);
         fClient = client;
 
         SendToThreadPool();
@@ -76,7 +75,11 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
             // Call on data receive
             if (!fCancel)
             {
-                fClient.fMyExtasysServer.OnDataReceive(fClient, new DataFrame(super.fPacketsData));
+                // Decrypt Data
+                final byte[] decryptedData = fClient.getMyTCPListener().getConnectionEncyptor().Decrypt(fPacketsData);
+                
+                // Call OnDataReceive
+                fClient.fMyExtasysServer.OnDataReceive(fClient, new DataFrame(decryptedData));
             }
         }
         catch (Exception ex)

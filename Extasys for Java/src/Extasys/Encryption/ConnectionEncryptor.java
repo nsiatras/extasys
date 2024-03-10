@@ -26,7 +26,7 @@ package Extasys.Encryption;
 public abstract class ConnectionEncryptor
 {
 
-    public abstract byte[] Encrypt(byte[] bytes);
+    public abstract byte[] Encrypt(final byte[] bytes);
 
-    public abstract byte[] Decrypt(byte[] bytes);
+    public abstract byte[] Decrypt(final byte[] bytes);
 }

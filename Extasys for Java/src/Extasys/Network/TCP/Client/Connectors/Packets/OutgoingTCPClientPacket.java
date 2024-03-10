@@ -51,8 +51,7 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
      */
     public OutgoingTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket) throws ConnectorCannotSendPacketException
     {
-        // Always encrypt outgoing data !
-        super(connector.getConnectionEncyptor().Encrypt(data), previousPacket);
+        super(data, previousPacket);
         fConnector = connector;
 
         SendToThreadPool();
@@ -81,11 +80,14 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
 
             if (!fCancel)
             {
+                // Encrypt Data
+                final byte[] encryptedData = fConnector.getConnectionEncyptor().Encrypt(fPacketsData);
+
                 try
                 {
-                    fConnector.fOutput.write(super.fPacketsData);
-                    fConnector.fBytesOut += super.fPacketsData.length;
-                    fConnector.fMyTCPClient.fTotalBytesOut += super.fPacketsData.length;
+                    fConnector.fOutput.write(encryptedData);
+                    fConnector.fBytesOut += encryptedData.length;
+                    fConnector.fMyTCPClient.fTotalBytesOut += encryptedData.length;
                 }
                 catch (IOException ioException)
                 {

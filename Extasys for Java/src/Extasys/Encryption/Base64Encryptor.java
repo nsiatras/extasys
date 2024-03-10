@@ -40,13 +40,13 @@ public class Base64Encryptor extends ConnectionEncryptor
     }
 
     @Override
-    public byte[] Encrypt(byte[] bytes)
+    public byte[] Encrypt(final byte[] bytes)
     {
         return fEncoder.encode(bytes);
     }
 
     @Override
-    public byte[] Decrypt(byte[] bytes)
+    public byte[] Decrypt(final byte[] bytes)
     {
         return fDecoder.decode(bytes);
     }

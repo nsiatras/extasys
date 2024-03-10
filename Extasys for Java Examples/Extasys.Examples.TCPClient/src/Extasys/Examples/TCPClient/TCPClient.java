@@ -46,7 +46,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
             TCPConnector connector = super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, fMessageSplitter);
 
             // Uncomment the following line to set Encryption for this TCPConnector
-            //connector.setConnectionEncryptor(new Base64Encryptor());
+            connector.setConnectionEncryptor(new Base64Encryptor());
         }
         catch (Exception ex)
         {

@@ -46,8 +46,7 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
      */
     public MessageCollectorTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket)
     {
-        // Always decrypt incoming data !
-        super(connector.getConnectionEncyptor().Decrypt(data), previousPacket);
+        super(data, previousPacket);
         fConnector = connector;
 
         SendToThreadPool();
@@ -77,7 +76,10 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
             // Call append data
             if (!fCancel)
             {
-                fConnector.fMessageCollector.AppendData(super.fPacketsData);
+                // Decrypt Data
+                final byte[] decryptedData = fConnector.getConnectionEncyptor().Decrypt(fPacketsData);
+
+                fConnector.fMessageCollector.AppendData(decryptedData);
             }
         }
         catch (Exception ex)

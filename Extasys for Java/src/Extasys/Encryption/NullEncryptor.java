@@ -27,13 +27,13 @@ public class NullEncryptor extends ConnectionEncryptor
 {
 
     @Override
-    public byte[] Encrypt(byte[] bytes)
+    public byte[] Encrypt(final byte[] bytes)
     {
         return bytes;
     }
 
     @Override
-    public byte[] Decrypt(byte[] bytes)
+    public byte[] Decrypt(final byte[] bytes)
     {
         return bytes;
     }

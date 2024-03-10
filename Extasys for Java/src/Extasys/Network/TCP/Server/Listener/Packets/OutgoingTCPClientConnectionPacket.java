@@ -49,8 +49,7 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
      */
     public OutgoingTCPClientConnectionPacket(TCPClientConnection client, byte[] data, NetworkPacket previousPacket) throws OutgoingPacketFailedException
     {
-        // Always encrypt outgoing data !
-        super(client.getMyTCPListener().getConnectionEncyptor().Encrypt(data), previousPacket);
+        super(data, previousPacket);
         fClient = client;
 
         SendToThreadPool();
@@ -79,11 +78,14 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
 
             if (!fCancel)
             {
+                // Encrypt data before Sent
+                final byte[] encryptedData = fClient.getMyTCPListener().getConnectionEncyptor().Encrypt(super.fPacketsData);
+
                 try
                 {
-                    fClient.fOutput.write(super.fPacketsData);
-                    fClient.fBytesOut += super.fPacketsData.length;
-                    fClient.fMyListener.fBytesOut += super.fPacketsData.length;
+                    fClient.fOutput.write(encryptedData);
+                    fClient.fBytesOut += encryptedData.length;
+                    fClient.fMyListener.fBytesOut += encryptedData.length;
                 }
                 catch (IOException ioException)
                 {

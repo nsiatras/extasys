@@ -41,14 +41,13 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
      * workers.
      *
      * @param connector is the TCP Connector where this message belongs to.
-     * @param data 
+     * @param data
      * @param previousPacket is the previous incoming message of the TCP
      * Connector.
      */
     public IncomingTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket)
     {
-        // Always decrypt incoming data !
-        super(connector.getConnectionEncyptor().Decrypt(data), previousPacket);
+        super(data, previousPacket);
         fConnector = connector;
 
         SendToThreadPool();
@@ -78,7 +77,11 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
             // Call OnDataReceive
             if (!fCancel)
             {
-                fConnector.fMyTCPClient.OnDataReceive(fConnector, new DataFrame(super.fPacketsData));
+                // Decrypt Data
+                final byte[] decryptedData = fConnector.getConnectionEncyptor().Decrypt(fPacketsData);
+
+                // Call OnDataReceive
+                fConnector.fMyTCPClient.OnDataReceive(fConnector, new DataFrame(decryptedData));
             }
         }
         catch (Exception ex)
@@ -88,7 +91,7 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-        
+
         fDone.Set();
     }
 
