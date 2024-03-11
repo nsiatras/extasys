@@ -302,9 +302,7 @@ class ReadIncomingData extends Thread
             }
             catch (IOException ex)
             {
-            }
-            catch (Exception ex)
-            {
+                fMyConnector.Stop();
             }
         }
     }
