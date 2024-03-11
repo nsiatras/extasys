@@ -580,7 +580,9 @@ public class TCPListener
     }
 
     /**
-     * Sets the Auto-Apply Message Splitter to outgoing messages On or Off
+     * Sets the Auto-Apply Message Splitter state. If this is set to true then
+     * Extasys will automatically apply the Message Collector splitter to all
+     * outgoing messages of this TCP Listener.
      *
      * @param value
      */
