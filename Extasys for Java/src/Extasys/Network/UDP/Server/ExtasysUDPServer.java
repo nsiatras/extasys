@@ -30,12 +30,14 @@ import java.util.ArrayList;
  *
  * @author Nikos Siatras
  */
-public class ExtasysUDPServer
+public abstract class ExtasysUDPServer
 {
 
     private String fName, fDescription;
     private final ArrayList<UDPListener> fListeners = new ArrayList<>();
+    private final Object fListenersLock = new Object();
     public final ExtasysThreadPool fMyThreadPool;
+    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
      * Constructs a new Extasys UDP Server.
@@ -68,9 +70,12 @@ public class ExtasysUDPServer
      */
     public UDPListener AddListener(String name, InetAddress ipAddress, int port, int readBufferSize, int readDataTimeOut)
     {
-        UDPListener listener = new UDPListener(this, name, ipAddress, port, readBufferSize, readDataTimeOut);
-        fListeners.add(listener);
-        return listener;
+        synchronized (fListenersLock)
+        {
+            UDPListener listener = new UDPListener(this, name, ipAddress, port, readBufferSize, readDataTimeOut);
+            fListeners.add(listener);
+            return listener;
+        }
     }
 
     /**
@@ -98,9 +103,12 @@ public class ExtasysUDPServer
      */
     public void SendData(DatagramPacket packet)
     {
-        for (UDPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            listener.SendData(packet);
+            for (UDPListener listener : fListeners)
+            {
+                listener.SendData(packet);
+            }
         }
     }
 
@@ -111,11 +119,14 @@ public class ExtasysUDPServer
      */
     public void Start() throws SocketException
     {
-        Stop();
-
-        for (UDPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            listener.Start();
+            Stop();
+
+            for (UDPListener listener : fListeners)
+            {
+                listener.Start();
+            }
         }
     }
 
@@ -124,9 +135,12 @@ public class ExtasysUDPServer
      */
     public void Stop()
     {
-        for (UDPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            listener.Stop();
+            for (UDPListener listener : fListeners)
+            {
+                listener.Stop();
+            }
         }
     }
 
@@ -141,15 +155,7 @@ public class ExtasysUDPServer
         fMyThreadPool.shutdown();
     }
 
-    public void OnDataReceive(UDPListener listener, DatagramPacket packet)
-    {
-        //System.out.println("Data received");
-        //System.out.println("---" + packet.getAddress() + ":" + packet.getPort());
-        //System.out.println("---" + new String(packet.getData(), 0, packet.getLength(), listener.getCharset()));
-
-        //DatagramPacket reply = new DatagramPacket(packet.getData(), 0, packet.getLength(), packet.getAddress(), packet.getPort());
-        //listener.SendData(reply);
-    }
+    public abstract void OnDataReceive(UDPListener listener, DatagramPacket packet);
 
     /**
      * Returns the name of this UDP server.
@@ -209,18 +215,7 @@ public class ExtasysUDPServer
      */
     public long getBytesIn()
     {
-        long bytesIn = 0;
-        try
-        {
-            for (UDPListener listener : fListeners)
-            {
-                bytesIn += listener.getBytesIn();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return bytesIn;
+        return fTotalBytesIn;
     }
 
     /**
@@ -230,17 +225,6 @@ public class ExtasysUDPServer
      */
     public long getBytesOut()
     {
-        long bytesOut = 0;
-        try
-        {
-            for (UDPListener listener : fListeners)
-            {
-                bytesOut += listener.getBytesOut();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return bytesOut;
+        return fTotalBytesOut;
     }
 }

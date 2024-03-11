@@ -20,9 +20,11 @@ THE SOFTWARE.*/
 package Extasys.Examples.TCPChatServer;
 
 import Extasys.DataFrame;
-import Extasys.Network.TCP.Server.Listener.Exceptions.*;
-
+import Extasys.Encryption.Base64Encryptor;
+import Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException;
+import Extasys.Network.TCP.Server.Listener.Exceptions.OutgoingPacketFailedException;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
+import Extasys.Network.TCP.Server.Listener.TCPListener;
 import java.net.InetAddress;
 import java.util.HashMap;
 
@@ -34,16 +36,21 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 {
 
     private final HashMap<String, TCPChatUser> fConnectedClients;
-    private final String fSPT = String.valueOf(((char) 2)); // Message splitter character.
-    private final String fMCChar = String.valueOf(((char) 3)); // Message collector character.
+
+    private final String fSPT = String.valueOf(((char) 2)); // Message splitter character. This is not the same as the message collector character
+
     private Thread fPingThread;
     private boolean fServerIsActive;
     private final frmTCPChatServer fMainForm;
 
     public TCPChatServer(InetAddress listenerIP, int port, frmTCPChatServer frmMain)
     {
-        super("TCP Chat Server", "", 10, 100);
-        super.AddListener("Main Listener", listenerIP, port, 99999, 20480, 10000, 100, ((char) 3));
+        super("TCP Chat Server", "This is a simple chat server", 10, 20);
+
+        TCPListener listener = super.AddListener("Main Listener", listenerIP, port, 9999, 8192, 10000, 100, ((char) 3));
+        listener.setAutoApplyMessageSplitterState(true); // Auto apply message splitter to outgoing messages
+        listener.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
+
         fConnectedClients = new HashMap<>();
         fMainForm = frmMain;
     }
@@ -65,7 +72,8 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
                     {
                         try
                         {
-                            SendToAllClients("Ping" + fSPT);
+                            // Send "Ping" command to all Client
+                            ReplyToAll("Ping" + fSPT);
                             Thread.sleep(5000);
                         }
                         catch (InterruptedException ex)
@@ -105,79 +113,78 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     {
         try
         {
-            System.out.println(new String(data.getBytes()));
+            // This isa the client's incoming message
             String[] splittedMessage = new String(data.getBytes()).split(fSPT);
 
-            if (splittedMessage[0].equals("Login"))
+            switch (splittedMessage[0])
             {
-                /*  Message: Login ((char)2) Username
-                Client wants to login.
-                Server checks if username is unique.
-                If the username is taken server replys -> "Change_Username ((char)2)"
-                If the username is not taken then server replys -> "Welcome ((char)2)" to the new client
-                and sends "New_User ((char)2) NewUsername" to all other clients.
-                 */
-                String tmpUsername = splittedMessage[1];
-                if (IsUsernameTaken(tmpUsername))
-                {
-                    SendToClient("Change_Username" + fSPT, sender);
-                }
-                else
-                {
-                    TCPChatUser user = new TCPChatUser(tmpUsername, sender);
-                    fConnectedClients.put(sender.getIPAddress(), user);
+                case "Login":
+                    // Message: Login ((char)2) Username
+                    // Client wants to login.
+                    // Server checks if username is unique.
+                    // If the username is taken server replys -> "Change_Username ((char)2)"
+                    // If the username is not taken then server replys -> "Welcome ((char)2)" to the new client
+                    // and sends "New_User ((char)2) NewUsername" to all other clients.
+                    String tmpUsername = splittedMessage[1];
+                    if (IsUsernameTaken(tmpUsername))
+                    {
+                        sender.SendData("Change_Username" + fSPT);
+                    }
+                    else
+                    {
+                        TCPChatUser user = new TCPChatUser(tmpUsername, sender);
+                        fConnectedClients.put(sender.getIPAddress(), user);
 
-                    SendToAllClients("New_User" + fSPT + tmpUsername);
-                    SendToClient("Welcome" + fSPT, sender);
-                }
-            }
-            else if (splittedMessage[0].equals("Message"))
-            {
-                /*  Message: Message ((char)2) some_text
-                Client sends a chat message to the server.
-                Server checks if the client is registered to the server.
-                If the client is registered to the server 
-                the server sends this message to all the other clients "Message ((char)2) Sender's username : some_text" else
-                it disconnects the client.  
-                 */
-                if (fConnectedClients.containsKey(sender.getIPAddress()))
-                {
-                    SendToAllClients("Message" + fSPT + GetClientName(sender) + ":" + splittedMessage[1]);
-                }
-                else
-                {
-                    sender.DisconnectMe();
-                }
-            }
-            else if (splittedMessage[0].equals("Get_List"))
-            {
-                /*  Message: Get_List ((char)2)
-                Client requets a list with other connected clients.
-                If the client is registered to the server the server replys the list
-                else it disconnects the client.
-                 */
-                if (fConnectedClients.containsKey(sender.getIPAddress()))
-                {
-                    SendToClient(GetConnectedClientsList(), sender);
-                }
-                else
-                {
-                    sender.DisconnectMe();
-                }
-            }
-            else if (splittedMessage[0].equals("Pong"))
-            {
-                /* Message: Pong ((char)2)
-                Client response to Ping.
-                 */
-                System.out.println(GetClientName(sender) + " PONG!");
-            }
-            else
-            {
-                System.out.println(sender.getIPAddress() + " sends wrong message");
+                        super.ReplyToAll("New_User" + fSPT + tmpUsername);
+                        sender.SendData("Welcome" + fSPT);
+                    }
+                    break;
+
+                case "Message":
+                    // Message: Message ((char)2) some_text
+                    // Client sends a chat message to the server.
+                    // Server checks if the client is registered to the server.
+                    // If the client is registered to the server
+                    // the server sends this message to all the other clients "Message ((char)2) Sender's username : some_text" else
+                    // it disconnects the client.
+                    if (fConnectedClients.containsKey(sender.getIPAddress()))
+                    {
+                        super.ReplyToAll("Message" + fSPT + GetClientName(sender) + ":" + splittedMessage[1]);
+                    }
+                    else
+                    {
+                        sender.DisconnectMe();
+                    }
+                    break;
+
+                case "Get_List":
+                    // Message: Get_List ((char)2)
+                    // Client requets a list with other connected clients.
+                    // If the client is registered to the server the server replys the list
+                    // else it disconnects the client.
+                    if (fConnectedClients.containsKey(sender.getIPAddress()))
+                    {
+                        sender.SendData(GetConnectedClientsList());
+                    }
+                    else
+                    {
+                        sender.DisconnectMe();
+                    }
+                    break;
+
+                case "Pong":
+                    // Message: Pong ((char)2)
+                    // A Client responded to Ping. 
+                    // Do nothing....
+                    System.out.println(GetClientName(sender) + " PONG!");
+                    break;
+
+                default:
+                    System.out.println(sender.getIPAddress() + " sends wrong message");
+                    break;
             }
         }
-        catch (Exception ex)
+        catch (ClientIsDisconnectedException | OutgoingPacketFailedException ex)
         {
             System.err.println(ex.getMessage());
         }
@@ -211,44 +218,6 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
         return "";
     }
 
-    private void SendToAllClients(String message)
-    {
-        message = message + fMCChar;
-        for (TCPChatUser user : fConnectedClients.values())
-        {
-            try
-            {
-                user.SendData(message);
-            }
-            catch (ClientIsDisconnectedException | OutgoingPacketFailedException ex)
-            {
-                System.err.println(ex.getMessage());
-            }
-        }
-
-    }
-
-    private void SendToClient(String data, TCPClientConnection sender)
-    {
-        try
-        {
-            sender.SendData(data + fMCChar);
-        }
-        catch (ClientIsDisconnectedException ex)
-        {
-            // Client disconnected.
-            System.err.println(ex.getMessage());
-        }
-        catch (OutgoingPacketFailedException ex)
-        {
-            // Failed to send packet.
-            System.err.println(ex.getMessage());
-        }
-        catch (Exception ex)
-        {
-        }
-    }
-
     private String GetConnectedClientsList()
     {
         String list = "";
@@ -272,7 +241,7 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     {
         if (fConnectedClients.containsKey(client.getIPAddress()))
         {
-            SendToAllClients("Remove_User" + fSPT + ((TCPChatUser) fConnectedClients.get(client.getIPAddress())).getUsername());
+            super.ReplyToAll("Remove_User" + fSPT + ((TCPChatUser) fConnectedClients.get(client.getIPAddress())).getUsername());
             fConnectedClients.remove(client.getIPAddress());
         }
         fMainForm.UpdateClientsCount();

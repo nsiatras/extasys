@@ -55,7 +55,7 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
     {
         try
         {
-            fClient.fMyExtasysServer.fMyThreadPool.execute(this);
+            fClient.fMyExtasysServer.getMyThreadPool().execute(this);
         }
         catch (RejectedExecutionException ex)
         {

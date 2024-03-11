@@ -32,12 +32,14 @@ import java.util.concurrent.ThreadPoolExecutor;
  *
  * @author Nikos Siatras
  */
-public class ExtasysUDPClient
+public abstract class ExtasysUDPClient
 {
 
     private String fName, fDescription;
     private final ArrayList<UDPConnector> fConnectors = new ArrayList<>();
+    private final Object fConnectorsLock = new Object();
     private final ExtasysThreadPool fMyThreadPool;
+    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
      * Constructs a new Extasys UDP Client.
@@ -70,9 +72,12 @@ public class ExtasysUDPClient
      */
     public UDPConnector AddConnector(String name, int readBufferSize, int readTimeOut, InetAddress serverIP, int serverPort)
     {
-        UDPConnector connector = new UDPConnector(this, name, readBufferSize, readTimeOut, serverIP, serverPort);
-        fConnectors.add(connector);
-        return connector;
+        synchronized (fConnectorsLock)
+        {
+            UDPConnector connector = new UDPConnector(this, name, readBufferSize, readTimeOut, serverIP, serverPort);
+            fConnectors.add(connector);
+            return connector;
+        }
     }
 
     /**
@@ -82,13 +87,16 @@ public class ExtasysUDPClient
      */
     public void RemoveConnector(String name)
     {
-        for (int i = 0; i < fConnectors.size(); i++)
+        synchronized (fConnectorsLock)
         {
-            if (((UDPConnector) fConnectors.get(i)).getName().equals(name))
+            for (int i = 0; i < fConnectors.size(); i++)
             {
-                ((UDPConnector) fConnectors.get(i)).Stop();
-                fConnectors.remove(i);
-                break;
+                if (((UDPConnector) fConnectors.get(i)).getName().equals(name))
+                {
+                    ((UDPConnector) fConnectors.get(i)).Stop();
+                    fConnectors.remove(i);
+                    break;
+                }
             }
         }
     }
@@ -101,9 +109,12 @@ public class ExtasysUDPClient
      */
     public void SendData(String data) throws IOException
     {
-        for (UDPConnector conn : fConnectors)
+        synchronized (fConnectorsLock)
         {
-            conn.SendData(data);
+            for (UDPConnector conn : fConnectors)
+            {
+                conn.SendData(data);
+            }
         }
     }
 
@@ -115,9 +126,12 @@ public class ExtasysUDPClient
      */
     public void SendData(byte[] bytes) throws IOException
     {
-        for (UDPConnector conn : fConnectors)
+        synchronized (fConnectorsLock)
         {
-            conn.SendData(bytes);
+            for (UDPConnector conn : fConnectors)
+            {
+                conn.SendData(bytes);
+            }
         }
     }
 
@@ -128,17 +142,20 @@ public class ExtasysUDPClient
      */
     public void Start() throws SocketException, Exception
     {
-        Stop();
-        try
+        synchronized (fConnectorsLock)
         {
-            for (UDPConnector conn : fConnectors)
+            Stop();
+            try
             {
-                conn.Start();
+                for (UDPConnector conn : fConnectors)
+                {
+                    conn.Start();
+                }
             }
-        }
-        catch (SocketException ex)
-        {
-            throw ex;
+            catch (SocketException ex)
+            {
+                throw ex;
+            }
         }
     }
 
@@ -147,15 +164,18 @@ public class ExtasysUDPClient
      */
     public void Stop()
     {
-        try
+        synchronized (fConnectorsLock)
         {
-            for (UDPConnector conn : fConnectors)
+            try
             {
-                conn.Stop();
+                for (UDPConnector conn : fConnectors)
+                {
+                    conn.Stop();
+                }
             }
-        }
-        catch (Exception ex)
-        {
+            catch (Exception ex)
+            {
+            }
         }
     }
 
@@ -170,12 +190,7 @@ public class ExtasysUDPClient
         fMyThreadPool.shutdown();
     }
 
-    public void OnDataReceive(UDPConnector connector, DatagramPacket packet)
-    {
-        //System.out.println("Data received");
-        //System.out.println("---" + packet.getAddress() + ":" + packet.getPort());
-        //System.out.println("---" + new String(packet.getData(), 0, packet.getLength()));
-    }
+    public abstract void OnDataReceive(UDPConnector connector, DatagramPacket packet);
 
     /**
      * Return the name of the UDP client.
@@ -245,18 +260,7 @@ public class ExtasysUDPClient
      */
     public long getBytesIn()
     {
-        long result = 0;
-        try
-        {
-            for (UDPConnector conn : fConnectors)
-            {
-                result += conn.getBytesIn();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return result;
+        return fTotalBytesIn;
     }
 
     /**
@@ -266,18 +270,7 @@ public class ExtasysUDPClient
      */
     public long getBytesOut()
     {
-        long result = 0;
-        try
-        {
-            for (UDPConnector conn : fConnectors)
-            {
-                result += conn.getBytesOut();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return result;
+        return fTotalBytesOut;
     }
 
 }

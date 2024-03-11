@@ -296,14 +296,13 @@ class ReadIncomingData extends Thread
                 receivedPacket = new DatagramPacket(data, data.length);
                 fMyConnector.fSocket.receive(receivedPacket);
                 fMyConnector.fBytesIn += receivedPacket.getLength();
+                fMyConnector.getMyExtasysUDPClient().fTotalBytesIn += receivedPacket.getLength();
 
                 fMyConnector.fLastIncomingPacket = new IncomingUDPClientPacket(fMyConnector, receivedPacket, fMyConnector.fLastIncomingPacket);
             }
             catch (IOException ex)
             {
-            }
-            catch (Exception ex)
-            {
+                fMyConnector.Stop();
             }
         }
     }

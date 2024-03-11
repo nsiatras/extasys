@@ -34,19 +34,19 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 {
 
     private boolean fKeepSendingMessages = false;
-    private final char fMessageSplitter = (char) 3;
     private int fPreviousNumber = 0;
 
     public TCPClient(String name, String description, InetAddress remoteHostIP, int remoteHostPort, int corePoolSize, int maximumPoolSize)
     {
         super(name, description, corePoolSize, maximumPoolSize);
 
+        
         try
         {
-            TCPConnector connector = super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, fMessageSplitter);
-
-            // Uncomment the following line to set Encryption for this TCPConnector
-            connector.setConnectionEncryptor(new Base64Encryptor());
+            // Add a new connector to this TCP Client
+            TCPConnector connector = super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, ((char) 3));
+            connector.setAutoApplyMessageSplitterState(true); // Auto apply message splitter to outgoing messages
+            connector.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
         }
         catch (Exception ex)
         {
@@ -74,7 +74,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
             // fMessageToExchange string back
             if (fKeepSendingMessages)
             {
-                connector.SendData(String.valueOf(fPreviousNumber) + fMessageSplitter);
+                connector.SendData(String.valueOf(fPreviousNumber));
             }
         }
         catch (ConnectorCannotSendPacketException | ConnectorDisconnectedException ex)
@@ -102,7 +102,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
         try
         {
             fPreviousNumber = 1000000000;
-            SendData(String.valueOf(fPreviousNumber) + fMessageSplitter);
+            SendData(String.valueOf(fPreviousNumber));
         }
         catch (ConnectorDisconnectedException | ConnectorCannotSendPacketException ex)
         {

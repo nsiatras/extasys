@@ -38,7 +38,9 @@ public abstract class ExtasysTCPServer
 
     private String fName, fDescription;
     private final ArrayList<TCPListener> fListeners = new ArrayList<>();
-    public final ExtasysThreadPool fMyThreadPool;
+    private final Object fListenersLock = new Object();
+    private final ExtasysThreadPool fMyThreadPool;
+    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
      * Constructs an new Extasys TCP Server.
@@ -74,10 +76,12 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog);
-        listener.setMyExtasysTCPServer(this);
-        fListeners.add(listener);
-        return listener;
+        synchronized (fListenersLock)
+        {
+            TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog);
+            fListeners.add(listener);
+            return listener;
+        }
     }
 
     /**
@@ -98,10 +102,12 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
-        listener.setMyExtasysTCPServer(this);
-        fListeners.add(listener);
-        return listener;
+        synchronized (fListenersLock)
+        {
+            TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
+            fListeners.add(listener);
+            return listener;
+        }
     }
 
     /**
@@ -122,10 +128,12 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
-        listener.setMyExtasysTCPServer(this);
-        fListeners.add(listener);
-        return listener;
+        synchronized (fListenersLock)
+        {
+            TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
+            fListeners.add(listener);
+            return listener;
+        }
     }
 
     /**
@@ -135,13 +143,16 @@ public abstract class ExtasysTCPServer
      */
     public void RemoveListener(String name)
     {
-        for (int i = 0; i < fListeners.size(); i++)
+        synchronized (fListenersLock)
         {
-            if (fListeners.get(i).getName().equals(name))
+            for (int i = 0; i < fListeners.size(); i++)
             {
-                fListeners.get(i).Stop();
-                fListeners.remove(i);
-                break;
+                if (fListeners.get(i).getName().equals(name))
+                {
+                    fListeners.get(i).Stop();
+                    fListeners.remove(i);
+                    break;
+                }
             }
         }
     }
@@ -192,25 +203,28 @@ public abstract class ExtasysTCPServer
 
     private void Stop(boolean force)
     {
-        // Stop all listeners.
-        for (TCPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            if (!force)
+            // Stop all listeners.
+            for (TCPListener listener : fListeners)
             {
-                listener.Stop();
+                if (!force)
+                {
+                    listener.Stop();
+                }
+                else
+                {
+                    listener.ForceStop();
+                }
             }
-            else
-            {
-                listener.ForceStop();
-            }
-        }
 
-        try
-        {
-            fMyThreadPool.getQueue().clear();
-        }
-        catch (Exception ex)
-        {
+            try
+            {
+                fMyThreadPool.getQueue().clear();
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 
@@ -285,9 +299,12 @@ public abstract class ExtasysTCPServer
      */
     public void ReplyToAll(String data)
     {
-        for (TCPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            listener.ReplyToAll(data);
+            for (TCPListener listener : fListeners)
+            {
+                listener.ReplyToAll(data);
+            }
         }
     }
 
@@ -298,9 +315,12 @@ public abstract class ExtasysTCPServer
      */
     public void ReplyToAll(byte[] bytes)
     {
-        for (TCPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            listener.ReplyToAll(bytes);
+            for (TCPListener listener : fListeners)
+            {
+                listener.ReplyToAll(bytes);
+            }
         }
     }
 
@@ -312,9 +332,12 @@ public abstract class ExtasysTCPServer
      */
     public void ReplyToAllExceptSender(String data, TCPClientConnection sender)
     {
-        for (TCPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            listener.ReplyToAllExceptSender(data, sender);
+            for (TCPListener listener : fListeners)
+            {
+                listener.ReplyToAllExceptSender(data, sender);
+            }
         }
     }
 
@@ -326,9 +349,12 @@ public abstract class ExtasysTCPServer
      */
     public void ReplyToAllExceptSender(byte[] bytes, TCPClientConnection sender)
     {
-        for (TCPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            listener.ReplyToAllExceptSender(bytes, sender);
+            for (TCPListener listener : fListeners)
+            {
+                listener.ReplyToAllExceptSender(bytes, sender);
+            }
         }
     }
 
@@ -380,7 +406,10 @@ public abstract class ExtasysTCPServer
      */
     public ArrayList<TCPListener> getListeners()
     {
-        return fListeners;
+        synchronized (fListenersLock)
+        {
+            return fListeners;
+        }
     }
 
     /**
@@ -390,20 +419,23 @@ public abstract class ExtasysTCPServer
      */
     public int getCurrentConnectionsNumber()
     {
-        int currentConnections = 0;
-
-        for (TCPListener listener : fListeners)
+        synchronized (fListenersLock)
         {
-            try
-            {
-                currentConnections += listener.getConnectedClients().size();
-            }
-            catch (Exception ex)
-            {
-            }
-        }
+            int currentConnections = 0;
 
-        return currentConnections;
+            for (TCPListener listener : fListeners)
+            {
+                try
+                {
+                    currentConnections += listener.getConnectedClients().size();
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
+            return currentConnections;
+        }
     }
 
     /**
@@ -417,24 +449,13 @@ public abstract class ExtasysTCPServer
     }
 
     /**
-     * Returns the total bytes received from this server.
+     * Returns the total bytes received by this server.
      *
-     * @return the total bytes received from this server.
+     * @return the total bytes received by this server.
      */
     public long getBytesIn()
     {
-        long bytesIn = 0;
-        try
-        {
-            for (TCPListener listener : fListeners)
-            {
-                bytesIn += listener.getBytesIn();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return bytesIn;
+        return fTotalBytesIn;
     }
 
     /**
@@ -444,17 +465,6 @@ public abstract class ExtasysTCPServer
      */
     public long getBytesOut()
     {
-        long bytesOut = 0;
-        try
-        {
-            for (TCPListener listener : fListeners)
-            {
-                bytesOut += listener.getBytesOut();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return bytesOut;
+        return fTotalBytesOut;
     }
 }

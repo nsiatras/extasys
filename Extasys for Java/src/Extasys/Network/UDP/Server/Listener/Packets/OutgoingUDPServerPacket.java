@@ -60,13 +60,14 @@ public class OutgoingUDPServerPacket extends NetworkPacket implements Runnable
             {
                 fMyListener.fSocket.send(fDataGram);
                 fMyListener.fBytesOut += fDataGram.getLength();
+                fMyListener.getMyExtasysUDPServer().fTotalBytesOut += fDataGram.getLength();
             }
 
         }
         catch (Exception ex)
         {
         }
-        
+
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;

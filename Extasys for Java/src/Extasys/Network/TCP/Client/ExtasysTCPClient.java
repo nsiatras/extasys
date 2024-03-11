@@ -37,7 +37,7 @@ public abstract class ExtasysTCPClient
     private String fName, fDescription;
     private final ArrayList<TCPConnector> fConnectors = new ArrayList<>();
     private final Object fConnectorsLock = new Object();
-    public final ExtasysThreadPool fMyThreadPool;
+    private final ExtasysThreadPool fMyThreadPool;
     public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
@@ -93,7 +93,7 @@ public abstract class ExtasysTCPClient
     {
         synchronized (fConnectorsLock)
         {
-            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, String.valueOf(ETX).getBytes());
+            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, ETX);
             fConnectors.add(connector);
             return connector;
         }
@@ -114,7 +114,7 @@ public abstract class ExtasysTCPClient
     {
         synchronized (fConnectorsLock)
         {
-            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, splitter.getBytes());
+            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, splitter);
             fConnectors.add(connector);
             return connector;
         }
@@ -187,15 +187,15 @@ public abstract class ExtasysTCPClient
     {
         synchronized (fConnectorsLock)
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (TCPConnector conn : fConnectors)
             {
                 if (!force)
                 {
-                    ((TCPConnector) fConnectors.get(i)).Stop();
+                    conn.Stop();
                 }
                 else
                 {
-                    ((TCPConnector) fConnectors.get(i)).ForceStop();
+                    conn.ForceStop();
                 }
             }
 
@@ -233,9 +233,9 @@ public abstract class ExtasysTCPClient
     {
         synchronized (fConnectorsLock)
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (TCPConnector conn : fConnectors)
             {
-                ((TCPConnector) fConnectors.get(i)).SendData(data);
+                conn.SendData(data);
             }
         }
     }
@@ -253,9 +253,9 @@ public abstract class ExtasysTCPClient
     {
         synchronized (fConnectorsLock)
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (TCPConnector conn : fConnectors)
             {
-                ((TCPConnector) fConnectors.get(i)).SendData(bytes);
+                conn.SendData(bytes);
             }
         }
     }
@@ -344,11 +344,9 @@ public abstract class ExtasysTCPClient
     }
 
     /**
-     * Returns the total number of bytes received from all the connectors of the
-     * client.
+     * Returns the total number of bytes received by this client.
      *
-     * @return the number of bytes received from all the connectors of the
-     * client.
+     * @return the number of bytes received by this client.
      */
     public long getBytesIn()
     {
@@ -356,11 +354,9 @@ public abstract class ExtasysTCPClient
     }
 
     /**
-     * Returns the total number of bytes send from all the connectors of the
-     * client.
+     * Returns the total number of bytes send from this client.
      *
-     * @return the total number of bytes send from all the connectors of the
-     * client.
+     * @return the total number of bytes send from this client.
      */
     public long getBytesOut()
     {

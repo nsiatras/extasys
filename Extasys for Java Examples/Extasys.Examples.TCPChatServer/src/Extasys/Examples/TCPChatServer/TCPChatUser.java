@@ -19,7 +19,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
 package Extasys.Examples.TCPChatServer;
 
-import Extasys.Network.TCP.Server.Listener.Exceptions.*;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 
 /**
@@ -29,8 +28,8 @@ import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 public class TCPChatUser
 {
 
-    private String fUsername;
-    private TCPClientConnection fConnection;
+    private final String fUsername;
+    private final TCPClientConnection fConnection;
 
     public TCPChatUser(String username, TCPClientConnection connection)
     {
@@ -48,8 +47,4 @@ public class TCPChatUser
         return fConnection;
     }
 
-    public void SendData(String data) throws ClientIsDisconnectedException, OutgoingPacketFailedException
-    {
-        fConnection.SendData(data);
-    }
 }
