@@ -449,9 +449,9 @@ public abstract class ExtasysTCPServer
     }
 
     /**
-     * Returns the total bytes received from this server.
+     * Returns the total bytes received by this server.
      *
-     * @return the total bytes received from this server.
+     * @return the total bytes received by this server.
      */
     public long getBytesIn()
     {

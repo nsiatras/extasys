@@ -187,15 +187,15 @@ public abstract class ExtasysTCPClient
     {
         synchronized (fConnectorsLock)
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (TCPConnector conn : fConnectors)
             {
                 if (!force)
                 {
-                    ((TCPConnector) fConnectors.get(i)).Stop();
+                    conn.Stop();
                 }
                 else
                 {
-                    ((TCPConnector) fConnectors.get(i)).ForceStop();
+                    conn.ForceStop();
                 }
             }
 
@@ -233,9 +233,9 @@ public abstract class ExtasysTCPClient
     {
         synchronized (fConnectorsLock)
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (TCPConnector conn : fConnectors)
             {
-                ((TCPConnector) fConnectors.get(i)).SendData(data);
+                conn.SendData(data);
             }
         }
     }
@@ -253,9 +253,9 @@ public abstract class ExtasysTCPClient
     {
         synchronized (fConnectorsLock)
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            for (TCPConnector conn : fConnectors)
             {
-                ((TCPConnector) fConnectors.get(i)).SendData(bytes);
+                conn.SendData(bytes);
             }
         }
     }
@@ -344,11 +344,9 @@ public abstract class ExtasysTCPClient
     }
 
     /**
-     * Returns the total number of bytes received from all the connectors of the
-     * client.
+     * Returns the total number of bytes received by this client.
      *
-     * @return the number of bytes received from all the connectors of the
-     * client.
+     * @return the number of bytes received by this client.
      */
     public long getBytesIn()
     {
@@ -356,11 +354,9 @@ public abstract class ExtasysTCPClient
     }
 
     /**
-     * Returns the total number of bytes send from all the connectors of the
-     * client.
+     * Returns the total number of bytes send from this client.
      *
-     * @return the total number of bytes send from all the connectors of the
-     * client.
+     * @return the total number of bytes send from this client.
      */
     public long getBytesOut()
     {
