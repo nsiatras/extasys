@@ -20,6 +20,7 @@ THE SOFTWARE.*/
 package Extasys.Examples.TCPChatClient;
 
 import Extasys.DataFrame;
+import Extasys.Encryption.Base64Encryptor;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;
@@ -36,17 +37,18 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     private final String fUsername;
     private final frmTCPChatClient fMainForm;
     private String fSPT = String.valueOf(((char) 2)); // Message splitter character.
-    private String fMCChar = String.valueOf(((char) 3)); // Message collector character.
 
     public TCPChatClient(InetAddress serverIP, int port, String username, frmTCPChatClient frmMain)
     {
-        super("TCP Chat Client", "", 4, 8);
+        super("TCP Chat Client", "", 1, 2);
         fServerIP = serverIP;
         fPort = port;
         fUsername = username;
         fMainForm = frmMain;
 
-        super.AddConnector("Main Connector", serverIP, port, 20480, ((char) 3));
+        TCPConnector connector = super.AddConnector("Main Connector", serverIP, port, 8192, ((char) 3));
+        connector.setAutoApplyMessageSplitterState(true); // Auto apply message splitter to outgoing messages
+        connector.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
     }
 
     public void Connect()
@@ -66,69 +68,67 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     {
         String[] splittedMessage = new String(data.getBytes()).split(fSPT);
 
-        if (splittedMessage[0].equals("Change_Username"))
+        switch (splittedMessage[0])
         {
-            /* Message: Change_Username ((char)2)
-            This user must change username because this one is allready in use by an other user,
-             */
-            fMainForm.MarkAsDisconnected();
-            fMainForm.DisplayMessage("Please change your username. This one is allready in use by an other user.");
-        }
-        else if (splittedMessage[0].equals("Welcome"))
-        {
-            /* Message: Welcome ((char)2)
-            Server welcomes you.
-             */
-            fMainForm.MarkAsConnected();
-            fMainForm.DisplayMessage("You are now connected !!!");
-            SendDataToServer("Get_List" + fSPT);
-        }
-        else if (splittedMessage[0].equals("User_List"))
-        {
-            /* Message: User_List ((char)2) list...
-            Server sends a list with connected clients to the client.
-             */
-            if (!splittedMessage[1].equals(""))
-            {
-                String[] connectedUsers = splittedMessage[1].split(String.valueOf(((char) 1)));
-                for (int i = 0; i < connectedUsers.length; i++)
+            case "Change_Username":
+                // Message: Change_Username ((char)2)
+                // This user must change username because this one is allready in use by an other user.
+                fMainForm.MarkAsDisconnected();
+                fMainForm.DisplayMessage("Please change your username. This one is allready in use by an other user.");
+                break;
+
+            case "Welcome":
+                /* Message: Welcome ((char)2)
+                Server welcomes you.
+                 */
+                fMainForm.MarkAsConnected();
+                fMainForm.DisplayMessage("You are now connected !!!");
+                SendDataToServer("Get_List" + fSPT);
+                break;
+
+            case "User_List":
+                // Message: User_List ((char)2) list...
+                // Server sends a list with connected clients to the client.
+                if (!splittedMessage[1].equals(""))
                 {
-                    if (!connectedUsers[i].equals(fUsername))
+                    String[] connectedUsers = splittedMessage[1].split(String.valueOf(((char) 1)));
+                    for (int i = 0; i < connectedUsers.length; i++)
                     {
-                        fMainForm.AddUserInList(connectedUsers[i]);
+                        if (!connectedUsers[i].equals(fUsername))
+                        {
+                            fMainForm.AddUserInList(connectedUsers[i]);
+                        }
                     }
                 }
-            }
-        }
-        else if (splittedMessage[0].equals("New_User"))
-        {
-            /* Message: New_User ((char)2) username
-            A new user connected to server.
-             */
-            fMainForm.AddUserInList(splittedMessage[1]);
-            fMainForm.DisplayMessage("User " + splittedMessage[1] + " connected");
-        }
-        else if (splittedMessage[0].equals("Remove_User"))
-        {
-            /* Message: Remove_User ((char)2) username
-            User disconnected from server.
-             */
-            fMainForm.RemoveUser(splittedMessage[1]);
-            fMainForm.DisplayMessage("User " + splittedMessage[1] + " disconnected");
-        }
-        else if (splittedMessage[0].equals("Message"))
-        {
-            /* Message: Message ((char)2) some_text
-            Server sends a message
-             */
-            fMainForm.DisplayMessage(splittedMessage[1]);
-        }
-        else if (splittedMessage[0].equals("Ping"))
-        {
-            /* Message: Ping ((char)2)
-            Server pings you.
-             */
-            SendDataToServer("Pong" + fSPT);
+                break;
+
+            case "New_User":
+                // Message: New_User ((char)2) username
+                // A user connected to the server.
+                fMainForm.AddUserInList(splittedMessage[1]);
+                fMainForm.DisplayMessage("User " + splittedMessage[1] + " connected");
+                break;
+
+            case "Remove_User":
+                // Message: Remove_User ((char)2) username
+                // A user has been disconnected from server.
+                fMainForm.RemoveUser(splittedMessage[1]);
+                fMainForm.DisplayMessage("User " + splittedMessage[1] + " disconnected");
+                break;
+
+            case "Message":
+                // Message: Message ((char)2) some_text
+                // Server sends a message
+                fMainForm.DisplayMessage(splittedMessage[1]);
+                break;
+
+            case "Ping":
+                // Message: Ping ((char)2)
+                // Server pings you.
+                SendDataToServer("Pong" + fSPT);
+                break;
+            default:
+                break;
         }
     }
 
@@ -149,7 +149,7 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     {
         try
         {
-            super.SendData(data + fMCChar);
+            super.SendData(data);
         }
         catch (ConnectorDisconnectedException ex)
         {
