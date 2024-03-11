@@ -2,6 +2,10 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Development/extasys/Extasys%20for%20Java/src/Extasys/Network/TCP/Client/Connectors/TCPConnector.java</file>
+            <file>file:/C:/Development/extasys/Extasys%20for%20Java/src/Extasys/Network/TCP/Server/Listener/TCPListener.java</file>
+            <file>file:/C:/Development/extasys/Extasys%20for%20Java/src/Extasys/Settings/Settings.java</file>
+        </group>
     </open-files>
 </project-private>
