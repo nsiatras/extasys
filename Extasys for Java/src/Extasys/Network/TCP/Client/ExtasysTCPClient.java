@@ -69,12 +69,9 @@ public abstract class ExtasysTCPClient
      */
     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize)
     {
-        synchronized (fConnectorsLock)
-        {
-            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize);
-            fConnectors.add(connector);
-            return connector;
-        }
+        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize);
+        fConnectors.add(connector);
+        return connector;
     }
 
     /**
@@ -91,12 +88,9 @@ public abstract class ExtasysTCPClient
      */
     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, char ETX)
     {
-        synchronized (fConnectorsLock)
-        {
-            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, String.valueOf(ETX).getBytes());
-            fConnectors.add(connector);
-            return connector;
-        }
+        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, ETX);
+        fConnectors.add(connector);
+        return connector;
     }
 
     /**
@@ -112,12 +106,9 @@ public abstract class ExtasysTCPClient
      */
     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, String splitter)
     {
-        synchronized (fConnectorsLock)
-        {
-            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, splitter.getBytes());
-            fConnectors.add(connector);
-            return connector;
-        }
+        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, splitter);
+        fConnectors.add(connector);
+        return connector;
     }
 
     /**

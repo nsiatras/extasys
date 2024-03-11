@@ -57,7 +57,7 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
     {
         try
         {
-            fConnector.fMyTCPClient.fMyThreadPool.execute(this);
+            fConnector.getMyExtasysTCPClient().fMyThreadPool.execute(this);
         }
         catch (RejectedExecutionException ex)
         {
@@ -81,7 +81,7 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
                 final byte[] decryptedData = fConnector.getConnectionEncyptor().Decrypt(fPacketsData);
 
                 // Call OnDataReceive
-                fConnector.fMyTCPClient.OnDataReceive(fConnector, new DataFrame(decryptedData));
+                fConnector.getMyExtasysTCPClient().OnDataReceive(fConnector, new DataFrame(decryptedData));
             }
         }
         catch (Exception ex)

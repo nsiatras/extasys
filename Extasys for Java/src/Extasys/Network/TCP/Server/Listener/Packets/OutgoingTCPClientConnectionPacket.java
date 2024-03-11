@@ -78,14 +78,29 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
 
             if (!fCancel)
             {
-                // Encrypt data before Sent
-                final byte[] encryptedData = fClient.getMyTCPListener().getConnectionEncyptor().Encrypt(super.fPacketsData);
+                final byte[] bytesToSent;
+
+                // Check if the MessageSplitter must be applied to the end of 
+                // the encryptedData bytes array to sent.
+                if (fClient.fMyListener.isUsingMessageCollector() && fClient.fMyListener.isAutoApplyMessageSplitterOn())
+                {
+                    // Encrypt data
+                    final byte[] encryptedData = fClient.getMyTCPListener().getConnectionEncyptor().Encrypt(super.fPacketsData);
+
+                    // Add ETX to the end of ecnryptedData
+                    bytesToSent = super.Combine2ByteArrays(encryptedData, fClient.fMyListener.getMessageETX().getBytes());
+                }
+                else
+                {
+                    // Encrypt data before Sent
+                    bytesToSent = fClient.getMyTCPListener().getConnectionEncyptor().Encrypt(super.fPacketsData);
+                }
 
                 try
                 {
-                    fClient.fOutput.write(encryptedData);
-                    fClient.fBytesOut += encryptedData.length;
-                    fClient.fMyListener.fBytesOut += encryptedData.length;
+                    fClient.fOutput.write(bytesToSent);
+                    fClient.fBytesOut += bytesToSent.length;
+                    fClient.fMyListener.fBytesOut += bytesToSent.length;
                 }
                 catch (IOException ioException)
                 {

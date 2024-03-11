@@ -47,7 +47,7 @@ public class TCPListenerThread implements Runnable
         {
             try
             {
-                TCPClientConnection client = new TCPClientConnection(fSocket.accept(), fMyListener, fMyListener.isMessageCollectorInUse(), fMyListener.getMessageETX());
+                TCPClientConnection client = new TCPClientConnection(fSocket.accept(), fMyListener, fMyListener.isUsingMessageCollector(), fMyListener.getMessageETX());
                 if (fMyListener.getConnectedClients().size() >= fMyListener.getMaxConnections())
                 {
                     client.DisconnectMe();

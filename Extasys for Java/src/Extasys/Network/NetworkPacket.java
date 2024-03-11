@@ -76,4 +76,12 @@ public class NetworkPacket
         }
     }
 
+    protected byte[] Combine2ByteArrays(byte[] first, byte[] second)
+    {
+        byte[] combined = new byte[first.length + second.length];
+        System.arraycopy(first, 0, combined, 0, first.length);
+        System.arraycopy(second, 0, combined, first.length, second.length);
+        return combined;
+    }
+
 }

@@ -61,7 +61,7 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
     {
         try
         {
-            fConnector.fMyTCPClient.fMyThreadPool.execute(this);
+            fConnector.getMyExtasysTCPClient().fMyThreadPool.execute(this);
         }
         catch (RejectedExecutionException ex)
         {
@@ -80,14 +80,29 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
 
             if (!fCancel)
             {
-                // Encrypt Data
-                final byte[] encryptedData = fConnector.getConnectionEncyptor().Encrypt(fPacketsData);
+                final byte[] bytesToSent;
+
+                // Check if the MessageSplitter must be applied to the end of 
+                // the encryptedData bytes array to sent.
+                if (fConnector.isUsingMessageCollector() && fConnector.isAutoApplyMessageSplitterOn())
+                {
+                    // Encrypt data
+                    final byte[] encryptedData = fConnector.getConnectionEncyptor().Encrypt(super.fPacketsData);
+
+                    // Add ETX to the end of ecnryptedData
+                    bytesToSent = super.Combine2ByteArrays(encryptedData, fConnector.getMessageETX().getBytes());
+                }
+                else
+                {
+                    // Encrypt Data
+                    bytesToSent = fConnector.getConnectionEncyptor().Encrypt(fPacketsData);
+                }
 
                 try
                 {
-                    fConnector.fOutput.write(encryptedData);
-                    fConnector.fBytesOut += encryptedData.length;
-                    fConnector.fMyTCPClient.fTotalBytesOut += encryptedData.length;
+                    fConnector.fOutput.write(bytesToSent);
+                    fConnector.fBytesOut += bytesToSent.length;
+                    fConnector.getMyExtasysTCPClient().fTotalBytesOut += bytesToSent.length;
                 }
                 catch (IOException ioException)
                 {

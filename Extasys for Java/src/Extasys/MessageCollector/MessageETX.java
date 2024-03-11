@@ -37,7 +37,7 @@ public class MessageETX
     {
         fBytes = bytes;
     }
-    
+
     public byte[] getBytes()
     {
         return fBytes;

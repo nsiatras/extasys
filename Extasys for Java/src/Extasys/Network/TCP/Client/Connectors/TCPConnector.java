@@ -43,15 +43,15 @@ import java.util.Arrays;
 public class TCPConnector
 {
 
-    public ExtasysTCPClient fMyTCPClient;
-    private final String fName;
-    private final InetAddress fServerIP;
-    private final int fServerPort;
+    protected ExtasysTCPClient fMyTCPClient;
+    private String fName;
+    private InetAddress fServerIP;
+    private int fServerPort;
     private boolean fActive;
     protected boolean fIsConnected = false;
     // Socket properties.
     public Socket fConnection;
-    private final int fReadBufferSize;
+    private int fReadBufferSize;
     public InputStream fInput;
     public OutputStream fOutput;
     protected final Object fSendDataLock = new Object();
@@ -60,9 +60,9 @@ public class TCPConnector
     // Data throughput.
     public long fBytesIn = 0, fBytesOut = 0;
     // Message collector properties.
-    private boolean fUseMessageCollector;
     public TCPConnectorMessageCollector fMessageCollector;
     private MessageETX fMessageETX = null;
+    private boolean fAutoApplyMessageSplitter = false;
     // Messages IO.
     protected NetworkPacket fLastIncomingPacket = null;
     protected NetworkPacket fLastOutgoingPacket = null;
@@ -70,49 +70,70 @@ public class TCPConnector
     private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
 
     /**
-     * Constructs a new TCP Connector.
+     * Constructs a new TCP Connector
      *
-     * @param myTCPClient is the TCP connector's main Extasys TCP Client.
-     * @param name is the connector's name.
+     * @param myExtasysTCPClient is the ExtasysTCPClient of this connector
+     * @param name is the connector's name
      * @param serverIP is the server's IP address the connector will use to
-     * connect.
+     * connect
      * @param serverPort is the server's TCP port the connector will use to
-     * connect.
+     * connect
      * @param readBufferSize is the read buffer size in bytes for this
-     * connection.
+     * connection
      *
      */
-    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize)
+    public TCPConnector(ExtasysTCPClient myExtasysTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize)
     {
-        fMyTCPClient = myTCPClient;
-        fName = name;
-        fServerIP = serverIP;
-        fServerPort = serverPort;
-        fReadBufferSize = readBufferSize;
+        Initialize(myExtasysTCPClient, name, serverIP, serverPort, readBufferSize, null);
     }
 
     /**
-     * Constructs a new TCP Connector with message collector use (ETX).
+     * Constructs a new TCP Connector
      *
-     * @param myTCPClient is the TCP connector's main Extasys TCP Client.
-     * @param name is the connector's name.
-     * @param serverIP is the server's IP address the connector will connect to.
-     * @param serverPort is the server's TCP port the connector will connect to.
+     * @param myExtasysTCPClient is the ExtasysTCPClient of this connector
+     * @param name is the connector's name
+     * @param serverIP is the server's IP address the connector will use to
+     * connect
+     * @param serverPort is the server's TCP port the connector will use to
+     * connect
      * @param readBufferSize is the read buffer size in bytes for this
-     * connection.
-     * @param ETX is the End of Text byte[].
+     * connection
+     * @param splitter is the message splitter character
      */
-    public TCPConnector(ExtasysTCPClient myTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, byte[] ETX)
+    public TCPConnector(ExtasysTCPClient myExtasysTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, char splitter)
     {
-        fMyTCPClient = myTCPClient;
+        Initialize(myExtasysTCPClient, name, serverIP, serverPort, readBufferSize, String.valueOf(splitter).getBytes());
+    }
+
+    /**
+     * Constructs a new TCP Connector
+     *
+     * @param myExtasysTCPClient is the ExtasysTCPClient of this connector
+     * @param name is the connector's name
+     * @param serverIP is the server's IP address the connector will use to
+     * connect
+     * @param serverPort is the server's TCP port the connector will use to
+     * connect
+     * @param readBufferSize is the read buffer size in bytes for this
+     * connection
+     * @param splitter is the message splitter string
+     */
+    public TCPConnector(ExtasysTCPClient myExtasysTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, String splitter)
+    {
+        Initialize(myExtasysTCPClient, name, serverIP, serverPort, readBufferSize, splitter.getBytes());
+    }
+
+    private void Initialize(ExtasysTCPClient myExtasysTCPClient, String name, InetAddress serverIP, int serverPort, int readBufferSize, byte[] splitter)
+    {
+        fMyTCPClient = myExtasysTCPClient;
         fName = name;
         fServerIP = serverIP;
         fServerPort = serverPort;
         fReadBufferSize = readBufferSize;
-
-        fUseMessageCollector = true;
-        fMessageETX = new MessageETX(ETX);
-        fMessageCollector = new TCPConnectorMessageCollector(this, fMessageETX);
+        fMessageETX = (splitter != null) ? new MessageETX(splitter) : null;
+        fMessageCollector = (splitter != null) ? new TCPConnectorMessageCollector(this, fMessageETX) : null;
+        fBytesIn = 0;
+        fBytesOut = 0;
     }
 
     /**
@@ -240,7 +261,7 @@ public class TCPConnector
                 fReadIncomingDataThread.Dispose();
             }
 
-            if (fUseMessageCollector)
+            if (fMessageCollector != null)
             {
                 fMessageCollector.Dispose();
                 fMessageCollector = null;
@@ -388,9 +409,9 @@ public class TCPConnector
      *
      * @return True if this connector uses message collector.
      */
-    public boolean isMessageCollectorInUse()
+    public boolean isUsingMessageCollector()
     {
-        return fUseMessageCollector;
+        return fMessageETX != null;
     }
 
     /**
@@ -443,6 +464,27 @@ public class TCPConnector
         fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
     }
 
+    /**
+     * Returns true if this TCP Connector automatically applies Message Splitter
+     * to outgoing messages
+     *
+     * @return
+     */
+    public boolean isAutoApplyMessageSplitterOn()
+    {
+        return fAutoApplyMessageSplitter;
+    }
+
+    /**
+     * Sets the Auto-Apply Message Splitter to outgoing messages On or Off
+     *
+     * @param value
+     */
+    public void setAutoApplyMessageSplitterOn(boolean value)
+    {
+        fAutoApplyMessageSplitter = value;
+    }
+
 }
 
 /**
@@ -491,7 +533,7 @@ class ReadIncomingDataThread extends Thread
     @Override
     public void run()
     {
-        if (fMyTCPConnector.isMessageCollectorInUse())
+        if (fMyTCPConnector.isUsingMessageCollector())
         {
             ConnectionWithMessageCollector();
         }
@@ -516,7 +558,7 @@ class ReadIncomingDataThread extends Thread
                 {
                     fMyTCPConnector.fBytesIn += bytesRead;
                     fMyTCPConnector.fMyTCPClient.fTotalBytesIn += bytesRead;
-                    
+
                     try
                     {
                         synchronized (fMyTCPConnector.fReceiveDataLock)

@@ -20,6 +20,7 @@
 package Extasys.MessageCollector;
 
 import Extasys.ByteArrayBuilder;
+import Extasys.Encryption.ConnectionEncryptor;
 
 /**
  *
@@ -35,6 +36,26 @@ public abstract class MessageCollector
     public MessageCollector(MessageETX messageETX)
     {
         fMessageETX = messageETX;
+    }
+
+    public synchronized void AppendDataWithDecryption(final byte[] bytes, ConnectionEncryptor encryptor)
+    {
+        try
+        {
+            fIncomingDataBuffer.Append(bytes);
+            fIndexOf = fIncomingDataBuffer.IndexOf(fMessageETX.getBytes());
+
+            while (fIndexOf > -1)
+            {
+                MessageCollected(encryptor.Decrypt(fIncomingDataBuffer.SubList(0, fIndexOf)));
+                fIncomingDataBuffer.Delete(0, fIndexOf + fMessageETX.getLength());
+                fIndexOf = fIncomingDataBuffer.IndexOf(fMessageETX.getBytes());
+            }
+        }
+        catch (Exception ex)
+        {
+            //System.err.println("Extasys.Network.TCP.Client.Connectors.Tools.TCPClientMessageCollector Error: " + ex.getMessage());
+        }
     }
 
     public synchronized void AppendData(final byte[] bytes)

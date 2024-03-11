@@ -34,21 +34,17 @@ import java.net.InetAddress;
 public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 {
 
-    private TCPListener fMyTCPListener;
-    private final char fMessageSplitter = (char) 3;
-   
-
     public TCPServer(String name, String description, InetAddress listenerIP, int port, int maxConnections, int connectionsTimeOut, int corePoolSize, int maximumPoolSize)
     {
         super(name, description, corePoolSize, maximumPoolSize);
 
         try
         {
-            // Add a listener with message collector.
-            fMyTCPListener = this.AddListener("My listener", listenerIP, port, maxConnections, 8192, connectionsTimeOut, 100,  fMessageSplitter);
-            
-            // Uncomment the following line to set Encryption for this TCP listener
-            fMyTCPListener.setConnectionEncryptor(new Base64Encryptor());
+            // Add a new TCPListener to the server
+            TCPListener listener = super.AddListener("My listener", listenerIP, port, maxConnections, 8192, connectionsTimeOut, 100, (char) 3);
+            listener.setAutoApplyMessageSplitterOn(true);  // Auto apply message splitter to outgoing messages
+            listener.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
+
         }
         catch (Exception ex)
         {
@@ -62,10 +58,9 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
         {
             // I received data from a client
             final String incomingDataStr = new String(data.getBytes());
-            //System.out.println("Data received: " + incomingDataStr);
 
             // Send the incoming data back to the client
-            sender.SendData(incomingDataStr + fMessageSplitter);
+            sender.SendData(incomingDataStr);
         }
         catch (ClientIsDisconnectedException | OutgoingPacketFailedException ex)
         {

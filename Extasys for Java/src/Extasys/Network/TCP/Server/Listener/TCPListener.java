@@ -55,14 +55,15 @@ public class TCPListener
     // Bytes throughtput.
     public long fBytesIn, fBytesOut;
     // Message collector.
-    private boolean fUseMessageCollector = false;
     private MessageETX fMessageETX = null;
+    private boolean fAutoApplyMessageSplitter = false;
     // Connection Encryption
     private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
 
     /**
      * Constructs a new TCP listener.
      *
+     * @param myServer is the Extasys TCP Server of this listener
      * @param name is the listener's name.
      * @param ipAddress is the listener's IP Address.
      * @param port is the listener's port.
@@ -75,14 +76,15 @@ public class TCPListener
      * listener can have.
      *
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
+    public TCPListener(ExtasysTCPServer myServer, String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
     {
-        Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, false, null);
+        Initialize(myServer, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, false, null);
     }
 
     /**
      * Constructs a new TCP listener.
      *
+     * @param myServer is the Extasys TCP Server of this listener
      * @param name is the listener's name.
      * @param ipAddress is the listener's IP Address.
      * @param port is the listener's port.
@@ -95,14 +97,15 @@ public class TCPListener
      * listener can have.
      * @param splitter is the message splitter.
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
+    public TCPListener(ExtasysTCPServer myServer, String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
     {
-        Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, String.valueOf(splitter).getBytes());
+        Initialize(myServer, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, String.valueOf(splitter).getBytes());
     }
 
     /**
      * Constructs a new TCP listener.
      *
+     * @param myServer is the Extasys TCP Server of this listener
      * @param name is the listener's name.
      * @param ipAddress is the listener's IP Address.
      * @param port is the listener's port.
@@ -115,13 +118,14 @@ public class TCPListener
      * listener can have.
      * @param splitter is the message splitter.
      */
-    public TCPListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
+    public TCPListener(ExtasysTCPServer myServer, String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
     {
-        Initialize(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, splitter.getBytes());
+        Initialize(myServer, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, true, splitter.getBytes());
     }
 
-    private void Initialize(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, boolean useMessageCollector, byte[] splitter)
+    private void Initialize(ExtasysTCPServer myServer, String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, boolean useMessageCollector, byte[] splitter)
     {
+        fMyExtasysTCPServer = myServer;
         fConnectedClients = new HashMap<>();
         fName = name;
         fIPAddress = ipAddress;
@@ -130,11 +134,7 @@ public class TCPListener
         fReadBufferSize = readBufferSize;
         fConnectionTimeOut = connectionTimeOut;
         fBackLog = backLog;
-        fUseMessageCollector = useMessageCollector;
-        if (splitter != null)
-        {
-            fMessageETX = new MessageETX(splitter);
-        }
+        fMessageETX = (splitter != null) ? new MessageETX(splitter) : null;
         fBytesIn = 0;
         fBytesOut = 0;
     }
@@ -384,17 +384,6 @@ public class TCPListener
     }
 
     /**
-     * Set my Extasys TCP server.
-     *
-     * @param server is the ExtasysTCPServer main reference at witch this
-     * TCPListener belongs.
-     */
-    public void setMyExtasysTCPServer(ExtasysTCPServer server)
-    {
-        fMyExtasysTCPServer = server;
-    }
-
-    /**
      * Returns a reference of this listener's main Extasys TCP server.
      *
      * @return a reference of this listener's main Extasys TCP server.
@@ -544,9 +533,9 @@ public class TCPListener
      *
      * @return True if the message collector of this listener is active.
      */
-    public boolean isMessageCollectorInUse()
+    public boolean isUsingMessageCollector()
     {
-        return fUseMessageCollector;
+        return fMessageETX != null;
     }
 
     /**
@@ -577,6 +566,27 @@ public class TCPListener
     public void setConnectionEncryptor(ConnectionEncryptor encryptor)
     {
         fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
+    }
+
+    /**
+     * Returns true if this TCP Listener automatically applies Message Splitter
+     * to outgoing messages
+     *
+     * @return
+     */
+    public boolean isAutoApplyMessageSplitterOn()
+    {
+        return fAutoApplyMessageSplitter;
+    }
+
+    /**
+     * Sets the Auto-Apply Message Splitter to outgoing messages On or Off
+     *
+     * @param value
+     */
+    public void setAutoApplyMessageSplitterOn(boolean value)
+    {
+        fAutoApplyMessageSplitter = value;
     }
 
 }

@@ -74,8 +74,7 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog);
-        listener.setMyExtasysTCPServer(this);
+        TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog);
         fListeners.add(listener);
         return listener;
     }
@@ -98,8 +97,7 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
-        listener.setMyExtasysTCPServer(this);
+        TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
         fListeners.add(listener);
         return listener;
     }
@@ -122,8 +120,7 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
     {
-        TCPListener listener = new TCPListener(name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
-        listener.setMyExtasysTCPServer(this);
+        TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
         fListeners.add(listener);
         return listener;
     }
