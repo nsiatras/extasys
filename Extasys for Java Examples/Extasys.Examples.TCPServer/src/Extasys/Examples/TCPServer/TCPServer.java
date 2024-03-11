@@ -42,9 +42,8 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
         {
             // Add a new TCPListener to the server
             TCPListener listener = super.AddListener("My listener", listenerIP, port, maxConnections, 8192, connectionsTimeOut, 100, (char) 3);
-            listener.setAutoApplyMessageSplitterOn(true);  // Auto apply message splitter to outgoing messages
+            listener.setAutoApplyMessageSplitterState(true);  // Auto apply message splitter to outgoing messages
             listener.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
-
         }
         catch (Exception ex)
         {

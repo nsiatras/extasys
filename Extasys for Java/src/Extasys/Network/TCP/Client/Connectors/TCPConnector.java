@@ -480,7 +480,7 @@ public class TCPConnector
      *
      * @param value
      */
-    public void setAutoApplyMessageSplitterOn(boolean value)
+    public void setAutoApplyMessageSplitterState(boolean value)
     {
         fAutoApplyMessageSplitter = value;
     }

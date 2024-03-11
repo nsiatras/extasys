@@ -415,6 +415,7 @@ class ClientDataReader implements Runnable
                 {
                     fClientConnection.fBytesIn += bytesRead;
                     fClientConnection.fMyListener.fBytesIn += bytesRead;
+                    fClientConnection.fMyExtasysServer.fTotalBytesIn += bytesRead;
 
                     // PACKET WITH MESSAGE COLLECTOR
                     synchronized (fClientConnection.fReceiveDataLock)
@@ -452,6 +453,7 @@ class ClientDataReader implements Runnable
                 {
                     fClientConnection.fBytesIn += bytesRead;
                     fClientConnection.fMyListener.fBytesIn += bytesRead;
+                    fClientConnection.fMyExtasysServer.fTotalBytesIn += bytesRead;
 
                     // PACKET WITHOUT MESSAGE COLLECTOR
                     synchronized (fClientConnection.fReceiveDataLock)

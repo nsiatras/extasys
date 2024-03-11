@@ -52,9 +52,12 @@ public abstract class ExtasysTCPClient
      */
     public ExtasysTCPClient(String name, String description, int corePoolSize, int maximumPoolSize)
     {
-        fName = name;
-        fDescription = description;
-        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
+        synchronized (fConnectorsLock)
+        {
+            fName = name;
+            fDescription = description;
+            fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
+        }
     }
 
     /**
@@ -69,9 +72,12 @@ public abstract class ExtasysTCPClient
      */
     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize)
     {
-        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize);
-        fConnectors.add(connector);
-        return connector;
+        synchronized (fConnectorsLock)
+        {
+            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize);
+            fConnectors.add(connector);
+            return connector;
+        }
     }
 
     /**
@@ -88,9 +94,12 @@ public abstract class ExtasysTCPClient
      */
     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, char ETX)
     {
-        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, ETX);
-        fConnectors.add(connector);
-        return connector;
+        synchronized (fConnectorsLock)
+        {
+            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, ETX);
+            fConnectors.add(connector);
+            return connector;
+        }
     }
 
     /**
@@ -106,9 +115,12 @@ public abstract class ExtasysTCPClient
      */
     public TCPConnector AddConnector(String name, InetAddress serverIP, int serverPort, int readBufferSize, String splitter)
     {
-        TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, splitter);
-        fConnectors.add(connector);
-        return connector;
+        synchronized (fConnectorsLock)
+        {
+            TCPConnector connector = new TCPConnector(this, name, serverIP, serverPort, readBufferSize, splitter);
+            fConnectors.add(connector);
+            return connector;
+        }
     }
 
     /**

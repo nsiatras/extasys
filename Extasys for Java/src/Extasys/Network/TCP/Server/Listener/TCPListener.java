@@ -584,7 +584,7 @@ public class TCPListener
      *
      * @param value
      */
-    public void setAutoApplyMessageSplitterOn(boolean value)
+    public void setAutoApplyMessageSplitterState(boolean value)
     {
         fAutoApplyMessageSplitter = value;
     }

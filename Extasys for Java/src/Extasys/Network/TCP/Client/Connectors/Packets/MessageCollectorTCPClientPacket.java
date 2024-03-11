@@ -94,7 +94,7 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
         }
         catch (Exception ex)
         {
-            int a = 1;
+
         }
 
         // Mark previous Packet as null.

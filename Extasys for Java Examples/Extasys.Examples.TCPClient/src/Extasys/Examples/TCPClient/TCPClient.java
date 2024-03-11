@@ -44,9 +44,8 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
         {
             // Add a new connector to this TCP Client
             TCPConnector connector = super.AddConnector(name, remoteHostIP, remoteHostPort, 8192, ((char) 3));
-            connector.setAutoApplyMessageSplitterOn(true); // Auto apply message splitter to outgoing messages
+            connector.setAutoApplyMessageSplitterState(true); // Auto apply message splitter to outgoing messages
             connector.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
-
         }
         catch (Exception ex)
         {

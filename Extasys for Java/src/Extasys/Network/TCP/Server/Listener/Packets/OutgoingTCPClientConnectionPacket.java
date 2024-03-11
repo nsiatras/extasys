@@ -101,6 +101,7 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
                     fClient.fOutput.write(bytesToSent);
                     fClient.fBytesOut += bytesToSent.length;
                     fClient.fMyListener.fBytesOut += bytesToSent.length;
+                    fClient.fMyExtasysServer.fTotalBytesOut += bytesToSent.length;
                 }
                 catch (IOException ioException)
                 {
