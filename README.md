@@ -26,6 +26,7 @@ ThreadPool --> ExtasysListener;
 * Multiple listeners per server and multiple connectors per Client
 * TCP message collector with character or string message splitter
 * On-the-Fly Data Encryption
+* Auto-Handle Message Splitter characters for TCP connections
 
 Extasys project is Developed with <a href="https://netbeans.apache.org/"><b>NetBeans IDE</b><a>
 
