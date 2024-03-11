@@ -57,7 +57,7 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
     {
         try
         {
-            fClient.fMyExtasysServer.fMyThreadPool.execute(this);
+            fClient.fMyExtasysServer.getMyThreadPool().execute(this);
         }
         catch (RejectedExecutionException ex)
         {
@@ -78,7 +78,7 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
             if (!fCancel)
             {
                 // Decrypt Data
-                if (fClient.fMyListener.isUsingMessageCollector() && fClient.fMyListener.isAutoApplyMessageSplitterOn())
+                if (fClient.fMyListener.isAutoApplyMessageSplitterOn())
                 {
                     // Append data as using AppendDataWithDecryption.
                     // Message collector decrypts data later

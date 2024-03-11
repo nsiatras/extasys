@@ -64,16 +64,16 @@ public class TCPListener
      * Constructs a new TCP listener.
      *
      * @param myServer is the Extasys TCP Server of this listener
-     * @param name is the listener's name.
-     * @param ipAddress is the listener's IP Address.
-     * @param port is the listener's port.
-     * @param maxConnections is the listener's maximum connections limit.
+     * @param name is the listener's name
+     * @param ipAddress is the listener's IP Address
+     * @param port is the listener's port
+     * @param maxConnections is the listener's maximum connections limit
      * @param readBufferSize is the listener's each connection read buffer size
-     * in bytes.
+     * in bytes
      * @param connectionTimeOut is the listener's connections time-out time in
-     * milliseconds.
+     * milliseconds
      * @param backLog is the number of outstanding connection requests this
-     * listener can have.
+     * listener can have
      *
      */
     public TCPListener(ExtasysTCPServer myServer, String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
@@ -82,20 +82,20 @@ public class TCPListener
     }
 
     /**
-     * Constructs a new TCP listener.
+     * Constructs a new TCP listener
      *
      * @param myServer is the Extasys TCP Server of this listener
-     * @param name is the listener's name.
-     * @param ipAddress is the listener's IP Address.
-     * @param port is the listener's port.
-     * @param maxConnections is the listener's maximum allowed connections..
+     * @param name is the listener's name
+     * @param ipAddress is the listener's IP Address
+     * @param port is the listener's port
+     * @param maxConnections is the listener's maximum allowed connections
      * @param readBufferSize is the listener's each connection read buffer size
-     * in bytes.
+     * in bytes
      * @param connectionTimeOut is the listener's connections time-out in
      * milliseconds. Set to 0 for no time-out
      * @param backLog is the number of outstanding connection requests this
-     * listener can have.
-     * @param splitter is the message splitter.
+     * listener can have
+     * @param splitter is the message splitter
      */
     public TCPListener(ExtasysTCPServer myServer, String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
     {
@@ -103,20 +103,20 @@ public class TCPListener
     }
 
     /**
-     * Constructs a new TCP listener.
+     * Constructs a new TCP listener
      *
      * @param myServer is the Extasys TCP Server of this listener
-     * @param name is the listener's name.
-     * @param ipAddress is the listener's IP Address.
-     * @param port is the listener's port.
-     * @param maxConnections is the listener's maximum allowed connections..
+     * @param name is the listener's name
+     * @param ipAddress is the listener's IP Address
+     * @param port is the listener's port
+     * @param maxConnections is the listener's maximum allowed connections
      * @param readBufferSize is the listener's each connection read buffer size
-     * in bytes.
+     * in bytes
      * @param connectionTimeOut is the listener's connections time-out in
      * milliseconds. Set to 0 for no time-out
      * @param backLog is the number of outstanding connection requests this
-     * listener can have.
-     * @param splitter is the message splitter.
+     * listener can have
+     * @param splitter is the message splitter
      */
     public TCPListener(ExtasysTCPServer myServer, String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
     {
@@ -140,7 +140,7 @@ public class TCPListener
     }
 
     /**
-     * Start or restart the TCPListener.
+     * Start or restart the TCPListener
      *
      * @throws java.io.IOException
      */
@@ -172,7 +172,7 @@ public class TCPListener
     }
 
     /**
-     * Stop the TCP listener.
+     * Stop the TCP listener
      */
     public void Stop()
     {

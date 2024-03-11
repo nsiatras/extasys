@@ -61,7 +61,7 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
     {
         try
         {
-            fConnector.getMyExtasysTCPClient().fMyThreadPool.execute(this);
+            fConnector.getMyExtasysTCPClient().getMyThreadPool().execute(this);
         }
         catch (RejectedExecutionException ex)
         {

@@ -36,6 +36,7 @@ public class ExtasysUDPServer
     private String fName, fDescription;
     private final ArrayList<UDPListener> fListeners = new ArrayList<>();
     public final ExtasysThreadPool fMyThreadPool;
+    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
      * Constructs a new Extasys UDP Server.
@@ -209,18 +210,7 @@ public class ExtasysUDPServer
      */
     public long getBytesIn()
     {
-        long bytesIn = 0;
-        try
-        {
-            for (UDPListener listener : fListeners)
-            {
-                bytesIn += listener.getBytesIn();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return bytesIn;
+        return fTotalBytesIn;
     }
 
     /**
@@ -230,17 +220,6 @@ public class ExtasysUDPServer
      */
     public long getBytesOut()
     {
-        long bytesOut = 0;
-        try
-        {
-            for (UDPListener listener : fListeners)
-            {
-                bytesOut += listener.getBytesOut();
-            }
-        }
-        catch (Exception ex)
-        {
-        }
-        return bytesOut;
+        return fTotalBytesOut;
     }
 }

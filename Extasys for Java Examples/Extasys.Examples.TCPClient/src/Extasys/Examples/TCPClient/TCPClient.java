@@ -40,6 +40,7 @@ public class TCPClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     {
         super(name, description, corePoolSize, maximumPoolSize);
 
+        
         try
         {
             // Add a new connector to this TCP Client

@@ -37,7 +37,7 @@ public abstract class ExtasysTCPClient
     private String fName, fDescription;
     private final ArrayList<TCPConnector> fConnectors = new ArrayList<>();
     private final Object fConnectorsLock = new Object();
-    public final ExtasysThreadPool fMyThreadPool;
+    private final ExtasysThreadPool fMyThreadPool;
     public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
@@ -52,12 +52,9 @@ public abstract class ExtasysTCPClient
      */
     public ExtasysTCPClient(String name, String description, int corePoolSize, int maximumPoolSize)
     {
-        synchronized (fConnectorsLock)
-        {
-            fName = name;
-            fDescription = description;
-            fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
-        }
+        fName = name;
+        fDescription = description;
+        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
     }
 
     /**

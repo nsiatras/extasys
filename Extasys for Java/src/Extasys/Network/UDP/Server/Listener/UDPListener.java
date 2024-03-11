@@ -281,6 +281,7 @@ class ReadIncomingDataThread extends Thread
                 receivedPacket = new DatagramPacket(data, data.length);
                 fMyUDPListener.fSocket.receive(receivedPacket);
                 fMyUDPListener.fBytesIn += receivedPacket.getLength();
+                fMyUDPListener.getMyExtasysUDPServer().fTotalBytesIn += receivedPacket.getLength();
 
                 fMyUDPListener.fLastIncomingPacket = new IncomingUDPServerPacket(fMyUDPListener, receivedPacket, fMyUDPListener.fLastIncomingPacket);
             }

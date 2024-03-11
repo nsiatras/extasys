@@ -71,6 +71,7 @@ public class OutgoingUDPClientPacket extends NetworkPacket implements Runnable
             {
                 fConnector.fSocket.send(fDataGram);
                 fConnector.fBytesOut += fDataGram.getLength();
+                fConnector.getMyExtasysUDPClient().fTotalBytesOut += fDataGram.getLength();
             }
         }
         catch (IOException ex)

@@ -58,7 +58,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
             // I received data from a client
             final String incomingDataStr = new String(data.getBytes());
 
-            // Send the incoming data back to the client
+            // Send the incoming data back to the sender
             sender.SendData(incomingDataStr);
         }
         catch (ClientIsDisconnectedException | OutgoingPacketFailedException ex)

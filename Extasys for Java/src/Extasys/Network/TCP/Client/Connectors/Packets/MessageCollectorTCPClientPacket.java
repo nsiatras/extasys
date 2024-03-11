@@ -56,7 +56,7 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
     {
         try
         {
-            fConnector.getMyExtasysTCPClient().fMyThreadPool.execute(this);
+            fConnector.getMyExtasysTCPClient().getMyThreadPool().execute(this);
         }
         catch (RejectedExecutionException ex)
         {
@@ -77,7 +77,7 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
             if (!fCancel)
             {
                 // Decrypt Data
-                if (fConnector.isUsingMessageCollector() && fConnector.isAutoApplyMessageSplitterOn())
+                if (fConnector.isAutoApplyMessageSplitterOn())
                 {
                     // Append data using AppendDataWithDecryption.
                     // Message collector decrypts data later

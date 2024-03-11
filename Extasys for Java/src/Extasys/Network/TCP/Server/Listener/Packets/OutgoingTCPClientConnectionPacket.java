@@ -59,7 +59,7 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
     {
         try
         {
-            fClient.fMyExtasysServer.fMyThreadPool.execute(this);
+            fClient.fMyExtasysServer.getMyThreadPool().execute(this);
         }
         catch (RejectedExecutionException ex)
         {

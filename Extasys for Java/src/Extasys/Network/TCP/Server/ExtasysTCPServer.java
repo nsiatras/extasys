@@ -38,8 +38,8 @@ public abstract class ExtasysTCPServer
 
     private String fName, fDescription;
     private final ArrayList<TCPListener> fListeners = new ArrayList<>();
-    private final Object fConnectorsLock = new Object();
-    public final ExtasysThreadPool fMyThreadPool;
+    private final Object fListenersLock = new Object();
+    private final ExtasysThreadPool fMyThreadPool;
     public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
@@ -76,7 +76,7 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog);
             fListeners.add(listener);
@@ -102,7 +102,7 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
             fListeners.add(listener);
@@ -128,7 +128,7 @@ public abstract class ExtasysTCPServer
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             TCPListener listener = new TCPListener(this, name, ipAddress, port, maxConnections, readBufferSize, connectionTimeOut, backLog, splitter);
             fListeners.add(listener);
@@ -143,7 +143,7 @@ public abstract class ExtasysTCPServer
      */
     public void RemoveListener(String name)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             for (int i = 0; i < fListeners.size(); i++)
             {
@@ -203,7 +203,7 @@ public abstract class ExtasysTCPServer
 
     private void Stop(boolean force)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             // Stop all listeners.
             for (TCPListener listener : fListeners)
@@ -299,7 +299,7 @@ public abstract class ExtasysTCPServer
      */
     public void ReplyToAll(String data)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             for (TCPListener listener : fListeners)
             {
@@ -315,7 +315,7 @@ public abstract class ExtasysTCPServer
      */
     public void ReplyToAll(byte[] bytes)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             for (TCPListener listener : fListeners)
             {
@@ -332,7 +332,7 @@ public abstract class ExtasysTCPServer
      */
     public void ReplyToAllExceptSender(String data, TCPClientConnection sender)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             for (TCPListener listener : fListeners)
             {
@@ -349,7 +349,7 @@ public abstract class ExtasysTCPServer
      */
     public void ReplyToAllExceptSender(byte[] bytes, TCPClientConnection sender)
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             for (TCPListener listener : fListeners)
             {
@@ -406,7 +406,7 @@ public abstract class ExtasysTCPServer
      */
     public ArrayList<TCPListener> getListeners()
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             return fListeners;
         }
@@ -419,7 +419,7 @@ public abstract class ExtasysTCPServer
      */
     public int getCurrentConnectionsNumber()
     {
-        synchronized (fConnectorsLock)
+        synchronized (fListenersLock)
         {
             int currentConnections = 0;
 
