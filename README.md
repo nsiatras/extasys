@@ -26,7 +26,7 @@ ThreadPool --> ExtasysListener;
 * Multiple listeners per server and multiple connectors per Client
 * TCP message collector with character or string message splitter
 * Auto-Handle Message Splitter characters for TCP connections
-* On-the-Fly Data Encryption
+* On-the-Fly Data Manipulations (Encryption, Encoding, Compression) using the [DataConverter](https://github.com/nsiatras/extasys/blob/master/Extasys%20for%20Java/src/Extasys/DataConvertion/DataConverter.java) object
 
 Extasys project is Developed with <a href="https://netbeans.apache.org/"><b>NetBeans IDE</b><a>
 
