@@ -19,8 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Client.Connectors;
 
-import Extasys.Encryption.ConnectionEncryptor;
-import Extasys.Encryption.NullEncryptor;
+import Extasys.DataConvertion.DataConverter;
+import Extasys.DataConvertion.NullDataConverter;
 import Extasys.Network.UDP.Client.Connectors.Packets.*;
 import Extasys.Network.UDP.Client.ExtasysUDPClient;
 import java.io.IOException;
@@ -50,8 +50,8 @@ public class UDPConnector
     public IncomingUDPClientPacket fLastIncomingPacket = null;
     public OutgoingUDPClientPacket fLastOutgoingPacket = null;
 
-    // Connection Encryption
-    private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
+    // Connection DataConverter (Encryption, Encoding, Compression)
+    private DataConverter fConnectionDataConverter = new NullDataConverter();
 
     /**
      * Constructs a new UDP Connector.
@@ -252,23 +252,23 @@ public class UDPConnector
     }
 
     /**
-     * Returns the connection encryptor
+     * Returns the connection's Data Converter
      *
      * @return
      */
-    public ConnectionEncryptor getConnectionEncyptor()
+    public DataConverter getConnectionDataConverter()
     {
-        return fConnectionEncryptor;
+        return fConnectionDataConverter;
     }
 
     /**
-     * Sets the connection encryptor of this UDPConnector
+     * Sets the connection's Data Converter of this UDPConnector
      *
-     * @param encryptor
+     * @param dataConverter
      */
-    public void setConnectionEncryptor(ConnectionEncryptor encryptor)
+    public void setConnectionDataConverter(DataConverter dataConverter)
     {
-        fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
+        fConnectionDataConverter = (dataConverter == null) ? new NullDataConverter() : dataConverter;
     }
 
 }

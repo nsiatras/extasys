@@ -78,7 +78,7 @@ public final class IncomingTCPClientPacket extends NetworkPacket implements Runn
             if (!fCancel)
             {
                 // Decrypt Data
-                final byte[] decryptedData = fConnector.getConnectionEncyptor().Decrypt(fPacketsData);
+                final byte[] decryptedData = fConnector.getConnectionDataConverter().Revert(fPacketsData);
 
                 // Call OnDataReceive
                 fConnector.getMyExtasysTCPClient().OnDataReceive(fConnector, new DataFrame(decryptedData));

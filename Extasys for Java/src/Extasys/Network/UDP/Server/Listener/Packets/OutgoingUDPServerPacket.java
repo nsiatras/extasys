@@ -52,9 +52,9 @@ public class OutgoingUDPServerPacket extends NetworkPacket implements Runnable
             // by the thread pool.
             super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
 
-            // Encrypt outgoing data
-            byte[] encryptedData = fMyListener.getConnectionEncyptor().Encrypt(fDataGram.getData());
-            fDataGram.setData(encryptedData, 0, encryptedData.length);
+            // Converter outgoing data
+            byte[] convertedData = fMyListener.getConnectionDataConverter().Convert(fDataGram.getData());
+            fDataGram.setData(convertedData, 0, convertedData.length);
 
             if (!fCancel)
             {

@@ -83,19 +83,19 @@ public final class OutgoingTCPClientPacket extends NetworkPacket implements Runn
                 final byte[] bytesToSent;
 
                 // Check if the MessageSplitter must be applied to the end of 
-                // the encryptedData bytes array to sent.
+                // the 'Converted Data' byte array to sent.
                 if (fConnector.isUsingMessageCollector() && fConnector.isAutoApplyMessageSplitterOn())
                 {
-                    // Encrypt data
-                    final byte[] encryptedData = fConnector.getConnectionEncyptor().Encrypt(super.fPacketsData);
+                    // Convert Data using the DataConverter data
+                    final byte[] convertedData = fConnector.getConnectionDataConverter().Convert(super.fPacketsData);
 
-                    // Add ETX to the end of ecnryptedData
-                    bytesToSent = super.Combine2ByteArrays(encryptedData, fConnector.getMessageETX().getBytes());
+                    // Add ETX to the end of Converted Data
+                    bytesToSent = super.Combine2ByteArrays(convertedData, fConnector.getMessageETX().getBytes());
                 }
                 else
                 {
-                    // Encrypt Data
-                    bytesToSent = fConnector.getConnectionEncyptor().Encrypt(fPacketsData);
+                    // Convert Data using the connector's DataConverter
+                    bytesToSent = fConnector.getConnectionDataConverter().Convert(fPacketsData);
                 }
 
                 try

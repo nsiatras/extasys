@@ -72,7 +72,7 @@ public class IncomingUDPServerPacket extends NetworkPacket implements Runnable
                 byte[] cleanData = Arrays.copyOfRange(fDataGram.getData(), 0, fDataGram.getLength());
 
                 // Decrypt incoming data
-                cleanData = fMyListener.getConnectionEncyptor().Decrypt(cleanData);
+                cleanData = fMyListener.getConnectionDataConverter().Revert(cleanData);
 
                 fDataGram.setData(cleanData, 0, cleanData.length);
 

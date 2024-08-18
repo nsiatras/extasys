@@ -19,8 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener;
 
-import Extasys.Encryption.ConnectionEncryptor;
-import Extasys.Encryption.NullEncryptor;
+import Extasys.DataConvertion.DataConverter;
+import Extasys.DataConvertion.NullDataConverter;
 import Extasys.MessageCollector.MessageETX;
 import Extasys.Network.TCP.Server.ExtasysTCPServer;
 import java.io.IOException;
@@ -57,8 +57,8 @@ public class TCPListener
     // Message collector.
     private MessageETX fMessageETX = null;
     private boolean fAutoApplyMessageSplitter = false;
-    // Connection Encryption
-    private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
+    // Connection DataConverter (Encryption, Encoding, Compression)
+    private DataConverter fConnectionDataConverter = new NullDataConverter();
 
     /**
      * Constructs a new TCP listener.
@@ -549,23 +549,23 @@ public class TCPListener
     }
 
     /**
-     * Returns the connection encryptor
+     * Returns the connection Data Converter
      *
      * @return
      */
-    public ConnectionEncryptor getConnectionEncyptor()
+    public DataConverter getConnectionDataConverter()
     {
-        return fConnectionEncryptor;
+        return fConnectionDataConverter;
     }
 
     /**
-     * Sets the connection encryptor of this TCPListener
+     * Sets the connection Data Converter of this TCPListener
      *
-     * @param encryptor
+     * @param dataConverter
      */
-    public void setConnectionEncryptor(ConnectionEncryptor encryptor)
+    public void setConnectionDataConverter(DataConverter dataConverter)
     {
-        fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
+        fConnectionDataConverter = (dataConverter == null) ? new NullDataConverter() : dataConverter;
     }
 
     /**

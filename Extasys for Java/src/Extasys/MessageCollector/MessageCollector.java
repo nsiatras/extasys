@@ -20,7 +20,7 @@
 package Extasys.MessageCollector;
 
 import Extasys.ByteArrayBuilder;
-import Extasys.Encryption.ConnectionEncryptor;
+import Extasys.DataConvertion.DataConverter;
 
 /**
  *
@@ -38,7 +38,7 @@ public abstract class MessageCollector
         fMessageETX = messageETX;
     }
 
-    public synchronized void AppendDataWithDecryption(final byte[] bytes, ConnectionEncryptor encryptor)
+    public synchronized void AppendDataWithDecryption(final byte[] bytes, DataConverter dataConverter)
     {
         try
         {
@@ -47,7 +47,7 @@ public abstract class MessageCollector
 
             while (fIndexOf > -1)
             {
-                MessageCollected(encryptor.Decrypt(fIncomingDataBuffer.SubList(0, fIndexOf)));
+                MessageCollected(dataConverter.Revert(fIncomingDataBuffer.SubList(0, fIndexOf)));
                 fIncomingDataBuffer.Delete(0, fIndexOf + fMessageETX.getLength());
                 fIndexOf = fIncomingDataBuffer.IndexOf(fMessageETX.getBytes());
             }

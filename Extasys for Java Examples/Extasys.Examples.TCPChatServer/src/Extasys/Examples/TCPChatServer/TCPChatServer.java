@@ -49,7 +49,7 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 
         TCPListener listener = super.AddListener("Main Listener", listenerIP, port, 9999, 8192, 10000, 100, ((char) 3));
         listener.setAutoApplyMessageSplitterState(true); // Auto apply message splitter to outgoing messages
-        listener.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
+        listener.setConnectionDataConverter(new Base64Encryptor()); // Base 64 Encryption
 
         fConnectedClients = new HashMap<>();
         fMainForm = frmMain;

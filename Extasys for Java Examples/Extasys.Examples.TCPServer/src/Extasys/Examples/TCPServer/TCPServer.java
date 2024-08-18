@@ -19,6 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Examples.TCPServer;
 
+import Extasys.DataConvertion.Base64Converter;
 import Extasys.DataFrame;
 import Extasys.Encryption.Base64Encryptor;
 import Extasys.Network.TCP.Server.Listener.Exceptions.ClientIsDisconnectedException;
@@ -43,7 +44,7 @@ public class TCPServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
             // Add a new TCPListener to the server
             TCPListener listener = super.AddListener("My listener", listenerIP, port, maxConnections, 8192, connectionsTimeOut, 100, (char) 3);
             listener.setAutoApplyMessageSplitterState(true);  // Auto apply message splitter to outgoing messages
-            listener.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
+            listener.setConnectionDataConverter(new Base64Converter()); // Base 64 Encoding
         }
         catch (Exception ex)
         {

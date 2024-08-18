@@ -17,7 +17,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.*/
-package Extasys.Encryption;
+package Extasys.DataConvertion;
 
 import java.util.Base64;
 import java.util.Base64.Decoder;
@@ -27,26 +27,43 @@ import java.util.Base64.Encoder;
  *
  * @author Nikos Siatras
  */
-public class Base64Encryptor extends ConnectionEncryptor
+public class Base64Converter extends DataConverter
 {
 
     private final Encoder fEncoder;
     private final Decoder fDecoder;
 
-    public Base64Encryptor()
+    public Base64Converter()
     {
         fEncoder = Base64.getEncoder();
         fDecoder = Base64.getDecoder();
     }
 
+    /**
+     * Encodes all bytes from the specified byte array into a newly-allocated
+     * byte array using the {@link Base64} encoding scheme. The returned byte
+     * array is of the length of the resulting bytes.
+     *
+     * @param bytes
+     * @return A newly-allocated byte array containing the resulting encoded
+     * bytes.
+     */
     @Override
-    public byte[] Encrypt(final byte[] bytes)
+    public byte[] Convert(final byte[] bytes)
     {
         return fEncoder.encode(bytes);
     }
 
+    /**
+     * Decodes all bytes from the input byte array using the {@link Base64}
+     * encoding scheme, writing the results into a newly-allocated output byte
+     * array. The returned byte array is of the length of the resulting bytes.
+     *
+     * @param bytes
+     * @return A newly-allocated byte array containing the decoded bytes.
+     */
     @Override
-    public byte[] Decrypt(final byte[] bytes)
+    public byte[] Revert(final byte[] bytes)
     {
         return fDecoder.decode(bytes);
     }

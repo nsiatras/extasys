@@ -19,8 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Client.Connectors;
 
-import Extasys.Encryption.ConnectionEncryptor;
-import Extasys.Encryption.NullEncryptor;
+import Extasys.DataConvertion.DataConverter;
+import Extasys.DataConvertion.NullDataConverter;
 import Extasys.MessageCollector.MessageETX;
 import Extasys.Network.NetworkPacket;
 import Extasys.Network.TCP.Client.Connectors.Packets.IncomingTCPClientPacket;
@@ -66,8 +66,8 @@ public class TCPConnector
     // Messages IO.
     protected NetworkPacket fLastIncomingPacket = null;
     protected NetworkPacket fLastOutgoingPacket = null;
-    // Connection Encryption
-    private ConnectionEncryptor fConnectionEncryptor = new NullEncryptor();
+    // Connection DataConverter (Encryption, Encoding, Compression)
+    private DataConverter fConnectionDataConverter = new NullDataConverter();
 
     /**
      * Constructs a new TCP Connector
@@ -445,23 +445,23 @@ public class TCPConnector
     }
 
     /**
-     * Returns the connection encryptor
+     * Returns the connection Data Converter
      *
      * @return
      */
-    public ConnectionEncryptor getConnectionEncyptor()
+    public DataConverter getConnectionDataConverter()
     {
-        return fConnectionEncryptor;
+        return fConnectionDataConverter;
     }
 
     /**
-     * Sets the connection encryptor of this TCPConnector
+     * Sets the connection DataConverter of this TCPConnector
      *
-     * @param encryptor
+     * @param dataConverter
      */
-    public void setConnectionEncryptor(ConnectionEncryptor encryptor)
+    public void setConnectionDataConverter(DataConverter dataConverter)
     {
-        fConnectionEncryptor = (encryptor == null) ? new NullEncryptor() : encryptor;
+        fConnectionDataConverter = (dataConverter == null) ? new NullDataConverter() : dataConverter;
     }
 
     /**

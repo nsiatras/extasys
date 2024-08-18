@@ -82,12 +82,12 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
                 {
                     // Append data as using AppendDataWithDecryption.
                     // Message collector decrypts data later
-                    fClient.fMyMessageCollector.AppendDataWithDecryption(fPacketsData, fClient.fMyListener.getConnectionEncyptor());
+                    fClient.fMyMessageCollector.AppendDataWithDecryption(fPacketsData, fClient.fMyListener.getConnectionDataConverter());
                 }
                 else
                 {
                     // Decrypt data before append
-                    byte[] decyptedData = fClient.getMyTCPListener().getConnectionEncyptor().Decrypt(fPacketsData);
+                    byte[] decyptedData = fClient.getMyTCPListener().getConnectionDataConverter().Revert(fPacketsData);
                     fClient.fMyMessageCollector.AppendData(decyptedData);
                 }
 

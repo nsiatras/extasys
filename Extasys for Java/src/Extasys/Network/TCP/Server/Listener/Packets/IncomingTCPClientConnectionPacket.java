@@ -76,7 +76,7 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
             if (!fCancel)
             {
                 // Decrypt Data
-                final byte[] decryptedData = fClient.getMyTCPListener().getConnectionEncyptor().Decrypt(fPacketsData);
+                final byte[] decryptedData = fClient.getMyTCPListener().getConnectionDataConverter().Revert(fPacketsData);
                 
                 // Call OnDataReceive
                 fClient.fMyExtasysServer.OnDataReceive(fClient, new DataFrame(decryptedData));

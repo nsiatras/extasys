@@ -17,25 +17,16 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.*/
-package Extasys.Encryption;
+package Extasys.DataConvertion;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class NullEncryptor extends ConnectionEncryptor
+public abstract class DataConverter
 {
 
-    @Override
-    public byte[] Encrypt(final byte[] bytes)
-    {
-        return bytes;
-    }
+    public abstract byte[] Convert(final byte[] bytes);
 
-    @Override
-    public byte[] Decrypt(final byte[] bytes)
-    {
-        return bytes;
-    }
-
+    public abstract byte[] Revert(final byte[] bytes);
 }
