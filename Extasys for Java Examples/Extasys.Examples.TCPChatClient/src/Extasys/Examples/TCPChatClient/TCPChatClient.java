@@ -20,7 +20,7 @@ THE SOFTWARE.*/
 package Extasys.Examples.TCPChatClient;
 
 import Extasys.DataFrame;
-import Extasys.Encryption.Base64Encryptor;
+import Extasys.DataConvertion.Base64Converter;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;
@@ -48,7 +48,7 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 
         TCPConnector connector = super.AddConnector("Main Connector", serverIP, port, 8192, ((char) 3));
         connector.setAutoApplyMessageSplitterState(true); // Auto apply message splitter to outgoing messages
-        connector.setConnectionEncryptor(new Base64Encryptor()); // Base 64 Encryption
+        connector.setConnectionDataConverter(new Base64Converter()); // Base 64 Encoding
     }
 
     public void Connect()
