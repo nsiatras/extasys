@@ -79,9 +79,9 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket impleme
                 // Decrypt Data
                 if (fConnector.isAutoApplyMessageSplitterOn())
                 {
-                    // Append data using AppendDataWithDecryption.
+                    // Append data using AppendDataWithConversion.
                     // Message collector decrypts data later
-                    fConnector.fMessageCollector.AppendDataWithDecryption(fPacketsData, fConnector.getConnectionDataConverter());
+                    fConnector.fMessageCollector.AppendDataWithConversion(fPacketsData, fConnector.getConnectionDataConverter());
                 }
                 else
                 {
