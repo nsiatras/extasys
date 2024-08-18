@@ -19,7 +19,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
 package Extasys.Examples.UDPClient;
 
-import Extasys.Encryption.Base64Encryptor;
+import Extasys.DataConvertion.Base64Converter;
 import Extasys.Network.UDP.Client.Connectors.UDPConnector;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -40,9 +40,9 @@ public class UDPClient extends Extasys.Network.UDP.Client.ExtasysUDPClient
         // Add a UDP connector to this UDP client.
         // You can add more than one connectors if you need to.
         UDPConnector conn = super.AddConnector("My connector", 10240, 10000, remoteHostIP, remoteHostPort);
-        
-        // Uncomment the following line to set Encryption for this UDPConnector
-        //conn.setConnectionEncryptor(new Base64Encryptor());
+
+        // Uncomment the following line to set a Data Converter for this UDPConnector
+        conn.setConnectionDataConverter(new Base64Converter());
     }
 
     @Override

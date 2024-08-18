@@ -19,7 +19,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.*/
 package Extasys.Examples.UDPServer;
 
-import Extasys.Encryption.Base64Encryptor;
+import Extasys.DataConvertion.Base64Converter;
 import Extasys.Network.UDP.Server.Listener.UDPListener;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -36,8 +36,8 @@ public class UDPServer extends Extasys.Network.UDP.Server.ExtasysUDPServer
         super(name, description, corePoolSize, maximumPoolSize);
         UDPListener listener = this.AddListener("My UDP Listener", listenerIP, port, 10240, connectionsTimeOut);
 
-        // Uncomment the following line to set Encryption for this UDPListener
-        //listener.setConnectionEncryptor(new Base64Encryptor());
+        // Uncomment the following line to set a DataConverter for this UDPListener
+        listener.setConnectionDataConverter(new Base64Converter());
     }
 
     @Override
