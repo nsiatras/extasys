@@ -28,7 +28,7 @@ import java.util.concurrent.RejectedExecutionException;
  *
  * @author Nikos Siatras
  */
-public final class IncomingTCPClientConnectionPacket extends NetworkPacket implements Runnable
+public final class IncomingTCPClientConnectionPacket extends NetworkPacket
 {
 
     private final TCPClientConnection fClient;
@@ -48,19 +48,15 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
         super(data, previousPacket);
         fClient = client;
 
-        SendToThreadPool();
-    }
-
-    protected void SendToThreadPool()
-    {
         try
         {
-            fClient.fMyExtasysServer.getMyThreadPool().execute(this);
+            SendToThreadPool(client.fMyExtasysServer.getMyThreadPool());
         }
         catch (RejectedExecutionException ex)
         {
             fClient.ForceDisconnect();
         }
+
     }
 
     @Override
@@ -77,7 +73,7 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket imple
             {
                 // Decrypt Data
                 final byte[] decryptedData = fClient.getMyTCPListener().getConnectionDataConverter().Revert(fPacketsData);
-                
+
                 // Call OnDataReceive
                 fClient.fMyExtasysServer.OnDataReceive(fClient, new DataFrame(decryptedData));
             }

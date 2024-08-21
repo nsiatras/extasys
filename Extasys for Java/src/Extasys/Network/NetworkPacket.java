@@ -19,13 +19,15 @@
  THE SOFTWARE.*/
 package Extasys.Network;
 
+import Extasys.ExtasysThreadPool;
 import Extasys.ManualResetEvent;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  *
  * @author Nikos Siatras
  */
-public class NetworkPacket
+public abstract class NetworkPacket implements Runnable
 {
 
     public final ManualResetEvent fDone = new ManualResetEvent(false);
@@ -37,6 +39,21 @@ public class NetworkPacket
     {
         fPacketsData = data;
         fPreviousPacket = previousPacket;
+    }
+
+    @Override
+    public abstract void run();
+
+    /**
+     * Sends this NetworkPacket to the given ExtasysThreadPool.
+     *
+     * @param pool
+     */
+    protected void SendToThreadPool(final ExtasysThreadPool pool) throws RejectedExecutionException
+    {
+        // TODO: Check if pool is Full and wait until Pool has space to
+        // send this NetworkPacket
+        pool.execute(this);
     }
 
     /**

@@ -27,7 +27,7 @@ import java.util.concurrent.RejectedExecutionException;
  *
  * @author Nikos Siatras
  */
-public final class MessageCollectorTCPClientConnectionPacket extends NetworkPacket implements Runnable
+public final class MessageCollectorTCPClientConnectionPacket extends NetworkPacket
 {
 
     private final TCPClientConnection fClient;
@@ -50,14 +50,9 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
         super(data, previousPacket);
         fClient = client;
 
-        SendToThreadPool();
-    }
-
-    protected void SendToThreadPool()
-    {
         try
         {
-            fClient.fMyExtasysServer.getMyThreadPool().execute(this);
+            SendToThreadPool(client.fMyExtasysServer.getMyThreadPool());
         }
         catch (RejectedExecutionException ex)
         {

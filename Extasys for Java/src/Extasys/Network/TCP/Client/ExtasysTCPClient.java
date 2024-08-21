@@ -25,7 +25,6 @@ import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  *

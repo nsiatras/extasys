@@ -28,7 +28,7 @@ import java.net.DatagramPacket;
  *
  * @author Nikos Siatras
  */
-public class OutgoingUDPServerPacket extends NetworkPacket implements Runnable
+public class OutgoingUDPServerPacket extends NetworkPacket
 {
 
     private final UDPListener fMyListener;
@@ -40,7 +40,7 @@ public class OutgoingUDPServerPacket extends NetworkPacket implements Runnable
         fMyListener = listener;
         fDataGram = packet;
 
-        listener.getMyExtasysUDPServer().fMyThreadPool.execute(this);
+        SendToThreadPool(listener.getMyExtasysUDPServer().fMyThreadPool);
     }
 
     @Override

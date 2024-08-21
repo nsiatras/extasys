@@ -29,7 +29,7 @@ import java.util.concurrent.RejectedExecutionException;
  *
  * @author Nikos Siatras
  */
-public final class OutgoingTCPClientConnectionPacket extends NetworkPacket implements Runnable
+public final class OutgoingTCPClientConnectionPacket extends NetworkPacket
 {
 
     private final TCPClientConnection fClient;
@@ -52,14 +52,9 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket imple
         super(data, previousPacket);
         fClient = client;
 
-        SendToThreadPool();
-    }
-
-    protected void SendToThreadPool()
-    {
         try
         {
-            fClient.fMyExtasysServer.getMyThreadPool().execute(this);
+            SendToThreadPool(client.fMyExtasysServer.getMyThreadPool());
         }
         catch (RejectedExecutionException ex)
         {

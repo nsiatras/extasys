@@ -28,7 +28,7 @@ import java.util.Arrays;
  *
  * @author Nikos Siatras
  */
-public class IncomingUDPClientPacket extends NetworkPacket implements Runnable
+public class IncomingUDPClientPacket extends NetworkPacket
 {
 
     private final UDPConnector fConnector;
@@ -52,7 +52,7 @@ public class IncomingUDPClientPacket extends NetworkPacket implements Runnable
         fConnector = connector;
         fDataGram = data;
 
-        connector.getMyExtasysUDPClient().getMyThreadPool().execute(this);
+        SendToThreadPool(connector.getMyExtasysUDPClient().getMyThreadPool());
     }
 
     @Override

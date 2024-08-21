@@ -29,7 +29,7 @@ import java.util.Arrays;
  *
  * @author Nikos Siatras
  */
-public class IncomingUDPServerPacket extends NetworkPacket implements Runnable
+public class IncomingUDPServerPacket extends NetworkPacket
 {
 
     private final UDPListener fMyListener;
@@ -52,7 +52,7 @@ public class IncomingUDPServerPacket extends NetworkPacket implements Runnable
         fMyListener = listener;
         fDataGram = packet;
 
-        listener.getMyExtasysUDPServer().fMyThreadPool.execute(this);
+        SendToThreadPool(listener.getMyExtasysUDPServer().fMyThreadPool);
     }
 
     @Override

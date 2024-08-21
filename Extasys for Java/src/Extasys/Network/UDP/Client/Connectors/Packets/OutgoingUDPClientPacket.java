@@ -28,7 +28,7 @@ import java.net.DatagramPacket;
  *
  * @author Nikos Siatras
  */
-public class OutgoingUDPClientPacket extends NetworkPacket implements Runnable
+public class OutgoingUDPClientPacket extends NetworkPacket
 {
 
     private final UDPConnector fConnector;
@@ -51,7 +51,7 @@ public class OutgoingUDPClientPacket extends NetworkPacket implements Runnable
         fConnector = connector;
         fDataGram = data;
 
-        connector.getMyExtasysUDPClient().getMyThreadPool().execute(this);
+        SendToThreadPool(connector.getMyExtasysUDPClient().getMyThreadPool());
     }
 
     @Override
