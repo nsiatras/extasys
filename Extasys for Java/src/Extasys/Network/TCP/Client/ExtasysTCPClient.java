@@ -338,7 +338,7 @@ public abstract class ExtasysTCPClient
      *
      * @return the client's Thread Pool.
      */
-    public ThreadPoolExecutor getMyThreadPool()
+    public ExtasysThreadPool getMyThreadPool()
     {
         return fMyThreadPool;
     }

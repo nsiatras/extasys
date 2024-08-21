@@ -248,7 +248,7 @@ public abstract class ExtasysUDPClient
      *
      * @return the client's Thread Pool.
      */
-    public ThreadPoolExecutor getMyThreadPool()
+    public ExtasysThreadPool getMyThreadPool()
     {
         return fMyThreadPool;
     }

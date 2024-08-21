@@ -443,7 +443,7 @@ public abstract class ExtasysTCPServer
      *
      * @return My Thread Pool.
      */
-    public ThreadPoolExecutor getMyThreadPool()
+    public ExtasysThreadPool getMyThreadPool()
     {
         return fMyThreadPool;
     }
