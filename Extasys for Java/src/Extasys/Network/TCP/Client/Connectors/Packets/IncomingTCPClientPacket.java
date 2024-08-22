@@ -72,11 +72,11 @@ public final class IncomingTCPClientPacket extends NetworkPacket
             // Call OnDataReceive
             if (!fCancel)
             {
-                // Decrypt Data
-                final byte[] decryptedData = fConnector.getConnectionDataConverter().Revert(fPacketsData);
+                // Revert Data using dataConverter
+                final byte[] revertedData = fConnector.getConnectionDataConverter().Revert(fPacketsData);
 
                 // Call OnDataReceive
-                fConnector.getMyExtasysTCPClient().OnDataReceive(fConnector, new DataFrame(decryptedData));
+                fConnector.getMyExtasysTCPClient().OnDataReceive(fConnector, new DataFrame(revertedData));
             }
         }
         catch (Exception ex)

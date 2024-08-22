@@ -75,14 +75,14 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket
                 if (fConnector.isAutoApplyMessageSplitterOn())
                 {
                     // Append data using AppendDataWithConversion.
-                    // Message collector decrypts data later
+                    // Message collector reverts data later
                     fConnector.fMessageCollector.AppendDataWithConversion(fPacketsData, fConnector.getConnectionDataConverter());
                 }
                 else
                 {
-                    // Decrypt data before append
-                    byte[] decyptedData = fConnector.getConnectionDataConverter().Revert(fPacketsData);
-                    fConnector.fMessageCollector.AppendData(decyptedData);
+                    // Revert data before append
+                    byte[] revertedData = fConnector.getConnectionDataConverter().Revert(fPacketsData);
+                    fConnector.fMessageCollector.AppendData(revertedData);
                 }
 
             }
