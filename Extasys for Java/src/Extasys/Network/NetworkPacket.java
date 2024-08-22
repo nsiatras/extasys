@@ -33,12 +33,14 @@ public abstract class NetworkPacket implements Runnable
     public final ManualResetEvent fDone = new ManualResetEvent(false);
     public final byte[] fPacketsData;
     public NetworkPacket fPreviousPacket;
+    private final ExtasysThreadPool fMyThreadPool;
     public volatile boolean fCancel = false;
 
-    public NetworkPacket(byte[] data, NetworkPacket previousPacket)
+    public NetworkPacket(final byte[] data, final NetworkPacket previousPacket, final ExtasysThreadPool myPool)
     {
         fPacketsData = data;
         fPreviousPacket = previousPacket;
+        fMyThreadPool = myPool;
     }
 
     @Override
@@ -46,14 +48,13 @@ public abstract class NetworkPacket implements Runnable
 
     /**
      * Sends this NetworkPacket to the given ExtasysThreadPool.
-     *
-     * @param pool
      */
-    protected void SendToThreadPool(final ExtasysThreadPool pool) throws RejectedExecutionException
+    protected void SendToThreadPool() throws RejectedExecutionException
     {
-        // TODO: Check if pool is Full and wait until Pool has space to
-        // send this NetworkPacket
-        pool.execute(this);
+        // TODO: Check if pool has space to add this message
+        // In other case wait until Pool has space available
+
+        fMyThreadPool.execute(this);
     }
 
     /**

@@ -36,7 +36,7 @@ public abstract class ExtasysUDPServer
     private String fName, fDescription;
     private final ArrayList<UDPListener> fListeners = new ArrayList<>();
     private final Object fListenersLock = new Object();
-    public final ExtasysThreadPool fMyThreadPool;
+    private final ExtasysThreadPool fMyThreadPool;
     public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
@@ -206,6 +206,16 @@ public abstract class ExtasysUDPServer
     public ArrayList<UDPListener> getListeners()
     {
         return fListeners;
+    }
+    
+     /**
+     * Return the servers's Thread Pool.
+     *
+     * @return the servers's Thread Pool.
+     */
+    public ExtasysThreadPool getMyThreadPool()
+    {
+        return fMyThreadPool;
     }
 
     /**

@@ -36,11 +36,11 @@ public class OutgoingUDPServerPacket extends NetworkPacket
 
     public OutgoingUDPServerPacket(UDPListener listener, DatagramPacket packet, NetworkPacket previousPacket)
     {
-        super(new byte[0], previousPacket);
+        super(new byte[0], previousPacket, listener.getMyExtasysUDPServer().getMyThreadPool());
         fMyListener = listener;
         fDataGram = packet;
 
-        SendToThreadPool(listener.getMyExtasysUDPServer().fMyThreadPool);
+        SendToThreadPool();
     }
 
     @Override
