@@ -78,6 +78,8 @@ public class UDPConnector
 
     /**
      * Start the UDP connector.
+     *
+     * @throws java.net.SocketException
      */
     public void Start() throws SocketException, Exception
     {
@@ -287,12 +289,12 @@ class ReadIncomingData extends Thread
     public void run()
     {
         DatagramPacket receivedPacket;
-        byte[] data;
+
         while (fMyConnector.isActive())
         {
             try
             {
-                data = new byte[fMyConnector.getReadBufferSize()];
+                final byte[] data = new byte[fMyConnector.getReadBufferSize()];
                 receivedPacket = new DatagramPacket(data, data.length);
                 fMyConnector.fSocket.receive(receivedPacket);
                 fMyConnector.fBytesIn += receivedPacket.getLength();

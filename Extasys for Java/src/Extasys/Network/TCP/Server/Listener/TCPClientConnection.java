@@ -52,7 +52,7 @@ public final class TCPClientConnection
     private String fName = "";
     private Object fTag = null;
     private Thread fClientDataReaderThread;
-    private final long fConnectionStartUpDateTime;
+    private final long fConnectionStartUpTimeStamp;
     // Data input-output streams.
     public InputStream fInput;
     public OutputStream fOutput;
@@ -81,7 +81,7 @@ public final class TCPClientConnection
         fMyMessageCollector = (fUseMessageCollector) ? new TCPClientConnectionMessageCollector(this, messageETX) : null;
 
         // Connection startup time
-        fConnectionStartUpDateTime = System.currentTimeMillis();
+        fConnectionStartUpTimeStamp = System.currentTimeMillis();
 
         try
         {
@@ -314,13 +314,25 @@ public final class TCPClientConnection
     }
 
     /**
-     * Return connection start up Date-Time.
+     * Returns the time in Date the connection with this TCPClientConnection
+     * started
      *
-     * @return connection start up Date-Time.
+     * @return
      */
     public Date getConnectionStartUpDateTime()
     {
-        return new Date(fConnectionStartUpDateTime);
+        return new Date(fConnectionStartUpTimeStamp);
+    }
+
+    /**
+     * Returns the time in milliseconds the connection with this
+     * TCPClientConnection started
+     *
+     * @return
+     */
+    public long getConnectionStartUpTimeStamp()
+    {
+        return fConnectionStartUpTimeStamp;
     }
 
     /**

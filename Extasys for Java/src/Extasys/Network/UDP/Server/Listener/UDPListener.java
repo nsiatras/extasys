@@ -147,7 +147,7 @@ public class UDPListener
     }
 
     /**
-     * Send data to udp client.
+     * Send data to UDP client.
      *
      * @param packet is the datagram packet to be send.
      */
@@ -277,7 +277,7 @@ class ReadIncomingDataThread extends Thread
         {
             try
             {
-                byte[] data = new byte[fMyUDPListener.getReadBufferSize()];
+                final byte[] data = new byte[fMyUDPListener.getReadBufferSize()];
                 receivedPacket = new DatagramPacket(data, data.length);
                 fMyUDPListener.fSocket.receive(receivedPacket);
                 fMyUDPListener.fBytesIn += receivedPacket.getLength();

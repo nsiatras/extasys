@@ -149,7 +149,7 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
                     // it disconnects the client.
                     if (fConnectedClients.containsKey(sender.getIPAddress()))
                     {
-                        super.ReplyToAll("Message" + fSPT + GetClientName(sender) + ":" + splittedMessage[1]);
+                        super.ReplyToAll("Message" + fSPT + GetClientName(sender) + ": " + splittedMessage[1]);
                     }
                     else
                     {

@@ -32,8 +32,8 @@ import java.net.InetAddress;
 public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
 {
 
-    private InetAddress fServerIP;
-    private int fPort;
+    private final InetAddress fServerIP;
+    private final int fPort;
     private final String fUsername;
     private final frmTCPChatClient fMainForm;
     private String fSPT = String.valueOf(((char) 2)); // Message splitter character.

@@ -38,7 +38,7 @@ public abstract class MessageCollector
         fMessageETX = messageETX;
     }
 
-    public synchronized void AppendDataWithConversion(final byte[] bytes, DataConverter dataConverter)
+    public synchronized void AppendDataWithConversion(final byte[] bytes, final DataConverter dataConverter)
     {
         try
         {
