@@ -30,19 +30,19 @@ import java.net.DatagramPacket;
  */
 public class OutgoingUDPServerPacket extends NetworkPacket
 {
-
+    
     private final UDPListener fMyListener;
     private final DatagramPacket fDataGram;
-
+    
     public OutgoingUDPServerPacket(UDPListener listener, DatagramPacket packet, NetworkPacket previousPacket)
     {
         super(packet.getData(), previousPacket);
         fMyListener = listener;
         fDataGram = packet;
-
-        SendToThreadPool(listener.getMyExtasysUDPServer().getMyThreadPool());
+        
+        listener.getMyExtasysUDPServer().getMyThreadPool().EnqueNetworkPacket(this);
     }
-
+    
     @Override
     public void run()
     {
@@ -55,14 +55,14 @@ public class OutgoingUDPServerPacket extends NetworkPacket
             // Converter outgoing data
             byte[] convertedData = fMyListener.getConnectionDataConverter().Convert(fDataGram.getData());
             fDataGram.setData(convertedData, 0, convertedData.length);
-
+            
             if (!fCancel)
             {
                 fMyListener.fSocket.send(fDataGram);
                 fMyListener.fBytesOut += fDataGram.getLength();
                 fMyListener.getMyExtasysUDPServer().fTotalBytesOut += fDataGram.getLength();
             }
-
+            
         }
         catch (Exception ex)
         {
@@ -71,8 +71,8 @@ public class OutgoingUDPServerPacket extends NetworkPacket
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-
+        
         fDone.Set();
     }
-
+    
 }

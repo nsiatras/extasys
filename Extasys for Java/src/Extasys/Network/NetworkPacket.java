@@ -45,19 +45,6 @@ public abstract class NetworkPacket implements Runnable
     public abstract void run();
 
     /**
-     * Sends this NetworkPacket to the given ExtasysThreadPool.
-     *
-     * @param pool
-     */
-    protected void SendToThreadPool(final ExtasysThreadPool pool) throws RejectedExecutionException
-    {
-        // TODO: Check if pool has space to add this message
-        // In other case wait until Pool has space available
-
-        pool.EnqueNetworkPacket(this);
-    }
-
-    /**
      * This method waits until this packet is processed by the Thread Pool. It
      * also checks if the previous packet was Canceled in order to mark it self
      * as canceled too.

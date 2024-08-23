@@ -30,7 +30,7 @@ import java.util.concurrent.RejectedExecutionException;
  */
 public final class IncomingTCPClientPacket extends NetworkPacket
 {
-
+    
     private final TCPConnector fConnector;
 
     /**
@@ -49,17 +49,17 @@ public final class IncomingTCPClientPacket extends NetworkPacket
     {
         super(data, previousPacket);
         fConnector = connector;
-
+        
         try
         {
-            super.SendToThreadPool(connector.getMyExtasysTCPClient().getMyThreadPool());
+            connector.getMyExtasysTCPClient().getMyThreadPool().EnqueNetworkPacket(this);
         }
         catch (RejectedExecutionException ex)
         {
             fConnector.ForceStop();
         }
     }
-
+    
     @Override
     public void run()
     {
@@ -86,8 +86,8 @@ public final class IncomingTCPClientPacket extends NetworkPacket
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-
+        
         fDone.Set();
     }
-
+    
 }

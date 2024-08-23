@@ -29,7 +29,7 @@ import java.util.concurrent.RejectedExecutionException;
  */
 public final class MessageCollectorTCPClientConnectionPacket extends NetworkPacket
 {
-
+    
     private final TCPClientConnection fClient;
 
     /**
@@ -49,17 +49,17 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
         // Always decrypt incoming data !
         super(data, previousPacket);
         fClient = client;
-
+        
         try
         {
-            SendToThreadPool(client.getMyExtasysTCPServer().getMyThreadPool());
+            client.getMyExtasysTCPServer().getMyThreadPool().EnqueNetworkPacket(this);
         }
         catch (RejectedExecutionException ex)
         {
             fClient.ForceDisconnect();
         }
     }
-
+    
     @Override
     public void run()
     {
@@ -85,7 +85,7 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
                     byte[] decyptedData = fClient.getMyTCPListener().getConnectionDataConverter().Revert(fPacketsData);
                     fClient.fMyMessageCollector.AppendData(decyptedData);
                 }
-
+                
             }
         }
         catch (Exception ex)
@@ -95,8 +95,8 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-
+        
         fDone.Set();
     }
-
+    
 }

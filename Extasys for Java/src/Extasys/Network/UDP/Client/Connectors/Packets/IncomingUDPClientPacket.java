@@ -30,7 +30,7 @@ import java.util.Arrays;
  */
 public class IncomingUDPClientPacket extends NetworkPacket
 {
-
+    
     private final UDPConnector fConnector;
     private final DatagramPacket fDataGram;
 
@@ -51,10 +51,10 @@ public class IncomingUDPClientPacket extends NetworkPacket
         super(data.getData(), previousPacket);
         fConnector = connector;
         fDataGram = data;
-
-        SendToThreadPool(connector.getMyExtasysUDPClient().getMyThreadPool());
+        
+        connector.getMyExtasysUDPClient().getMyThreadPool().EnqueNetworkPacket(this);
     }
-
+    
     @Override
     public void run()
     {
@@ -75,7 +75,7 @@ public class IncomingUDPClientPacket extends NetworkPacket
 
                 // Set trimmed and decrypted data to fDataGram
                 fDataGram.setData(cleanData, 0, cleanData.length);
-
+                
                 fConnector.getMyExtasysUDPClient().OnDataReceive(fConnector, fDataGram);
             }
         }
@@ -86,7 +86,7 @@ public class IncomingUDPClientPacket extends NetworkPacket
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-
+        
         fDone.Set();
     }
 
@@ -99,5 +99,5 @@ public class IncomingUDPClientPacket extends NetworkPacket
     {
         return fDataGram;
     }
-
+    
 }

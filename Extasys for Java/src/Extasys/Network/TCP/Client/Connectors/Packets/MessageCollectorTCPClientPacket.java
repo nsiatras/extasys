@@ -51,7 +51,7 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket
 
         try
         {
-            SendToThreadPool(connector.getMyExtasysTCPClient().getMyThreadPool());
+            connector.getMyExtasysTCPClient().getMyThreadPool().EnqueNetworkPacket(this);
         }
         catch (RejectedExecutionException ex)
         {

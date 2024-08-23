@@ -31,7 +31,7 @@ import java.util.concurrent.RejectedExecutionException;
  */
 public final class OutgoingTCPClientConnectionPacket extends NetworkPacket
 {
-
+    
     private final TCPClientConnection fClient;
 
     /**
@@ -51,17 +51,17 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket
     {
         super(data, previousPacket);
         fClient = client;
-
+        
         try
         {
-            SendToThreadPool(client.getMyExtasysTCPServer().getMyThreadPool());
+            client.getMyExtasysTCPServer().getMyThreadPool().EnqueNetworkPacket(this);
         }
         catch (RejectedExecutionException ex)
         {
             fClient.ForceDisconnect();
         }
     }
-
+    
     @Override
     public void run()
     {
@@ -70,7 +70,7 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket
             // Wait for previous Packet to be processed
             // by the thread pool.
             super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
-
+            
             if (!fCancel)
             {
                 final byte[] bytesToSent;
@@ -90,7 +90,7 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket
                     // Convert Data using the client's DataConverter data before Sent
                     bytesToSent = fClient.getMyTCPListener().getConnectionDataConverter().Convert(super.fPacketsData);
                 }
-
+                
                 try
                 {
                     fClient.fOutput.write(bytesToSent);
@@ -114,8 +114,8 @@ public final class OutgoingTCPClientConnectionPacket extends NetworkPacket
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-
+        
         fDone.Set();
     }
-
+    
 }
