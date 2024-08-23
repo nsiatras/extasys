@@ -42,28 +42,35 @@ public class ExtasysThreadPool extends ThreadPoolExecutor
         // It appears that LinkedBlockingQueue has better performance than the ArrayBlockingQueue
         super(corePoolWorkers, maximumPoolWorkers, 10, TimeUnit.SECONDS, new LinkedBlockingQueue(25000));
         fPoolsQueue = this.getQueue();
+
         this.prestartAllCoreThreads();
     }
 
     public void EnqueNetworkPacket(NetworkPacket packet)
     {
-        try
+        super.execute(packet);
+
+        // TODO: To be tested !
+        /*try
         {
             synchronized (fPoolsQueue)
             {
+                // The following while statement ensures that there is enough
+                // space to the ThreadPool's queue in order to enqueue the
+                // NetworkPacket (Runnable). 
                 while (fPoolsQueue.remainingCapacity() < 500)
                 {
                     fPoolsQueue.wait(); // Wait until space is freed up in the queue
                 }
 
                 super.execute(packet);
+
             }
         }
         catch (InterruptedException ex)
         {
             Thread.currentThread().interrupt();
-        }
-
+        }*/
     }
 
 }
