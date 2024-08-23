@@ -45,12 +45,12 @@ public final class IncomingTCPClientConnectionPacket extends NetworkPacket
      */
     public IncomingTCPClientConnectionPacket(TCPClientConnection client, byte[] data, NetworkPacket previousPacket)
     {
-        super(data, previousPacket, client.getMyExtasysTCPServer().getMyThreadPool());
+        super(data, previousPacket);
         fClient = client;
 
         try
         {
-            SendToThreadPool();
+            SendToThreadPool(client.getMyExtasysTCPServer().getMyThreadPool());
         }
         catch (RejectedExecutionException ex)
         {

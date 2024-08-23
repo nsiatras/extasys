@@ -47,12 +47,12 @@ public final class MessageCollectorTCPClientConnectionPacket extends NetworkPack
     public MessageCollectorTCPClientConnectionPacket(final TCPClientConnection client, final byte[] data, final NetworkPacket previousPacket)
     {
         // Always decrypt incoming data !
-        super(data, previousPacket, client.getMyExtasysTCPServer().getMyThreadPool());
+        super(data, previousPacket);
         fClient = client;
 
         try
         {
-            SendToThreadPool();
+            SendToThreadPool(client.getMyExtasysTCPServer().getMyThreadPool());
         }
         catch (RejectedExecutionException ex)
         {

@@ -48,11 +48,11 @@ public class IncomingUDPClientPacket extends NetworkPacket
      */
     public IncomingUDPClientPacket(UDPConnector connector, DatagramPacket data, NetworkPacket previousPacket)
     {
-        super(new byte[0], previousPacket, connector.getMyExtasysUDPClient().getMyThreadPool());
+        super(data.getData(), previousPacket);
         fConnector = connector;
         fDataGram = data;
 
-        SendToThreadPool();
+        SendToThreadPool(connector.getMyExtasysUDPClient().getMyThreadPool());
     }
 
     @Override

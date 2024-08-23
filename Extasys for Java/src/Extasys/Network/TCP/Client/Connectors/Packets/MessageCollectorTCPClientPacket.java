@@ -46,12 +46,12 @@ public final class MessageCollectorTCPClientPacket extends NetworkPacket
      */
     public MessageCollectorTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket)
     {
-        super(data, previousPacket, connector.getMyExtasysTCPClient().getMyThreadPool());
+        super(data, previousPacket);
         fConnector = connector;
 
         try
         {
-            SendToThreadPool();
+            SendToThreadPool(connector.getMyExtasysTCPClient().getMyThreadPool());
         }
         catch (RejectedExecutionException ex)
         {

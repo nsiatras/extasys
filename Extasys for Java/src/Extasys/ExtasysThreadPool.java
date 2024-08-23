@@ -19,6 +19,8 @@
  THE SOFTWARE.*/
 package Extasys;
 
+import Extasys.Network.NetworkPacket;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -26,17 +28,42 @@ import java.util.concurrent.TimeUnit;
 /**
  *
  * @author Nikos Siatras
+ *
  */
 public class ExtasysThreadPool extends ThreadPoolExecutor
 {
 
-    public ExtasysThreadPool(int corePoolSize, int maximumPoolSize)
+    private final BlockingQueue fPoolsQueue;
+
+    public ExtasysThreadPool(int corePoolWorkers, int maximumPoolWorkers)
     {
         //super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ArrayBlockingQueue(250000, true));
 
         // It appears that LinkedBlockingQueue has better performance than the ArrayBlockingQueue
-        super(corePoolSize, maximumPoolSize, 10, TimeUnit.SECONDS, new LinkedBlockingQueue(250000));
+        super(corePoolWorkers, maximumPoolWorkers, 10, TimeUnit.SECONDS, new LinkedBlockingQueue(25000));
+        fPoolsQueue = this.getQueue();
         this.prestartAllCoreThreads();
+    }
+
+    public void EnqueNetworkPacket(NetworkPacket packet)
+    {
+        try
+        {
+            synchronized (fPoolsQueue)
+            {
+                while (fPoolsQueue.remainingCapacity() < 500)
+                {
+                    fPoolsQueue.wait(); // Wait until space is freed up in the queue
+                }
+
+                super.execute(packet);
+            }
+        }
+        catch (InterruptedException ex)
+        {
+            Thread.currentThread().interrupt();
+        }
+
     }
 
 }

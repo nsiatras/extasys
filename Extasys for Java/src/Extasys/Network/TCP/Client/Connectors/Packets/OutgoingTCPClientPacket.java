@@ -51,12 +51,12 @@ public final class OutgoingTCPClientPacket extends NetworkPacket
      */
     public OutgoingTCPClientPacket(TCPConnector connector, byte[] data, NetworkPacket previousPacket) throws ConnectorCannotSendPacketException
     {
-        super(data, previousPacket, connector.getMyExtasysTCPClient().getMyThreadPool());
+        super(data, previousPacket);
         fConnector = connector;
 
         try
         {
-            SendToThreadPool();
+            SendToThreadPool(connector.getMyExtasysTCPClient().getMyThreadPool());
         }
         catch (RejectedExecutionException ex)
         {
