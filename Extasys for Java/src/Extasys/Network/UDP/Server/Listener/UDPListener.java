@@ -227,7 +227,7 @@ public class UDPListener
     }
 
     /**
-     * Returns the active state of this listener.
+     * Returns true if this listener is Active (Started).
      *
      * @return the active state of this listener.
      */

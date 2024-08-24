@@ -394,9 +394,9 @@ public class TCPListener
     }
 
     /**
-     * Returns the active state of this TCPListener.
+     * Returns true if this TCPListener is active (Started).
      *
-     * @return True if this TCPListener is active.
+     * @return the active state of this listener.
      */
     public boolean isActive()
     {

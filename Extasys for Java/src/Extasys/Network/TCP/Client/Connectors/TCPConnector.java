@@ -333,9 +333,9 @@ public class TCPConnector
     }
 
     /**
-     * Returns the active state of this connector.
+     * Returns true if this TCPConnector is active (Started) and connected.
      *
-     * @return True if connector is active and connected.
+     * @return the active state of this connector.
      */
     public boolean isActive()
     {

@@ -19,9 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Network;
 
-import Extasys.ExtasysThreadPool;
 import Extasys.ManualResetEvent;
-import java.util.concurrent.RejectedExecutionException;
 
 /**
  *

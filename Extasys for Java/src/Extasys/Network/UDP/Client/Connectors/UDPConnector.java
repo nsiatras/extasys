@@ -164,7 +164,7 @@ public class UDPConnector
     }
 
     /**
-     * Send data to all host.
+     * Send data to host.
      *
      * @param data is the string to be send.
      * @throws java.io.IOException
@@ -186,6 +186,11 @@ public class UDPConnector
         fLastOutgoingPacket = new OutgoingUDPClientPacket(this, outPacket, fLastOutgoingPacket);
     }
 
+    /**
+     * Returns true if this UDPConnector is active (Started).
+     *
+     * @return the active state of this connector.
+     */
     public boolean isActive()
     {
         return fActive;
