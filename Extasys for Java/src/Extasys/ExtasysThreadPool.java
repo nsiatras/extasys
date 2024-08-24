@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class ExtasysThreadPool extends ThreadPoolExecutor
 {
 
-    private final BlockingQueue fPoolsQueue;
+    //private final BlockingQueue fPoolsQueue;
 
     public ExtasysThreadPool(int corePoolWorkers, int maximumPoolWorkers)
     {
@@ -41,7 +41,7 @@ public class ExtasysThreadPool extends ThreadPoolExecutor
 
         // It appears that LinkedBlockingQueue has better performance than the ArrayBlockingQueue
         super(corePoolWorkers, maximumPoolWorkers, 10, TimeUnit.SECONDS, new LinkedBlockingQueue(25000));
-        fPoolsQueue = this.getQueue();
+        //fPoolsQueue = this.getQueue();
 
         this.prestartAllCoreThreads();
     }

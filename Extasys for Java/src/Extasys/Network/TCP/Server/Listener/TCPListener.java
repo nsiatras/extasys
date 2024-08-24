@@ -19,9 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Server.Listener;
 
-import Extasys.DataConvertion.DataConverter;
-import Extasys.DataConvertion.NullDataConverter;
 import Extasys.MessageCollector.MessageETX;
+import Extasys.Network.AbstractListener;
 import Extasys.Network.TCP.Server.ExtasysTCPServer;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,33 +31,27 @@ import java.util.HashMap;
  *
  * @author Nikos Siatras
  */
-public class TCPListener
+public class TCPListener extends AbstractListener
 {
 
     // Extasys tcp server reference.
     private ExtasysTCPServer fMyExtasysTCPServer;
+
     // Socket.
     private ServerSocket fTcpListener;
     private Thread fTCPListenerThread;
-    private boolean fActive = false;
-    // TCP listener identification.
-    private String fName;
-    private InetAddress fIPAddress;
-    private int fPort;
+
     // Connections.
     private HashMap<String, TCPClientConnection> fConnectedClients;
     final Object fAddRemoveUsersLock = new Object();
     private int fMaxConnections;
-    private int fReadBufferSize;
+
     private int fConnectionTimeOut;
     private int fBackLog;
-    // Bytes throughtput.
-    public long fBytesIn, fBytesOut;
+
     // Message collector.
     private MessageETX fMessageETX = null;
     private boolean fAutoApplyMessageSplitter = false;
-    // Connection DataConverter (Encryption, Encoding, Compression)
-    private DataConverter fConnectionDataConverter = new NullDataConverter();
 
     /**
      * Constructs a new TCP listener.
@@ -394,46 +387,6 @@ public class TCPListener
     }
 
     /**
-     * Returns true if this TCPListener is active (Started).
-     *
-     * @return the active state of this listener.
-     */
-    public boolean isActive()
-    {
-        return fActive;
-    }
-
-    /**
-     * Return's this listener's name.
-     *
-     * @return the name of this listener.
-     */
-    public String getName()
-    {
-        return fName;
-    }
-
-    /**
-     * Returns listener's IP address.
-     *
-     * @return this listener's IP address.
-     */
-    public InetAddress getIPAddress()
-    {
-        return fIPAddress;
-    }
-
-    /**
-     * Returns listener's port.
-     *
-     * @return this listener's port.
-     */
-    public int getPort()
-    {
-        return fPort;
-    }
-
-    /**
      * Returns a HashMap with the connected clients of this listener. The
      * HashMap's key is a string contains client's IP address. The HashMap's
      * value is a TCPClientConnection.
@@ -466,28 +419,6 @@ public class TCPListener
     }
 
     /**
-     * Returns read buffer size in bytes for each client connection of this
-     * TCPListener.
-     *
-     * @return the read buffer size in bytes for each client connection.
-     */
-    public int getReadBufferSize()
-    {
-        return fReadBufferSize;
-    }
-
-    /**
-     * Set read buffer size in bytes for each client connection of this
-     * TCPListener.
-     *
-     * @param value is the read buffer size in bytes.
-     */
-    public void setReadBufferSize(int value)
-    {
-        fReadBufferSize = value;
-    }
-
-    /**
      * Returns the connections time-out in milliseconds of this listener.
      *
      * @return the connections time-out in milliseconds of this listener.
@@ -509,26 +440,6 @@ public class TCPListener
     }
 
     /**
-     * Returns the number of bytes received from this TCPListener.
-     *
-     * @return the number of bytes received.
-     */
-    public long getBytesIn()
-    {
-        return fBytesIn;
-    }
-
-    /**
-     * Returns the number of bytes sent from this TCPListener.
-     *
-     * @return the number of bytes sent.
-     */
-    public long getBytesOut()
-    {
-        return fBytesOut;
-    }
-
-    /**
      * Returns the active state of this listener's message collector.
      *
      * @return True if the message collector of this listener is active.
@@ -546,26 +457,6 @@ public class TCPListener
     public MessageETX getMessageETX()
     {
         return fMessageETX;
-    }
-
-    /**
-     * Returns the connection Data Converter
-     *
-     * @return
-     */
-    public DataConverter getConnectionDataConverter()
-    {
-        return fConnectionDataConverter;
-    }
-
-    /**
-     * Sets the connection Data Converter of this TCPListener
-     *
-     * @param dataConverter
-     */
-    public void setConnectionDataConverter(DataConverter dataConverter)
-    {
-        fConnectionDataConverter = (dataConverter == null) ? new NullDataConverter() : dataConverter;
     }
 
     /**

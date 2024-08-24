@@ -19,8 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Server.Listener;
 
-import Extasys.DataConvertion.DataConverter;
-import Extasys.DataConvertion.NullDataConverter;
+import Extasys.Network.AbstractListener;
 import Extasys.Network.UDP.Server.ExtasysUDPServer;
 import Extasys.Network.UDP.Server.Listener.Packets.IncomingUDPServerPacket;
 import Extasys.Network.UDP.Server.Listener.Packets.OutgoingUDPServerPacket;
@@ -34,25 +33,19 @@ import java.net.SocketException;
  *
  * @author Nikos Siatras
  */
-public class UDPListener
+public class UDPListener extends AbstractListener
 {
 
     private final ExtasysUDPServer fMyUDPServer; //Extasys UDP server reference.
-    private final String fName;
-    private final InetAddress fIPAddress;
-    private final int fPort;
-    private final int fReadBufferSize;
+
+    protected Thread fReadIncomingDataThread;
+
     private final int fReadDataTimeOut;
     public DatagramSocket fSocket;
-    private boolean fActive = false;
-    private Thread fReadIncomingDataThread;
-    public long fBytesIn = 0, fBytesOut = 0;
+
     //Messages IO.
     public IncomingUDPServerPacket fLastIncomingPacket = null;
     public OutgoingUDPServerPacket fLastOutgoingPacket = null;
-
-    // Connection DataConverter (Encryption, Encoding, Compression)
-    private DataConverter fConnectionDataConverter = new NullDataConverter();
 
     /**
      * Constructs a new UDP Listener.
@@ -164,96 +157,6 @@ public class UDPListener
     public ExtasysUDPServer getMyExtasysUDPServer()
     {
         return fMyUDPServer;
-    }
-
-    /**
-     * Returns the name of this UDP Listener.
-     *
-     * @return the name of this UDP Listener.
-     */
-    public String getName()
-    {
-        return fName;
-    }
-
-    /**
-     * Returns the IP address of this UDP Listener.
-     *
-     * @return the IP address of this UDP Listener.
-     */
-    public InetAddress getIPAddress()
-    {
-        return fIPAddress;
-    }
-
-    /**
-     * Returns the UDP port of this listener.
-     *
-     * @return the UDP port of this listener.
-     */
-    public int getPort()
-    {
-        return fPort;
-    }
-
-    /**
-     * Returns the read buffer size of this listener.
-     *
-     * @return the read buffer size of this listener.
-     */
-    public int getReadBufferSize()
-    {
-        return fReadBufferSize;
-    }
-
-    /**
-     * Return the number of bytes received from this listener.
-     *
-     * @return the number of bytes received from this listener.
-     */
-    public long getBytesIn()
-    {
-        return fBytesIn;
-    }
-
-    /**
-     * Return the number of bytes send from this listener.
-     *
-     * @return the number of bytes send from this listener.
-     */
-    public long getBytesOut()
-    {
-        return fBytesOut;
-    }
-
-    /**
-     * Returns true if this listener is Active (Started).
-     *
-     * @return the active state of this listener.
-     */
-    public boolean isActive()
-    {
-        return fActive;
-    }
-
-    /**
-     * Returns the connection's data converter
-     *
-     * @return
-     */
-    public DataConverter getConnectionDataConverter()
-    {
-        return fConnectionDataConverter;
-    }
-
-    /**
-     * Sets the connection's DataConverter of this UDPListener
-     *
-     * @param dataConverter
-     */
-    public void setConnectionDataConverter(DataConverter dataConverter)
-    {
-        fConnectionDataConverter = (dataConverter == null) ? new NullDataConverter() : dataConverter;
     }
 
 }
