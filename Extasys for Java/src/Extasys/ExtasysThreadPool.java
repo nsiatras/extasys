@@ -20,7 +20,6 @@
 package Extasys;
 
 import Extasys.Network.NetworkPacket;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class ExtasysThreadPool extends ThreadPoolExecutor
 {
 
-    //private final BlockingQueue fPoolsQueue;
+    // private final BlockingQueue fPoolsQueue;
 
     public ExtasysThreadPool(int corePoolWorkers, int maximumPoolWorkers)
     {
