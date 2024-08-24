@@ -72,6 +72,8 @@ public abstract class ExtasysTCPServer
      * @param backLog is the number of outstanding connection requests the
      * listener can have.
      *
+     * @return the TCPListener that was added to this server
+     *
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog)
     {
@@ -97,7 +99,8 @@ public abstract class ExtasysTCPServer
      * @param backLog is the number of outstanding connection requests the
      * listener can have.
      * @param splitter is the message splitter.
-     * @return the listener.
+     *
+     * @return the TCPListener that was added to this server
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, char splitter)
     {
@@ -123,7 +126,8 @@ public abstract class ExtasysTCPServer
      * @param backLog is the number of outstanding connection requests the
      * listener can have.
      * @param splitter is the message splitter.
-     * @return the listener.
+     *
+     * @return the TCPListener that was added to this server
      */
     public TCPListener AddListener(String name, InetAddress ipAddress, int port, int maxConnections, int readBufferSize, int connectionTimeOut, int backLog, String splitter)
     {
@@ -448,9 +452,9 @@ public abstract class ExtasysTCPServer
     }
 
     /**
-     * Returns the total bytes received by this server.
+     * Returns the total bytes received from this server.
      *
-     * @return the total bytes received by this server.
+     * @return the total bytes received from this server.
      */
     public long getBytesIn()
     {
@@ -458,9 +462,9 @@ public abstract class ExtasysTCPServer
     }
 
     /**
-     * Returns the total bytes send from this server.
+     * Returns the total bytes sent from this server.
      *
-     * @return the total bytes send from this server.
+     * @return the total bytes sent from this server.
      */
     public long getBytesOut()
     {
