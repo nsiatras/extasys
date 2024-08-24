@@ -22,6 +22,10 @@ package Extasys.MessageCollector;
 /**
  *
  * @author Nikos Siatras - https://github.com/nsiatras
+ *
+ * This class holds the properties of the message splitter for TCP Connections.
+ * Early Extasys versions holds the ETX as a string. This class was implemented
+ * to keep message splitter char(characters) as a byte array.
  */
 public class MessageETX
 {

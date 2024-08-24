@@ -41,7 +41,7 @@ public class Base64Converter extends DataConverter
 
     /**
      * Encodes all bytes from the specified byte array into a newly-allocated
-     * byte array using the {@link Base64} encoding scheme. The returned byte
+     * byte array using the Base64 encoding scheme. The returned byte
      * array is of the length of the resulting bytes.
      *
      * @param bytes
