@@ -19,10 +19,8 @@
  THE SOFTWARE.*/
 package Extasys.Network.TCP.Client.Connectors;
 
-import Extasys.DataConvertion.DataConverter;
-import Extasys.DataConvertion.NullDataConverter;
 import Extasys.MessageCollector.MessageETX;
-import Extasys.Network.NetworkPacket;
+import Extasys.Network.AbstractConnector;
 import Extasys.Network.TCP.Client.Connectors.Packets.*;
 import Extasys.Network.TCP.Client.ExtasysTCPClient;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException;
@@ -38,34 +36,23 @@ import java.util.Arrays;
  *
  * @author Nikos Siatras
  */
-public class TCPConnector
+public class TCPConnector extends AbstractConnector
 {
 
     protected ExtasysTCPClient fMyTCPClient;
-    private String fName;
-    private InetAddress fServerIP;
-    private int fServerPort;
-    private boolean fActive;
-    protected boolean fIsConnected = false;
+
     // Socket properties.
     public Socket fConnection;
-    private int fReadBufferSize;
     public InputStream fInput;
     public OutputStream fOutput;
-    protected final Object fSendDataLock = new Object();
-    protected final Object fReceiveDataLock = new Object();
     private ReadIncomingDataThread fReadIncomingDataThread;
-    // Data throughput.
-    public long fBytesIn = 0, fBytesOut = 0;
+
+    protected boolean fIsConnected = false;
+
     // Message collector properties.
     public TCPConnectorMessageCollector fMessageCollector;
     private MessageETX fMessageETX = null;
     private boolean fAutoApplyMessageSplitter = false;
-    // Messages IO.
-    protected NetworkPacket fLastIncomingPacket = null;
-    protected NetworkPacket fLastOutgoingPacket = null;
-    // Connection DataConverter (Encryption, Encoding, Compression)
-    private DataConverter fConnectionDataConverter = new NullDataConverter();
 
     /**
      * Constructs a new TCP Connector
@@ -333,76 +320,6 @@ public class TCPConnector
     }
 
     /**
-     * Returns true if this TCPConnector is active (Started) and connected.
-     *
-     * @return the active state of this connector.
-     */
-    public boolean isActive()
-    {
-        return fActive;
-    }
-
-    /**
-     * Returns the name of this connector.
-     *
-     * @return the name of this connector
-     */
-    public String getName()
-    {
-        return fName;
-    }
-
-    /**
-     * Returns the remote server's IP address.
-     *
-     * @return the remote server's IP address
-     */
-    public InetAddress getServerIPAddress()
-    {
-        return fServerIP;
-    }
-
-    /**
-     * Returns the remote server TCP port.
-     *
-     * @return the remote server TCP port.
-     */
-    public int getServerPort()
-    {
-        return fServerPort;
-    }
-
-    /**
-     * Returns the read buffer size of the connection.
-     *
-     * @return the read buffer size of the connection
-     */
-    public int getReadBufferSize()
-    {
-        return fReadBufferSize;
-    }
-
-    /**
-     * Return the number of bytes received from this connector.
-     *
-     * @return the number of bytes received from this connector.
-     */
-    public long getBytesIn()
-    {
-        return fBytesIn;
-    }
-
-    /**
-     * Returns the number of bytes send from this connector.
-     *
-     * @return the number of bytes send from this connector.
-     */
-    public long getBytesOut()
-    {
-        return fBytesOut;
-    }
-
-    /**
      * Returns the active state of the message collector.
      *
      * @return True if this connector uses message collector.
@@ -440,26 +357,6 @@ public class TCPConnector
     public boolean isConnected()
     {
         return fIsConnected;
-    }
-
-    /**
-     * Returns the connection Data Converter
-     *
-     * @return
-     */
-    public DataConverter getConnectionDataConverter()
-    {
-        return fConnectionDataConverter;
-    }
-
-    /**
-     * Sets the connection DataConverter of this TCPConnector
-     *
-     * @param dataConverter
-     */
-    public void setConnectionDataConverter(DataConverter dataConverter)
-    {
-        fConnectionDataConverter = (dataConverter == null) ? new NullDataConverter() : dataConverter;
     }
 
     /**

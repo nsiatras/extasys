@@ -19,8 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Client.Connectors;
 
-import Extasys.DataConvertion.DataConverter;
-import Extasys.DataConvertion.NullDataConverter;
+import Extasys.Network.AbstractConnector;
 import Extasys.Network.UDP.Client.Connectors.Packets.*;
 import Extasys.Network.UDP.Client.ExtasysUDPClient;
 import java.io.IOException;
@@ -33,25 +32,15 @@ import java.net.SocketException;
  *
  * @author Nikos Siatras
  */
-public class UDPConnector
+public class UDPConnector extends AbstractConnector
 {
 
-    private boolean fActive = false;
     private final ExtasysUDPClient fMyUDPClient; //Extasys UDP Client reference.
     public DatagramSocket fSocket;
-    private final InetAddress fServerIP;
-    private final int fServerPort;
+
     private Thread fReadDataThread;
-    private final String fName;
-    private final int fReadBufferSize;
+
     private final int fReadTimeOut;
-    public long fBytesIn = 0, fBytesOut = 0;
-
-    public IncomingUDPClientPacket fLastIncomingPacket = null;
-    public OutgoingUDPClientPacket fLastOutgoingPacket = null;
-
-    // Connection DataConverter (Encryption, Encoding, Compression)
-    private DataConverter fConnectionDataConverter = new NullDataConverter();
 
     /**
      * Constructs a new UDP Connector.
@@ -187,16 +176,6 @@ public class UDPConnector
     }
 
     /**
-     * Returns true if this UDPConnector is active (Started).
-     *
-     * @return the active state of this connector.
-     */
-    public boolean isActive()
-    {
-        return fActive;
-    }
-
-    /**
      * Returns the main Extasys UDP Client of the connector.
      *
      * @return the main Extasys UDP Client of the connector.
@@ -204,26 +183,6 @@ public class UDPConnector
     public ExtasysUDPClient getMyExtasysUDPClient()
     {
         return fMyUDPClient;
-    }
-
-    /**
-     * Returns the name of this connector.
-     *
-     * @return the name of this connector
-     */
-    public String getName()
-    {
-        return fName;
-    }
-
-    /**
-     * Returns the read buffer size of the connection.
-     *
-     * @return the read buffer size of the connection
-     */
-    public int getReadBufferSize()
-    {
-        return fReadBufferSize;
     }
 
     /**
@@ -236,46 +195,6 @@ public class UDPConnector
     public int getReadTimeOut()
     {
         return fReadTimeOut;
-    }
-
-    /**
-     * Return the number of bytes received from this connector.
-     *
-     * @return the number of bytes received from this connector.
-     */
-    public long getBytesIn()
-    {
-        return fBytesIn;
-    }
-
-    /**
-     * Return the number of bytes send from this connector.
-     *
-     * @return the number of bytes send from this connector.
-     */
-    public long getBytesOut()
-    {
-        return fBytesOut;
-    }
-
-    /**
-     * Returns the connection's Data Converter
-     *
-     * @return
-     */
-    public DataConverter getConnectionDataConverter()
-    {
-        return fConnectionDataConverter;
-    }
-
-    /**
-     * Sets the connection's Data Converter of this UDPConnector
-     *
-     * @param dataConverter
-     */
-    public void setConnectionDataConverter(DataConverter dataConverter)
-    {
-        fConnectionDataConverter = (dataConverter == null) ? new NullDataConverter() : dataConverter;
     }
 
 }
