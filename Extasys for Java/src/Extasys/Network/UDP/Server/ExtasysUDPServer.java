@@ -198,8 +198,7 @@ public abstract class ExtasysUDPServer
     }
 
     /**
-     * Returns an ArrayList with this server's UDP listeners. The ArrayList
-     * elements are UDPListener classes.
+     * Returns an ArrayList with this server's UDP listeners.
      *
      * @return ArrayList with this server's UDP listeners.
      */
@@ -207,8 +206,8 @@ public abstract class ExtasysUDPServer
     {
         return fListeners;
     }
-    
-     /**
+
+    /**
      * Return the servers's Thread Pool.
      *
      * @return the servers's Thread Pool.

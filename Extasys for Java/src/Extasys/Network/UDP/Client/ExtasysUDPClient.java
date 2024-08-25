@@ -232,12 +232,11 @@ public abstract class ExtasysUDPClient
     }
 
     /**
-     * Return ArrayList with the client's connectors. Each element of the
-     * ArrayList is a UDPConnector class.
+     * Returns an ArrayList with the client's UDP connectors.
      *
-     * @return ArrayList with the client's connectors.
+     * @return ArrayList with the client's UDP connectors.
      */
-    public ArrayList getConnectors()
+    public ArrayList<UDPConnector> getConnectors()
     {
         return fConnectors;
     }

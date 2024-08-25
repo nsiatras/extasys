@@ -322,10 +322,9 @@ public abstract class ExtasysTCPClient
     }
 
     /**
-     * Return ArrayList with the client's connectors. Each element of the
-     * ArrayList is a TCPConnector class.
+     * Returns ArrayList with the client's TCP connectors.
      *
-     * @return ArrayList with the client's connectors.
+     * @return ArrayList with the client's TCP connectors.
      */
     public ArrayList<TCPConnector> getConnectors()
     {

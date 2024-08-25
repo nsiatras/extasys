@@ -402,8 +402,7 @@ public abstract class ExtasysTCPServer
     }
 
     /**
-     * Returns an ArrayList with this server's TCP listeners. The ArrayList
-     * elements are TCPListener classes.
+     * Returns an ArrayList with this server's TCP listeners.
      *
      * @return ArrayList with this server's TCP listeners.
      */
