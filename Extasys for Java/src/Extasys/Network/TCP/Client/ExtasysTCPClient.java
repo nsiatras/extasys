@@ -208,6 +208,7 @@ public abstract class ExtasysTCPClient extends AbstractClient
      * active members of this class. After calling this method you cannot
      * re-start the client.
      */
+    @Override
     public void Dispose()
     {
         Stop();

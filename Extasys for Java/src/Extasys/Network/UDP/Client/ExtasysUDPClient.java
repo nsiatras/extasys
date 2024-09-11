@@ -179,6 +179,7 @@ public abstract class ExtasysUDPClient extends AbstractClient
      * members of this class. After calling this method you cannot re-start the
      * client.
      */
+    @Override
     public void Dispose()
     {
         Stop();

@@ -41,6 +41,8 @@ public abstract class AbstractClient
         fDescription = description;
         fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
     }
+    
+    public abstract void Dispose();
 
     /**
      * Return the name of the client.
