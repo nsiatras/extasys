@@ -19,7 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Server.Listener;
 
-import Extasys.Network.AbstractListener;
+import Extasys.Network.Abstract.AbstractListener;
 import Extasys.Network.UDP.Server.ExtasysUDPServer;
 import Extasys.Network.UDP.Server.Listener.Packets.IncomingUDPServerPacket;
 import Extasys.Network.UDP.Server.Listener.Packets.OutgoingUDPServerPacket;

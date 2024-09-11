@@ -20,7 +20,7 @@
 package Extasys.Network.TCP.Client.Connectors;
 
 import Extasys.MessageCollector.MessageETX;
-import Extasys.Network.AbstractConnector;
+import Extasys.Network.Abstract.AbstractConnector;
 import Extasys.Network.TCP.Client.Connectors.Packets.*;
 import Extasys.Network.TCP.Client.ExtasysTCPClient;
 import Extasys.Network.TCP.Client.Exceptions.ConnectorCannotSendPacketException;

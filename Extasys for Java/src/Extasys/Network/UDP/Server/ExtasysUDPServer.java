@@ -19,7 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Server;
 
-import Extasys.Network.AbstractServer;
+import Extasys.Network.Abstract.AbstractServer;
 import Extasys.Network.UDP.Server.Listener.UDPListener;
 import java.net.DatagramPacket;
 import java.net.InetAddress;

@@ -20,7 +20,7 @@
 package Extasys.Network.TCP.Server;
 
 import Extasys.DataFrame;
-import Extasys.Network.AbstractServer;
+import Extasys.Network.Abstract.AbstractServer;
 import Extasys.Network.TCP.Server.Listener.Exceptions.*;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.Network.TCP.Server.Listener.TCPListener;

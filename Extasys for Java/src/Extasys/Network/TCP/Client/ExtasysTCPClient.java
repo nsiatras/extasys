@@ -20,7 +20,7 @@
 package Extasys.Network.TCP.Client;
 
 import Extasys.DataFrame;
-import Extasys.Network.AbstractClient;
+import Extasys.Network.Abstract.AbstractClient;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;

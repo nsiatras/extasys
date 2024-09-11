@@ -20,7 +20,7 @@
 package Extasys.Network.TCP.Server.Listener;
 
 import Extasys.MessageCollector.MessageETX;
-import Extasys.Network.AbstractListener;
+import Extasys.Network.Abstract.AbstractListener;
 import Extasys.Network.TCP.Server.ExtasysTCPServer;
 import java.io.IOException;
 import java.net.InetAddress;

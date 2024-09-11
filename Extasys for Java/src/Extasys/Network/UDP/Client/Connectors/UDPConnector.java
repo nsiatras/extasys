@@ -19,7 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Client.Connectors;
 
-import Extasys.Network.AbstractConnector;
+import Extasys.Network.Abstract.AbstractConnector;
 import Extasys.Network.UDP.Client.Connectors.Packets.*;
 import Extasys.Network.UDP.Client.ExtasysUDPClient;
 import java.io.IOException;
