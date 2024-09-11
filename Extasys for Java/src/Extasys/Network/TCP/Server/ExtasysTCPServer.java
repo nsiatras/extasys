@@ -20,7 +20,7 @@
 package Extasys.Network.TCP.Server;
 
 import Extasys.DataFrame;
-import Extasys.ExtasysThreadPool;
+import Extasys.Network.AbstractServer;
 import Extasys.Network.TCP.Server.Listener.Exceptions.*;
 import Extasys.Network.TCP.Server.Listener.TCPClientConnection;
 import Extasys.Network.TCP.Server.Listener.TCPListener;
@@ -32,14 +32,11 @@ import java.util.ArrayList;
  *
  * @author Nikos Siatras
  */
-public abstract class ExtasysTCPServer
+public abstract class ExtasysTCPServer extends AbstractServer
 {
 
-    private String fName, fDescription;
     private final ArrayList<TCPListener> fListeners = new ArrayList<>();
     private final Object fListenersLock = new Object();
-    private final ExtasysThreadPool fMyThreadPool;
-    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
      * Constructs an new Extasys TCP Server.
@@ -53,9 +50,7 @@ public abstract class ExtasysTCPServer
      */
     public ExtasysTCPServer(String name, String description, int corePoolSize, int maximumPoolSize)
     {
-        fName = name;
-        fDescription = description;
-        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
+        super(name, description, corePoolSize, maximumPoolSize);
     }
 
     /**
@@ -237,6 +232,7 @@ public abstract class ExtasysTCPServer
      * This method stops the server and disposes all the active members of this
      * class. After calling this method you cannot re-start the server.
      */
+    @Override
     public void Dispose()
     {
         Stop();
@@ -362,46 +358,6 @@ public abstract class ExtasysTCPServer
     }
 
     /**
-     * Server's name.
-     *
-     * @return server's name.
-     */
-    public String getName()
-    {
-        return fName;
-    }
-
-    /**
-     * Set's the server's name
-     *
-     * @param name
-     */
-    public void setName(String name)
-    {
-        fName = name;
-    }
-
-    /**
-     * Server's description.
-     *
-     * @return server's description.
-     */
-    public String getDescription()
-    {
-        return fDescription;
-    }
-
-    /**
-     * Set's the server's description
-     *
-     * @param description is the server's description
-     */
-    public void setDescription(String description)
-    {
-        fDescription = description;
-    }
-
-    /**
      * Returns an ArrayList with this server's TCP listeners.
      *
      * @return ArrayList with this server's TCP listeners.
@@ -440,33 +396,4 @@ public abstract class ExtasysTCPServer
         }
     }
 
-    /**
-     * Returns my Thread Pool.
-     *
-     * @return My Thread Pool.
-     */
-    public ExtasysThreadPool getMyThreadPool()
-    {
-        return fMyThreadPool;
-    }
-
-    /**
-     * Returns the total bytes received from this server.
-     *
-     * @return the total bytes received from this server.
-     */
-    public long getBytesIn()
-    {
-        return fTotalBytesIn;
-    }
-
-    /**
-     * Returns the total bytes sent from this server.
-     *
-     * @return the total bytes sent from this server.
-     */
-    public long getBytesOut()
-    {
-        return fTotalBytesOut;
-    }
 }

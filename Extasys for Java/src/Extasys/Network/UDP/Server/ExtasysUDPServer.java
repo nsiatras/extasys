@@ -19,7 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Server;
 
-import Extasys.ExtasysThreadPool;
+import Extasys.Network.AbstractServer;
 import Extasys.Network.UDP.Server.Listener.UDPListener;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -30,14 +30,11 @@ import java.util.ArrayList;
  *
  * @author Nikos Siatras
  */
-public abstract class ExtasysUDPServer
+public abstract class ExtasysUDPServer extends AbstractServer
 {
 
-    private String fName, fDescription;
     private final ArrayList<UDPListener> fListeners = new ArrayList<>();
     private final Object fListenersLock = new Object();
-    private final ExtasysThreadPool fMyThreadPool;
-    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
      * Constructs a new Extasys UDP Server.
@@ -51,9 +48,7 @@ public abstract class ExtasysUDPServer
      */
     public ExtasysUDPServer(String name, String description, int corePoolSize, int maximumPoolSize)
     {
-        fName = name;
-        fDescription = description;
-        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
+        super(name, description, corePoolSize, maximumPoolSize);
     }
 
     /**
@@ -85,13 +80,16 @@ public abstract class ExtasysUDPServer
      */
     public void RemoveListener(String name)
     {
-        for (int i = 0; i < fListeners.size(); i++)
+        synchronized (fListenersLock)
         {
-            if (((UDPListener) fListeners.get(i)).getName().equals(name))
+            for (int i = 0; i < fListeners.size(); i++)
             {
-                ((UDPListener) fListeners.get(i)).Stop();
-                fListeners.remove(i);
-                break;
+                if (fListeners.get(i).getName().equals(name))
+                {
+                    fListeners.get(i).Stop();
+                    fListeners.remove(i);
+                    break;
+                }
             }
         }
     }
@@ -149,6 +147,7 @@ public abstract class ExtasysUDPServer
      * active members of this class. After calling this method you cannot
      * re-start the server.
      */
+    @Override
     public void Dispose()
     {
         Stop();
@@ -156,46 +155,6 @@ public abstract class ExtasysUDPServer
     }
 
     public abstract void OnDataReceive(UDPListener listener, DatagramPacket packet);
-
-    /**
-     * Returns the name of this UDP server.
-     *
-     * @return the name of this UDP server.
-     */
-    public String getName()
-    {
-        return fName;
-    }
-
-    /**
-     * Sets the name of this UDP server
-     *
-     * @param name the name to set on this UDP server
-     */
-    public void setName(String name)
-    {
-        fName = name;
-    }
-
-    /**
-     * Returns the description of this UDP server.
-     *
-     * @return the description of this UDP server.
-     */
-    public String getDescription()
-    {
-        return fDescription;
-    }
-
-    /**
-     * Sets the description of this UDP server
-     *
-     * @param description the description to set on this UDP server
-     */
-    public void setDescription(String description)
-    {
-        fDescription = description;
-    }
 
     /**
      * Returns an ArrayList with this server's UDP listeners.
@@ -207,33 +166,4 @@ public abstract class ExtasysUDPServer
         return fListeners;
     }
 
-    /**
-     * Return the servers's Thread Pool.
-     *
-     * @return the servers's Thread Pool.
-     */
-    public ExtasysThreadPool getMyThreadPool()
-    {
-        return fMyThreadPool;
-    }
-
-    /**
-     * Returns the total bytes received from this server.
-     *
-     * @return the total bytes received from this server.
-     */
-    public long getBytesIn()
-    {
-        return fTotalBytesIn;
-    }
-
-    /**
-     * Returns the total bytes send from this server.
-     *
-     * @return the total bytes send from this server.
-     */
-    public long getBytesOut()
-    {
-        return fTotalBytesOut;
-    }
 }

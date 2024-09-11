@@ -30,7 +30,7 @@ import java.net.InetAddress;
  * This class holds common properties for Listeners such as the TCPListener and
  * the UDPListener
  */
-public class AbstractListener
+public abstract class AbstractListener
 {
 
     // Description

@@ -25,27 +25,29 @@ import Extasys.ExtasysThreadPool;
  *
  * @author Nikos Siatras - https://github.com/nsiatras
  *
- * This class holds common properties for Clients such as the TCPClient and the
- * UDPClient
+ * This class holds common properties for Listeners such as the TCPServer and
+ * the UDPServer
  */
-public abstract class AbstractClient
+public abstract class AbstractServer
 {
 
     private String fName, fDescription;
     protected final ExtasysThreadPool fMyThreadPool;
     public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
-    public AbstractClient(String name, String description, int corePoolSize, int maximumPoolSize)
+    public AbstractServer(String name, String description, int corePoolSize, int maximumPoolSize)
     {
         fName = name;
         fDescription = description;
         fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
     }
+    
+    public abstract void Dispose();
 
     /**
-     * Return the name of the client.
+     * Server's name.
      *
-     * @return the name of the client.
+     * @return server's name.
      */
     public String getName()
     {
@@ -53,7 +55,7 @@ public abstract class AbstractClient
     }
 
     /**
-     * Sets the name of the TCPClient
+     * Set's the server's name
      *
      * @param name
      */
@@ -63,9 +65,9 @@ public abstract class AbstractClient
     }
 
     /**
-     * Return the description of the client.
+     * Server's description.
      *
-     * @return the description of the client.
+     * @return server's description.
      */
     public String getDescription()
     {
@@ -73,9 +75,9 @@ public abstract class AbstractClient
     }
 
     /**
-     * Sets the description of the TCPClient
+     * Set's the server's description
      *
-     * @param description is the TCPClient's description
+     * @param description is the server's description
      */
     public void setDescription(String description)
     {
@@ -83,9 +85,9 @@ public abstract class AbstractClient
     }
 
     /**
-     * Return the client's Thread Pool.
+     * Returns the server's ThreadPool.
      *
-     * @return the client's Thread Pool.
+     * @return My Thread Pool.
      */
     public ExtasysThreadPool getMyThreadPool()
     {
@@ -93,9 +95,9 @@ public abstract class AbstractClient
     }
 
     /**
-     * Returns the total number of bytes received by this client.
+     * Returns the total bytes received from this server.
      *
-     * @return the number of bytes received by this client.
+     * @return the total bytes received from this server.
      */
     public long getBytesIn()
     {
@@ -103,9 +105,9 @@ public abstract class AbstractClient
     }
 
     /**
-     * Returns the total number of bytes send from this client.
+     * Returns the total bytes sent from this server.
      *
-     * @return the total number of bytes send from this client.
+     * @return the total bytes sent from this server.
      */
     public long getBytesOut()
     {
