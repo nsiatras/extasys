@@ -19,7 +19,7 @@
  THE SOFTWARE.*/
 package Extasys.Network.UDP.Client;
 
-import Extasys.ExtasysThreadPool;
+import Extasys.Network.AbstractClient;
 import Extasys.Network.UDP.Client.Connectors.UDPConnector;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -31,14 +31,11 @@ import java.util.ArrayList;
  *
  * @author Nikos Siatras
  */
-public abstract class ExtasysUDPClient
+public abstract class ExtasysUDPClient extends AbstractClient
 {
 
-    private String fName, fDescription;
     private final ArrayList<UDPConnector> fConnectors = new ArrayList<>();
     private final Object fConnectorsLock = new Object();
-    private final ExtasysThreadPool fMyThreadPool;
-    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
 
     /**
      * Constructs a new Extasys UDP Client.
@@ -52,9 +49,7 @@ public abstract class ExtasysUDPClient
      */
     public ExtasysUDPClient(String name, String description, int corePoolSize, int maximumPoolSize)
     {
-        fName = name;
-        fDescription = description;
-        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
+        super(name, description, corePoolSize, maximumPoolSize);
     }
 
     /**
@@ -68,6 +63,7 @@ public abstract class ExtasysUDPClient
      * @param serverIP is the server's ip address the connector will use to send
      * data.
      * @param serverPort is the server's udp port.
+     * @return
      */
     public UDPConnector AddConnector(String name, int readBufferSize, int readTimeOut, InetAddress serverIP, int serverPort)
     {
@@ -192,46 +188,6 @@ public abstract class ExtasysUDPClient
     public abstract void OnDataReceive(UDPConnector connector, DatagramPacket packet);
 
     /**
-     * Return the name of the UDP client.
-     *
-     * @return the name of the client.
-     */
-    public String getName()
-    {
-        return fName;
-    }
-
-    /**
-     * Sets the name of the UDP Client.
-     *
-     * @param name
-     */
-    public void setName(String name)
-    {
-        fName = name;
-    }
-
-    /**
-     * Return the description of the UDP client.
-     *
-     * @return the description of the client.
-     */
-    public String getDescription()
-    {
-        return fDescription;
-    }
-
-    /**
-     * Sets the description of the UDP Client.
-     *
-     * @param description
-     */
-    public void setDescription(String description)
-    {
-        fDescription = description;
-    }
-
-    /**
      * Returns an ArrayList with the client's UDP connectors.
      *
      * @return ArrayList with the client's UDP connectors.
@@ -239,36 +195,6 @@ public abstract class ExtasysUDPClient
     public ArrayList<UDPConnector> getConnectors()
     {
         return fConnectors;
-    }
-
-    /**
-     * Return the client's Thread Pool.
-     *
-     * @return the client's Thread Pool.
-     */
-    public ExtasysThreadPool getMyThreadPool()
-    {
-        return fMyThreadPool;
-    }
-
-    /**
-     * Returns the total bytes received.
-     *
-     * @return the total bytes received.
-     */
-    public long getBytesIn()
-    {
-        return fTotalBytesIn;
-    }
-
-    /**
-     * Returns the total bytes send.
-     *
-     * @return the total bytes send.
-     */
-    public long getBytesOut()
-    {
-        return fTotalBytesOut;
     }
 
 }

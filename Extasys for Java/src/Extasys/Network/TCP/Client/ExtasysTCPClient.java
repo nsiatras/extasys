@@ -20,7 +20,7 @@
 package Extasys.Network.TCP.Client;
 
 import Extasys.DataFrame;
-import Extasys.ExtasysThreadPool;
+import Extasys.Network.AbstractClient;
 import Extasys.Network.TCP.Client.Connectors.TCPConnector;
 import Extasys.Network.TCP.Client.Exceptions.*;
 import java.net.InetAddress;
@@ -30,14 +30,11 @@ import java.util.ArrayList;
  *
  * @author Nikos Siatras
  */
-public abstract class ExtasysTCPClient
+public abstract class ExtasysTCPClient extends AbstractClient
 {
 
-    private String fName, fDescription;
-    private final ArrayList<TCPConnector> fConnectors = new ArrayList<>();
     private final Object fConnectorsLock = new Object();
-    private final ExtasysThreadPool fMyThreadPool;
-    public long fTotalBytesIn = 0, fTotalBytesOut = 0;
+    private final ArrayList<TCPConnector> fConnectors = new ArrayList<>();
 
     /**
      * Constructs a new Extasys TCP Client.
@@ -51,9 +48,7 @@ public abstract class ExtasysTCPClient
      */
     public ExtasysTCPClient(String name, String description, int corePoolSize, int maximumPoolSize)
     {
-        fName = name;
-        fDescription = description;
-        fMyThreadPool = new ExtasysThreadPool(corePoolSize, maximumPoolSize);
+        super(name, description, corePoolSize, maximumPoolSize);
     }
 
     /**
@@ -282,46 +277,6 @@ public abstract class ExtasysTCPClient
     public abstract void OnDisconnect(TCPConnector connector);
 
     /**
-     * Return the name of the client.
-     *
-     * @return the name of the client.
-     */
-    public String getName()
-    {
-        return fName;
-    }
-
-    /**
-     * Sets the name of the TCPClient
-     *
-     * @param name
-     */
-    public void setName(String name)
-    {
-        fName = name;
-    }
-
-    /**
-     * Return the description of the client.
-     *
-     * @return the description of the client.
-     */
-    public String getDescription()
-    {
-        return fDescription;
-    }
-
-    /**
-     * Sets the description of the TCPClient
-     *
-     * @param description is the TCPClient's description
-     */
-    public void setDescription(String description)
-    {
-        fDescription = description;
-    }
-
-    /**
      * Returns ArrayList with the client's TCP connectors.
      *
      * @return ArrayList with the client's TCP connectors.
@@ -331,33 +286,4 @@ public abstract class ExtasysTCPClient
         return fConnectors;
     }
 
-    /**
-     * Return the client's Thread Pool.
-     *
-     * @return the client's Thread Pool.
-     */
-    public ExtasysThreadPool getMyThreadPool()
-    {
-        return fMyThreadPool;
-    }
-
-    /**
-     * Returns the total number of bytes received by this client.
-     *
-     * @return the number of bytes received by this client.
-     */
-    public long getBytesIn()
-    {
-        return fTotalBytesIn;
-    }
-
-    /**
-     * Returns the total number of bytes send from this client.
-     *
-     * @return the total number of bytes send from this client.
-     */
-    public long getBytesOut()
-    {
-        return fTotalBytesOut;
-    }
 }
