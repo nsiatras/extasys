@@ -37,8 +37,6 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
 
     private final HashMap<String, TCPChatUser> fConnectedClients;
 
-    private final String fSPT = String.valueOf(((char) 2)); // Message splitter character. This is not the same as the message collector character
-
     private Thread fPingThread;
     private boolean fServerIsActive;
     private final frmTCPChatServer fMainForm;
@@ -73,7 +71,8 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
                         try
                         {
                             // Send "Ping" command to all Client
-                            ReplyToAll("Ping" + fSPT);
+                            MessageToken token = new MessageToken("Ping", "");
+                            ReplyToAll(token.toJSON());
                             Thread.sleep(5000);
                         }
                         catch (InterruptedException ex)
@@ -114,29 +113,38 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
         try
         {
             // This isa the client's incoming message
-            String[] splittedMessage = new String(data.getBytes()).split(fSPT);
+            //String[] splittedMessage = new String(data.getBytes()).split(fSPT);
+            MessageToken token = MessageToken.fromJSON(new String(data.getBytes()));
+            final String tokenHeader = token.getHeader();
+            final String tokenData = token.getData();
 
-            switch (splittedMessage[0])
+            switch (tokenHeader)
             {
                 case "Login":
-                    // Message: Login ((char)2) Username
+                    // Message: "Login","Username"
                     // Client wants to login.
                     // Server checks if username is unique.
-                    // If the username is taken server replys -> "Change_Username ((char)2)"
-                    // If the username is not taken then server replys -> "Welcome ((char)2)" to the new client
+                    // If the username is taken server replys -> 'Change_Username,""'
+                    // If the username is not taken then server replys -> 'Welcome,""' to the new client
                     // and sends "New_User ((char)2) NewUsername" to all other clients.
-                    String tmpUsername = splittedMessage[1];
+                    String tmpUsername = tokenData;
                     if (IsUsernameTaken(tmpUsername))
                     {
-                        sender.SendData("Change_Username" + fSPT);
+                        MessageToken tokenToSend = new MessageToken("Change_Username", tmpUsername);
+                        sender.SendData(tokenToSend.toJSON());
                     }
                     else
                     {
                         TCPChatUser user = new TCPChatUser(tmpUsername, sender);
                         fConnectedClients.put(sender.getIPAddress(), user);
 
-                        super.ReplyToAll("New_User" + fSPT + tmpUsername);
-                        sender.SendData("Welcome" + fSPT);
+                        // Inform all users that a new user is now connected to the chat.
+                        MessageToken tokenToSend = new MessageToken("New_User", tmpUsername);
+                        super.ReplyToAll(tokenToSend.toJSON());
+
+                        // Send the welcome message to the user just connected.
+                        tokenToSend = new MessageToken("Welcome", "");
+                        sender.SendData(tokenToSend.toJSON());
                     }
                     break;
 
@@ -149,7 +157,10 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
                     // it disconnects the client.
                     if (fConnectedClients.containsKey(sender.getIPAddress()))
                     {
-                        super.ReplyToAll("Message" + fSPT + GetClientName(sender) + ": " + splittedMessage[1]);
+                        final String clientName = GetClientName(sender);
+                        MessageToken tokenToSend = new MessageToken("Message", (clientName + ": " + tokenData));
+
+                        super.ReplyToAll(tokenToSend.toJSON());
                     }
                     else
                     {
@@ -158,7 +169,7 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
                     break;
 
                 case "Get_List":
-                    // Message: Get_List ((char)2)
+                    // Message: "Get_List",""
                     // Client requets a list with other connected clients.
                     // If the client is registered to the server the server replys the list
                     // else it disconnects the client.
@@ -226,7 +237,8 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
             list = list + user.getUsername() + String.valueOf(((char) 1));
         }
 
-        return "User_List" + fSPT + list;
+        MessageToken token = new MessageToken("User_List", list);
+        return token.toJSON();
     }
 
     @Override
@@ -241,7 +253,11 @@ public class TCPChatServer extends Extasys.Network.TCP.Server.ExtasysTCPServer
     {
         if (fConnectedClients.containsKey(client.getIPAddress()))
         {
-            super.ReplyToAll("Remove_User" + fSPT + ((TCPChatUser) fConnectedClients.get(client.getIPAddress())).getUsername());
+            final String username = GetClientName(client);
+
+            MessageToken token = new MessageToken("Remove_User", username);
+            super.ReplyToAll(token.toJSON());
+
             fConnectedClients.remove(client.getIPAddress());
         }
         fMainForm.UpdateClientsCount();

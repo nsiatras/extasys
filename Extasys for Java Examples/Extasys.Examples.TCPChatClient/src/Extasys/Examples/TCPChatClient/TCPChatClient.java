@@ -36,7 +36,6 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     private final int fPort;
     private final String fUsername;
     private final frmTCPChatClient fMainForm;
-    private String fSPT = String.valueOf(((char) 2)); // Message splitter character.
 
     public TCPChatClient(InetAddress serverIP, int port, String username, frmTCPChatClient frmMain)
     {
@@ -66,32 +65,34 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     @Override
     public void OnDataReceive(TCPConnector connector, DataFrame data)
     {
-        String[] splittedMessage = new String(data.getBytes()).split(fSPT);
+        MessageToken token = MessageToken.fromJSON(new String(data.getBytes()));
+        final String tokenHeader = token.getHeader();
+        final String tokenData = token.getData();
 
-        switch (splittedMessage[0])
+        switch (tokenHeader)
         {
             case "Change_Username":
-                // Message: Change_Username ((char)2)
+                // Message: "Change_Username",""
                 // This user must change username because this one is allready in use by an other user.
                 fMainForm.MarkAsDisconnected();
                 fMainForm.DisplayMessage("Please change your username. This one is allready in use by an other user.");
                 break;
 
             case "Welcome":
-                /* Message: Welcome ((char)2)
-                Server welcomes you.
-                 */
+                // Message: "Welcome",""
+                // Server welcomes you.
                 fMainForm.MarkAsConnected();
                 fMainForm.DisplayMessage("You are now connected !!!");
-                SendDataToServer("Get_List" + fSPT);
+                MessageToken tokenToSend = new MessageToken("Get_List", "");
+                SendDataToServer(tokenToSend);
                 break;
 
             case "User_List":
-                // Message: User_List ((char)2) list...
+                // Message: "User_List","A list of Usernames separated with (char)1"
                 // Server sends a list with connected clients to the client.
-                if (!splittedMessage[1].equals(""))
+                if (!tokenData.equals(""))
                 {
-                    String[] connectedUsers = splittedMessage[1].split(String.valueOf(((char) 1)));
+                    String[] connectedUsers = token.getData().split(String.valueOf(((char) 1)));
                     for (int i = 0; i < connectedUsers.length; i++)
                     {
                         if (!connectedUsers[i].equals(fUsername))
@@ -103,30 +104,32 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
                 break;
 
             case "New_User":
-                // Message: New_User ((char)2) username
+                // Message: "New_User","username"
                 // A user connected to the server.
-                fMainForm.AddUserInList(splittedMessage[1]);
-                fMainForm.DisplayMessage("User " + splittedMessage[1] + " connected");
+                fMainForm.AddUserInList(tokenData);
+                fMainForm.DisplayMessage("User " + tokenData + " connected");
                 break;
 
             case "Remove_User":
-                // Message: Remove_User ((char)2) username
+                // Message: "Remove_User","username"
                 // A user has been disconnected from server.
-                fMainForm.RemoveUser(splittedMessage[1]);
-                fMainForm.DisplayMessage("User " + splittedMessage[1] + " disconnected");
+                fMainForm.RemoveUser(tokenData);
+                fMainForm.DisplayMessage("User " + tokenData + " disconnected");
                 break;
 
             case "Message":
-                // Message: Message ((char)2) some_text
+                // Message: "Message","Message text"
                 // Server sends a message
-                fMainForm.DisplayMessage(splittedMessage[1]);
+                fMainForm.DisplayMessage(tokenData);
                 break;
 
             case "Ping":
-                // Message: Ping ((char)2)
-                // Server pings you.
-                SendDataToServer("Pong" + fSPT);
+                // Message: "Ping",""
+                // Server pings you, reply with Pong
+                MessageToken pongToken = new MessageToken("Pong", "");
+                SendDataToServer(pongToken);
                 break;
+
             default:
                 break;
         }
@@ -135,7 +138,8 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
     @Override
     public void OnConnect(TCPConnector connector)
     {
-        SendDataToServer("Login" + fSPT + fUsername);
+        MessageToken tokenToSend = new MessageToken("Login", fUsername);
+        SendDataToServer(tokenToSend);
     }
 
     @Override
@@ -145,11 +149,11 @@ public class TCPChatClient extends Extasys.Network.TCP.Client.ExtasysTCPClient
         fMainForm.DisplayMessage("You are disconnected...");
     }
 
-    public void SendDataToServer(String data)
+    public void SendDataToServer(MessageToken token)
     {
         try
         {
-            super.SendData(data);
+            super.SendData(token.toJSON());
         }
         catch (ConnectorDisconnectedException ex)
         {

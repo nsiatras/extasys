@@ -101,7 +101,9 @@ public class frmTCPChatClient extends javax.swing.JFrame
             String message = jTextField1.getText().trim();
             if (!message.equals(""))
             {
-                fClient.SendDataToServer("Message" + String.valueOf(((char) 2)) + jTextField1.getText());
+                MessageToken tokenToSend = new MessageToken("Message", jTextField1.getText());
+                
+                fClient.SendDataToServer(tokenToSend);
                 jTextField1.setText("");
             }
         }
