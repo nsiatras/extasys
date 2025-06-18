@@ -31,7 +31,7 @@ import java.util.Arrays;
  */
 public class IncomingUDPServerPacket extends NetworkPacket
 {
-    
+
     private final UDPListener fMyListener;
     private final DatagramPacket fDataGram;
 
@@ -51,16 +51,15 @@ public class IncomingUDPServerPacket extends NetworkPacket
         super(packet.getData(), previousPacket);
         fMyListener = listener;
         fDataGram = packet;
-        
+
         listener.getMyExtasysUDPServer().getMyThreadPool().EnqueNetworkPacket(this);
     }
-    
+
     @Override
     public void run()
     {
         try
         {
-
             // Wait for previous Packet to be processed
             // by the thread pool.
             super.WaitForPreviousPacketToBeProcessedAndCheckIfItWasCanceled();
@@ -71,11 +70,11 @@ public class IncomingUDPServerPacket extends NetworkPacket
                 // Trim the incoming packet
                 byte[] cleanData = Arrays.copyOfRange(fDataGram.getData(), 0, fDataGram.getLength());
 
-                // Decrypt incoming data
+                // Revert incoming data
                 cleanData = fMyListener.getConnectionDataConverter().Revert(cleanData);
-                
+
                 fDataGram.setData(cleanData, 0, cleanData.length);
-                
+
                 fMyListener.getMyExtasysUDPServer().OnDataReceive(fMyListener, fDataGram);
             }
         }
@@ -86,8 +85,8 @@ public class IncomingUDPServerPacket extends NetworkPacket
         // Mark previous Packet as null.
         // GC will take it out later...
         fPreviousPacket = null;
-        
+
         fDone.Set();
     }
-    
+
 }
