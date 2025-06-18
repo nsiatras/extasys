@@ -143,14 +143,26 @@ public abstract class ExtasysTCPServer extends AbstractServer
     {
         synchronized (fListenersLock)
         {
-            for (int i = 0; i < fListeners.size(); i++)
+            fListeners.stream()
+                    .filter(l -> l.getName().equals(name))
+                    .findFirst()
+                    .ifPresent(this::RemoveListener);
+        }
+    }
+
+    /**
+     * Stop and remove a listener.
+     *
+     * @param listener the listener to stop and remove
+     */
+    public void RemoveListener(TCPListener listener)
+    {
+        synchronized (fListenersLock)
+        {
+            if (listener != null)
             {
-                if (fListeners.get(i).getName().equals(name))
-                {
-                    fListeners.get(i).Stop();
-                    fListeners.remove(i);
-                    break;
-                }
+                listener.Stop();
+                fListeners.remove(listener);
             }
         }
     }

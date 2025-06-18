@@ -84,14 +84,27 @@ public abstract class ExtasysUDPClient extends AbstractClient
     {
         synchronized (fConnectorsLock)
         {
-            for (int i = 0; i < fConnectors.size(); i++)
+            fConnectors.stream()
+                    .filter(c -> c.getName().equals(name))
+                    .findFirst()
+                    .ifPresent(this::RemoveConnector);
+        }
+    }
+
+    /**
+     * Stop and remove a connector from this client.
+     *
+     * @param connector the connector to stop and remove
+     *
+     */
+    public void RemoveConnector(UDPConnector connector)
+    {
+        synchronized (fConnectorsLock)
+        {
+            if (connector != null)
             {
-                if (((UDPConnector) fConnectors.get(i)).getName().equals(name))
-                {
-                    ((UDPConnector) fConnectors.get(i)).Stop();
-                    fConnectors.remove(i);
-                    break;
-                }
+                connector.Stop();
+                fConnectors.remove(connector);
             }
         }
     }
