@@ -33,13 +33,12 @@ public class ExtasysThreadPool extends ThreadPoolExecutor
 {
 
     // private final BlockingQueue fPoolsQueue;
-
     public ExtasysThreadPool(int corePoolWorkers, int maximumPoolWorkers)
     {
         //super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ArrayBlockingQueue(250000, true));
 
         // It appears that LinkedBlockingQueue has better performance than the ArrayBlockingQueue
-        super(corePoolWorkers, maximumPoolWorkers, 10, TimeUnit.SECONDS, new LinkedBlockingQueue(50000));
+        super(corePoolWorkers, maximumPoolWorkers, 5000, TimeUnit.SECONDS, new LinkedBlockingQueue(50000));
         //fPoolsQueue = this.getQueue();
 
         this.prestartAllCoreThreads();
