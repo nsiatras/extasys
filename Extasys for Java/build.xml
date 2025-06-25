@@ -15,7 +15,7 @@
     <target name="00-Release-Fat-Jar-WithJavaDocs" depends="jar">
         
         <property name="store.jar.name" value="Extasys"/>
-        <property name="LibraryVersion" value="NT_1.0.4"/>
+        <property name="LibraryVersion" value="NT_1.0.7"/>
         
         <!-- don't edit below this line -->
         <property name="store.dir" value="00_Release"/>

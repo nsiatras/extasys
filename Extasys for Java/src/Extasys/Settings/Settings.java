@@ -26,5 +26,5 @@ package Extasys.Settings;
 public class Settings
 {
 
-    public static final String VERSION = "Extasys NT v1.0.6";
+    public static final String VERSION = "Extasys NT v1.0.7";
 }
