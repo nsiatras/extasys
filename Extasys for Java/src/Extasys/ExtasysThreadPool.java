@@ -21,6 +21,7 @@ package Extasys;
 
 import Extasys.Network.NetworkPacket;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -32,43 +33,46 @@ import java.util.concurrent.TimeUnit;
 public class ExtasysThreadPool extends ThreadPoolExecutor
 {
 
-    // private final BlockingQueue fPoolsQueue;
+    private final LinkedBlockingQueue<Runnable> fPoolsQueue;
+
     public ExtasysThreadPool(int corePoolWorkers, int maximumPoolWorkers)
     {
-        //super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ArrayBlockingQueue(250000, true));
+        // LinkedBlockingQueue has better performance than ArrayBlockingQueue
+        this(corePoolWorkers, maximumPoolWorkers, new LinkedBlockingQueue<>(50000));
+    }
 
-        // It appears that LinkedBlockingQueue has better performance than the ArrayBlockingQueue
-        super(corePoolWorkers, maximumPoolWorkers, 10, TimeUnit.SECONDS, new LinkedBlockingQueue(100000));
-        //fPoolsQueue = this.getQueue();
-
+    private ExtasysThreadPool(int corePoolWorkers, int maximumPoolWorkers, LinkedBlockingQueue<Runnable> queue)
+    {
+        super(corePoolWorkers, maximumPoolWorkers, 10, TimeUnit.SECONDS, queue);
+        fPoolsQueue = queue;
         this.prestartAllCoreThreads();
     }
 
+    /**
+     * Enqueue a NetworkPacket into the thread pool. If the queue is full, wait
+     * up to 5 seconds for space to become available. If still full after
+     * timeout, reject the packet by throwing RejectedExecutionException.
+     *
+     * @param packet the NetworkPacket to enqueue
+     */
     public void EnqueNetworkPacket(NetworkPacket packet)
     {
-        super.execute(packet);
-
-        // TODO: To be tested !
-        /*try
+        try
         {
-            synchronized (fPoolsQueue)
+            // offer() blocks until space is available or timeout is reached
+            // This prevents RejectedExecutionException under burst traffic
+            boolean accepted = fPoolsQueue.offer(packet, 5, TimeUnit.SECONDS);
+
+            if (!accepted)
             {
-                // The following while statement ensures that there is enough
-                // space to the ThreadPool's queue in order to enqueue the
-                // NetworkPacket (Runnable). 
-                while (fPoolsQueue.remainingCapacity() < 500)
-                {
-                    fPoolsQueue.wait(); // Wait until space is freed up in the queue
-                }
-
-                super.execute(packet);
-
+                // Queue is still full after timeout - reject the packet
+                throw new RejectedExecutionException("Thread pool queue is full");
             }
         }
         catch (InterruptedException ex)
         {
             Thread.currentThread().interrupt();
-        }*/
+        }
     }
 
 }
