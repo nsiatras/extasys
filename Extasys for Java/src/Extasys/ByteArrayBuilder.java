@@ -19,6 +19,8 @@
  THE SOFTWARE.*/
 package Extasys;
 
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
 import java.util.Arrays;
 
 /**
@@ -28,17 +30,24 @@ import java.util.Arrays;
 public class ByteArrayBuilder
 {
 
+    // Internal buffer with extra capacity to avoid reallocations on every Append
+    private final int fDefaultCapacity;
     private byte[] fBytes;
+    private int fLength;
+
     private final Object fLock;
 
-    public ByteArrayBuilder()
+    public ByteArrayBuilder(int defaultCapacity)
     {
+        fDefaultCapacity = defaultCapacity;
         fLock = new Object();
-        fBytes = new byte[0];
+        fBytes = new byte[fDefaultCapacity];
+        fLength = 0;
     }
 
     /**
-     * Append data to ByteArrayBuilder
+     * Append data to ByteArrayBuilder. Uses a capacity-doubling strategy to
+     * minimize array reallocations.
      *
      * @param data is the byte[] array to append
      */
@@ -46,40 +55,59 @@ public class ByteArrayBuilder
     {
         synchronized (fLock)
         {
-            final byte[] newArray = new byte[fBytes.length + data.length];
-            System.arraycopy(fBytes, 0, newArray, 0, fBytes.length);
-            System.arraycopy(data, 0, newArray, fBytes.length, data.length);
-            fBytes = newArray;
+            int requiredLength = fLength + data.length;
+
+            // Grow the internal buffer if needed (doubling strategy)
+            if (requiredLength > fBytes.length)
+            {
+                int newCapacity = Math.max(fBytes.length * 2, requiredLength);
+                fBytes = Arrays.copyOf(fBytes, newCapacity);
+            }
+
+            System.arraycopy(data, 0, fBytes, fLength, data.length);
+            fLength += data.length;
         }
     }
 
+    /**
+     * Find the first occurrence of subArray in the internal buffer. Uses
+     * MemorySegment for zero-copy, SIMD-accelerated comparison.
+     *
+     * @param subArray is the byte[] array to search for
+     * @return the index of the first occurrence, or -1 if not found
+     */
     public int IndexOf(byte[] subArray)
     {
         synchronized (fLock)
         {
             int subArrayLength = subArray.length;
 
-            if (subArrayLength == 1)
+            // If subArray is empty or larger than the data, no match is possible
+            if (subArrayLength == 0 || subArrayLength > fLength)
             {
-                for (int i = 0; i < fBytes.length; i++)
-                {
-                    if (fBytes[i] == subArray[0])
-                    {
-                        return i;
-                    }
-                }
+                return -1;
             }
-            else
-            {
-                // Find subArray in fBytes
-                for (int i = 0; i < fBytes.length; i++)
-                {
-                    byte[] arrayToCompare = Arrays.copyOfRange(fBytes, i, i + subArrayLength);
 
-                    if (Arrays.equals(arrayToCompare, subArray))
-                    {
-                        return i;
-                    }
+            // Wrap both arrays in MemorySegments (zero-copy, no heap allocation)
+            // MemorySegment.ofArray gives access to JVM SIMD intrinsics via mismatch()
+            MemorySegment haystack = MemorySegment.ofArray(fBytes).asSlice(0, fLength);
+            MemorySegment needle = MemorySegment.ofArray(subArray);
+
+            int limit = fLength - subArrayLength;
+
+            for (int i = 0; i <= limit; i++)
+            {
+                // Quick check on first byte before full comparison
+                if (haystack.get(ValueLayout.JAVA_BYTE, i) != subArray[0])
+                {
+                    continue;
+                }
+
+                // Compare a slice of haystack against the needle (no array allocation)
+                // mismatch() returns -1 if the two segments are equal
+                if (haystack.asSlice(i, subArrayLength).mismatch(needle) == -1)
+                {
+                    return i;
                 }
             }
 
@@ -87,21 +115,31 @@ public class ByteArrayBuilder
         }
     }
 
+    /**
+     * Delete bytes from the internal buffer in the range [indexFrom, indexTo).
+     *
+     * @param indexFrom start index (inclusive)
+     * @param indexTo end index (exclusive)
+     */
     public void Delete(int indexFrom, int indexTo)
     {
         synchronized (fLock)
         {
-            final byte[] firstPart = Arrays.copyOfRange(fBytes, 0, indexFrom);
-            final byte[] secondPart = Arrays.copyOfRange(fBytes, indexTo, fBytes.length);
+            int deleteCount = indexTo - indexFrom;
 
-            final byte[] C = new byte[firstPart.length + secondPart.length];
-            System.arraycopy(firstPart, 0, C, 0, firstPart.length);
-            System.arraycopy(secondPart, 0, C, firstPart.length, secondPart.length);
-
-            fBytes = C;
+            // Shift remaining bytes left, avoiding intermediate array allocation
+            System.arraycopy(fBytes, indexTo, fBytes, indexFrom, fLength - indexTo);
+            fLength -= deleteCount;
         }
     }
 
+    /**
+     * Returns a copy of the bytes in the range [fromIndex, toIndex).
+     *
+     * @param fromIndex start index (inclusive)
+     * @param toIndex end index (exclusive)
+     * @return a new byte[] with the requested bytes
+     */
     public byte[] SubList(int fromIndex, int toIndex)
     {
         synchronized (fLock)
@@ -110,11 +148,28 @@ public class ByteArrayBuilder
         }
     }
 
+    /**
+     * Dispose the internal buffer and reset the builder.
+     */
     public void Dispose()
     {
         synchronized (fLock)
         {
-            this.fBytes = new byte[0];
+            fBytes = new byte[fDefaultCapacity];
+            fLength = 0;
+        }
+    }
+
+    /**
+     * Returns the number of bytes currently stored.
+     *
+     * @return the number of bytes currently stored
+     */
+    public int getLength()
+    {
+        synchronized (fLock)
+        {
+            return fLength;
         }
     }
 }

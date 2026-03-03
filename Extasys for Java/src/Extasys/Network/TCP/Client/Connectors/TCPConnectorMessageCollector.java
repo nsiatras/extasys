@@ -32,9 +32,9 @@ public class TCPConnectorMessageCollector extends MessageCollector
 
     private final TCPConnector fMyConnector;
 
-    public TCPConnectorMessageCollector(TCPConnector connector, MessageETX messageETX)
+    public TCPConnectorMessageCollector(TCPConnector connector, MessageETX messageETX, int defaultCapacity)
     {
-        super(messageETX);
+        super(messageETX, defaultCapacity);
         fMyConnector = connector;
     }
 

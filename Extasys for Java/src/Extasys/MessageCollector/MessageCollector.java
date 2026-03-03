@@ -29,13 +29,14 @@ import Extasys.DataConvertion.DataConverter;
 public abstract class MessageCollector
 {
 
-    private final ByteArrayBuilder fIncomingDataBuffer = new ByteArrayBuilder();
+    private final ByteArrayBuilder fIncomingDataBuffer;
     private final MessageETX fMessageETX;
     private int fIndexOf = -1;
 
-    public MessageCollector(MessageETX messageETX)
+    public MessageCollector(MessageETX messageETX, int defaultCapacity)
     {
         fMessageETX = messageETX;
+        fIncomingDataBuffer = new ByteArrayBuilder(defaultCapacity);
     }
 
     public synchronized void AppendDataWithConversion(final byte[] bytes, final DataConverter dataConverter)

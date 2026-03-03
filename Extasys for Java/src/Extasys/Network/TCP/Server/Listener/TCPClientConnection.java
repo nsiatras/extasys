@@ -78,7 +78,7 @@ public final class TCPClientConnection
 
         // Initialize a new message collector or not
         fUseMessageCollector = useMessageCollector;
-        fMyMessageCollector = (fUseMessageCollector) ? new TCPClientConnectionMessageCollector(this, messageETX) : null;
+        fMyMessageCollector = (fUseMessageCollector) ? new TCPClientConnectionMessageCollector(this, messageETX, myTCPListener.getReadBufferSize()) : null;
 
         // Connection startup time
         fConnectionStartUpTimeStamp = System.currentTimeMillis();

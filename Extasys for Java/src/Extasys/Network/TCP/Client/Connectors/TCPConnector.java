@@ -116,7 +116,7 @@ public class TCPConnector extends AbstractConnector
         fServerPort = serverPort;
         fReadBufferSize = readBufferSize;
         fMessageETX = (splitter != null) ? new MessageETX(splitter) : null;
-        fMessageCollector = (splitter != null) ? new TCPConnectorMessageCollector(this, fMessageETX) : null;
+        fMessageCollector = (splitter != null) ? new TCPConnectorMessageCollector(this, fMessageETX, readBufferSize) : null;
         fBytesIn = 0;
         fBytesOut = 0;
     }

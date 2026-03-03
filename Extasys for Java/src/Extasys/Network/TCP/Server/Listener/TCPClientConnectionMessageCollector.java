@@ -32,9 +32,9 @@ public class TCPClientConnectionMessageCollector extends MessageCollector
 
     private final TCPClientConnection fMyClient;
 
-    public TCPClientConnectionMessageCollector(TCPClientConnection myClient, MessageETX messageETX)
+    public TCPClientConnectionMessageCollector(TCPClientConnection myClient, MessageETX messageETX, int defaultCapacity)
     {
-        super(messageETX);
+        super(messageETX, defaultCapacity);
         fMyClient = myClient;
     }
 
