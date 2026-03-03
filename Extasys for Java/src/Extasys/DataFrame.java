@@ -39,7 +39,9 @@ public final class DataFrame
 
     public DataFrame(byte[] bytes, int offset, int length)
     {
-        fBytes = Arrays.copyOfRange(bytes, offset, length);
+        // Arrays.copyOfRange expects (array, from, to) where 'to' is exclusive.
+        // Therefore 'to' must be offset + length, not length alone.
+        fBytes = Arrays.copyOfRange(bytes, offset, offset + length);
         fLength = fBytes.length;
     }
 
