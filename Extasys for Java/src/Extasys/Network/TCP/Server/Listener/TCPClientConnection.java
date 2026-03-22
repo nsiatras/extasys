@@ -284,9 +284,10 @@ public final class TCPClientConnection
     }
 
     /**
-     * Return client's IP Address.
+     * Returns the client's IP address and port in the format "IP:Port" (e.g.
+     * "192.168.1.10:54321").
      *
-     * @return client's IP Address.
+     * @return the client's IP address and port as a String.
      */
     public String getIPAddress()
     {
