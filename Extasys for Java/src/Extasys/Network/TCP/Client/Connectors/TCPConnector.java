@@ -438,7 +438,6 @@ class ReadIncomingDataThread extends Thread
         {
             ConnectionWithoutMessageCollector();
         }
-
     }
 
     private void ConnectionWithMessageCollector()
