@@ -19,6 +19,10 @@
  THE SOFTWARE.*/
 package Extasys;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  *
  * @author Nikos Siatras
@@ -36,11 +40,15 @@ package Extasys;
  *
  * - Call WaitOne(milliseconds) to block the current thread until the event is
  * set or the timeout expires.
+ *
+ * - Call WaitOneWithoutException(milliseconds) to block the current thread
+ * until the event is set or the timeout expires, without throwing an exception.
  */
 public class ManualResetEvent
 {
 
-    private final Object fLock = new Object();
+    private final ReentrantLock fLock = new ReentrantLock();
+    private final Condition fCondition = fLock.newCondition();
     private volatile boolean fIsOpen;
 
     public ManualResetEvent(boolean initialState)
@@ -48,6 +56,10 @@ public class ManualResetEvent
         fIsOpen = initialState;
     }
 
+    /**
+     * Resets the event to the non-signaled state (close the gate). Threads
+     * calling WaitOne() will block until Set() is called.
+     */
     public void Reset()
     {
         fIsOpen = false;
@@ -60,13 +72,20 @@ public class ManualResetEvent
      */
     public void WaitOne()
     {
-        synchronized (fLock)
+        // Fast path: if already open, no need to acquire the lock
+        if (fIsOpen)
+        {
+            return;
+        }
+
+        fLock.lock();
+        try
         {
             while (!fIsOpen)
             {
                 try
                 {
-                    fLock.wait();
+                    fCondition.await();
                 }
                 catch (InterruptedException ex)
                 {
@@ -74,6 +93,10 @@ public class ManualResetEvent
                     // WaitOne() must keep waiting until Set() is called.
                 }
             }
+        }
+        finally
+        {
+            fLock.unlock();
         }
     }
 
@@ -88,24 +111,54 @@ public class ManualResetEvent
      */
     public boolean WaitOne(long milliseconds) throws InterruptedException
     {
-        synchronized (fLock)
+        // Fast path: if already open, no need to acquire the lock
+        if (fIsOpen)
         {
-            if (fIsOpen)
-            {
-                return true;
-            }
+            return true;
+        }
 
+        fLock.lock();
+        try
+        {
             // Track remaining time to handle spurious wakeups correctly
-            long deadline = System.currentTimeMillis() + milliseconds;
             long remaining = milliseconds;
+            long deadline = System.currentTimeMillis() + milliseconds;
 
             while (!fIsOpen && remaining > 0)
             {
-                fLock.wait(remaining);
+                fCondition.await(remaining, TimeUnit.MILLISECONDS);
                 remaining = deadline - System.currentTimeMillis();
             }
 
             return fIsOpen;
+        }
+        finally
+        {
+            fLock.unlock();
+        }
+    }
+
+    /**
+     * Blocks the current thread until the event is set or the timeout expires.
+     * Same behavior as WaitOne(milliseconds) but does not throw
+     * InterruptedException. If the thread is interrupted, the interrupt flag is
+     * restored and the method returns false.
+     *
+     * @param milliseconds maximum time to wait in milliseconds
+     * @return true if the event was set, false if the timeout expired or the
+     * thread was interrupted
+     */
+    public boolean WaitOneWithoutException(long milliseconds)
+    {
+        try
+        {
+            return WaitOne(milliseconds);
+        }
+        catch (InterruptedException ex)
+        {
+            // Restore the interrupt flag so the caller can detect the interruption if needed
+            Thread.currentThread().interrupt();
+            return false;
         }
     }
 
@@ -115,10 +168,15 @@ public class ManualResetEvent
      */
     public void Set()
     {
-        synchronized (fLock)
+        fLock.lock();
+        try
         {
             fIsOpen = true;
-            fLock.notifyAll();
+            fCondition.signalAll();
+        }
+        finally
+        {
+            fLock.unlock();
         }
     }
 
