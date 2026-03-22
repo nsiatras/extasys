@@ -394,7 +394,7 @@ class ReadIncomingDataThread extends Thread
 
     private final TCPConnector fMyTCPConnector;
     private final byte[] fReadBuffer;
-    private boolean fActive = false;
+    private volatile boolean fActive = false;
 
     public ReadIncomingDataThread(TCPConnector myTCPConnector)
     {
